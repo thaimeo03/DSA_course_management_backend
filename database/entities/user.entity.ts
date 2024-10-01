@@ -7,4 +7,7 @@ export class User {
 
   @Column({ type: 'varchar' })
   fullName: string
+
+  @Column({ type: 'varchar', unique: true })
+  email: string
 }
