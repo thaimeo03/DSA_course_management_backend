@@ -4,7 +4,7 @@ interface Pagination {
   totalPage: number
 }
 
-export class ResponseData<T> {
+export class DataResponse<T> {
   message: string
   data?: T
 
@@ -14,7 +14,7 @@ export class ResponseData<T> {
   }
 }
 
-export class ResponseDataWithPagination<T> extends ResponseData<T> {
+export class DataResponseWithPagination<T> extends DataResponse<T> {
   pagination: Pagination
 
   constructor({ message, data, pagination }: { message: string; data: T; pagination: Pagination }) {
