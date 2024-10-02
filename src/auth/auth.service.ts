@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import { InjectRepository } from '@nestjs/typeorm'
 import { User } from 'database/entities/user.entity'
 import { Repository } from 'typeorm'
 import { PayloadDto } from './dto/payload.dto'
+import { RefreshTokenDto } from './dto/refresh-token.dto'
+import { AuthMessages } from 'common/constants/messages/auth.message'
 
 @Injectable()
 export class AuthService {
@@ -50,5 +52,28 @@ export class AuthService {
         secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET')
       }
     )
+  }
+
+  // 1. Check old refresh token
+  // 2. Generate new access token
+  // 3. Update new refresh token
+  async refreshToken(refreshTokenDto: RefreshTokenDto) {
+    // 1
+    const { userId, oldRefreshToken } = refreshTokenDto
+    const user = await this.userRepository.findOneBy({ id: userId })
+
+    if (oldRefreshToken !== user.refreshToken) throw new BadRequestException(AuthMessages.INVALID_TOKEN)
+
+    // 2
+    const { accessToken, refreshToken } = await this.generateToken({
+      userId,
+      role: user.role,
+      verified: user.verified
+    })
+
+    // 3
+    await this.userRepository.update(userId, { refreshToken })
+
+    return { accessToken, refreshToken }
   }
 }
