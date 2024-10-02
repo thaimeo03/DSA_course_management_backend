@@ -20,8 +20,8 @@ export class RefreshTokenStrategy extends PassportStrategy(Strategy, 'refresh-to
   }
 
   private static extractJwtFromCookie(req: Request) {
-    if (req.cookies && 'refresh_token' in req.cookies) {
-      return req.cookies.refresh_token
+    if (req.cookies && process.env.AUTH_COOKIE_REFRESH_TOKEN_NAME in req.cookies) {
+      return req.cookies[process.env.AUTH_COOKIE_REFRESH_TOKEN_NAME]
     }
     return null
   }

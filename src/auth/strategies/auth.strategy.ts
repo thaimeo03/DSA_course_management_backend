@@ -21,8 +21,8 @@ export class AuthJwtStrategy extends PassportStrategy(Strategy, 'authJwt') {
   }
 
   private static extractJwtFromCookie(req: Request) {
-    if (req.cookies && 'access_token' in req.cookies) {
-      return req.cookies.access_token
+    if (req.cookies && process.env.AUTH_COOKIE_ACCESS_TOKEN_NAME in req.cookies) {
+      return req.cookies[process.env.AUTH_COOKIE_ACCESS_TOKEN_NAME]
     }
     return null
   }
