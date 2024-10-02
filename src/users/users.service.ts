@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config'
 import { AuthService } from 'src/auth/auth.service'
 import * as bcrypt from 'bcrypt'
 import { UserMessages } from 'common/constants/messages/user.message'
+import { LoginDto } from './dto/login.dto'
 
 @Injectable()
 export class UsersService {
@@ -55,9 +56,34 @@ export class UsersService {
 
   // 1. Check email exists
   // 2. Check password
-  // 3. Generate token (access token, refresh token) taken from auth service
-  // 4. Update new refresh token and return token
-  async login() {}
+  // 3. Check verified (handle in future)
+  // 4. Generate token (access token, refresh token) taken from auth service
+  // 5. Update new refresh token and return token
+  async login(loginDto: LoginDto) {
+    // 1
+    const user = await this.usersRepository.findOneBy({ email: loginDto.email })
+    if (!user) throw new BadRequestException(UserMessages.EMAIL_OR_PASSWORD_INVALID)
+
+    // 2
+    const isMatch = await bcrypt.compare(loginDto.password, user.password)
+    if (!isMatch) throw new BadRequestException(UserMessages.EMAIL_OR_PASSWORD_INVALID)
+
+    // 3 (coming soon)
+
+    // 4
+    const { accessToken, refreshToken } = await this.authService.generateToken({
+      userId: user.id,
+      role: user.role,
+      verified: user.verified
+    })
+
+    // 5
+    await this.usersRepository.update(user.id, {
+      refreshToken
+    })
+
+    return { accessToken, refreshToken }
+  }
 
   async logout() {}
 }
