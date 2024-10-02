@@ -85,5 +85,8 @@ export class UsersService {
     return { accessToken, refreshToken }
   }
 
-  async logout() {}
+  // Update refresh token is null
+  async logout(userId: string) {
+    await this.usersRepository.update(userId, { refreshToken: null })
+  }
 }

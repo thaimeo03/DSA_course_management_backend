@@ -3,5 +3,6 @@ export const UserMessages = {
   EMAIL_ALREADY_EXISTS: 'Email already exists',
   EMAIL_OR_PASSWORD_INVALID: 'Email or password invalid',
   REGISTER_SUCCESS: 'Register successfully',
-  LOGIN_SUCCESS: 'Login successfully'
+  LOGIN_SUCCESS: 'Login successfully',
+  LOGOUT_SUCCESS: 'Logout successfully'
 }

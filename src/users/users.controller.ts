@@ -7,8 +7,6 @@ import { UserMessages } from 'common/constants/messages/user.message'
 import { ConfigService } from '@nestjs/config'
 import { LoginDto } from './dto/login.dto'
 import { AuthJwtGuard } from 'src/auth/guards/auth.guard'
-import { Roles } from 'common/decorators/roles.de'
-import { Role } from 'common/enums/users.enum'
 
 @Controller('users')
 export class UsersController {
@@ -39,8 +37,15 @@ export class UsersController {
 
   @Get('logout')
   @UseGuards(AuthJwtGuard)
-  @Roles(Role.Student)
   async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    return req.user
+    const userId = req.user['userId'] as string
+
+    await this.usersService.logout(userId)
+
+    // Clear cookies
+    res.clearCookie(this.configService.get('AUTH_COOKIE_ACCESS_TOKEN_NAME'))
+    res.clearCookie(this.configService.get('AUTH_COOKIE_REFRESH_TOKEN_NAME'))
+
+    return new DataResponse({ message: UserMessages.LOGOUT_SUCCESS })
   }
 }
