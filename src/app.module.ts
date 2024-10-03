@@ -5,6 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { DBConfigService } from 'database/data-source'
 import { UsersModule } from './users/users.module'
 import { AuthModule } from './auth/auth.module'
+import { ImagesModule } from './images/images.module'
+import { CoursesModule } from './courses/courses.module'
 
 @Module({
   imports: [
@@ -16,7 +18,9 @@ import { AuthModule } from './auth/auth.module'
       useClass: DBConfigService
     }),
     UsersModule,
-    AuthModule
+    AuthModule,
+    ImagesModule,
+    CoursesModule
   ],
   controllers: [AppController],
   providers: []
