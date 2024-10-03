@@ -1,8 +1,10 @@
-import { Body, Controller, Post, UploadedFiles, UseInterceptors } from '@nestjs/common'
+import { Body, Controller, Delete, Post, UploadedFiles, UseInterceptors } from '@nestjs/common'
 import { FilesInterceptor } from '@nestjs/platform-express'
 import { UploadImageBodyDto } from './dto/upload-image-body.dto'
 import { ImagesService } from './images.service'
 import { DataResponse } from 'common/core/response-success.core'
+import { ImageMessages } from 'common/constants/messages/image.message'
+import { DeleteImagesDto } from './dto/delete-images.dto'
 
 @Controller('images')
 export class ImagesController {
@@ -17,8 +19,17 @@ export class ImagesController {
     })
 
     return new DataResponse({
-      message: 'Upload images file success',
+      message: ImageMessages.UPLOAD_SUCCESS,
       data
+    })
+  }
+
+  @Delete('delete')
+  async deleteFiles(@Body() deleteImagesDto: DeleteImagesDto) {
+    await this.imagesService.deleteImages(deleteImagesDto.urls)
+
+    return new DataResponse({
+      message: ImageMessages.DELETE_SUCCESS
     })
   }
 }

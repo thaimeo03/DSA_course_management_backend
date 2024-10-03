@@ -21,7 +21,7 @@ export class User {
   @Column({ type: 'enum', enum: Role, default: Role.Student })
   role: Role
 
-  @Column({ type: 'varchar', nullable: true, length: 200 })
+  @Column({ type: 'varchar', nullable: true })
   avatar: string
 
   @Column({ type: 'date', nullable: true })
