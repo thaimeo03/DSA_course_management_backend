@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common'
+import { Body, Controller, Delete, Param, Post } from '@nestjs/common'
 import { CoursesService } from './courses.service'
 import { CreateCourseDto } from './dto/create-course.dto'
 import { DataResponse } from 'common/core/response-success.core'
@@ -15,6 +15,15 @@ export class CoursesController {
     return new DataResponse({
       message: CourseMessages.CREATE_COURSE_SUCCESS,
       data
+    })
+  }
+
+  @Delete(':id')
+  async deleteCourse(@Param('id') id: string) {
+    await this.coursesService.deleteCourse(id)
+
+    return new DataResponse({
+      message: CourseMessages.DELETE_COURSE_SUCCESS
     })
   }
 }
