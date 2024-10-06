@@ -4,6 +4,8 @@ import { Course } from 'database/entities/course.entity'
 import { Repository } from 'typeorm'
 import { CreateCourseDto } from './dto/create-course.dto'
 import { CourseMessages } from 'common/constants/messages/course.message'
+import { FindAllCourseDto } from './dto/find-all-course.dto'
+import { Pagination } from 'common/core/pagination.core'
 
 @Injectable()
 export class CoursesService {
@@ -23,5 +25,28 @@ export class CoursesService {
 
     // 2
     await this.coursesRepository.delete(id)
+  }
+
+  // Get all courses
+  // Pagination
+  async findAllCourses(findAllCoursesDto: FindAllCourseDto) {
+    // 1
+    const page = findAllCoursesDto.page || 1
+    const limit = findAllCoursesDto.limit || 5
+    const skip = (page - 1) * limit
+
+    const courses = await this.coursesRepository.find({
+      skip,
+      take: limit
+    })
+
+    // 2
+    const totalPage = Math.ceil((await this.coursesRepository.count()) / limit)
+    const pagination = new Pagination({ limit, currentPage: page, totalPage })
+
+    return {
+      courses,
+      pagination
+    }
   }
 }

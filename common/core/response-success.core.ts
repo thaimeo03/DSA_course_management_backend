@@ -1,8 +1,4 @@
-interface Pagination {
-  limit: number
-  currentPage: number
-  totalPage: number
-}
+import { Pagination } from './pagination.core'
 
 export class DataResponse<T> {
   message: string
