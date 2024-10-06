@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common'
 import { CoursesService } from './courses.service'
 import { CreateCourseDto } from './dto/create-course.dto'
 import { DataResponse, DataResponseWithPagination } from 'common/core/response-success.core'
 import { CourseMessages } from 'common/constants/messages/course.message'
 import { FindAllCourseDto } from './dto/find-all-course.dto'
+import { UpdateCourseDto } from './dto/update-course.dto'
 
 @Controller('courses')
 export class CoursesController {
@@ -27,6 +28,15 @@ export class CoursesController {
       message: CourseMessages.FIND_ALL_COURSES_SUCCESS,
       data: courses,
       pagination: pagination
+    })
+  }
+
+  @Patch(':id')
+  async updateCourse(@Param('id') id: string, @Body() updateCourseDto: UpdateCourseDto) {
+    await this.coursesService.updateCourse(id, updateCourseDto)
+
+    return new DataResponse({
+      message: CourseMessages.UPDATE_COURSE_SUCCESS
     })
   }
 

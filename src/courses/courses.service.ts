@@ -6,6 +6,7 @@ import { CreateCourseDto } from './dto/create-course.dto'
 import { CourseMessages } from 'common/constants/messages/course.message'
 import { FindAllCourseDto } from './dto/find-all-course.dto'
 import { Pagination } from 'common/core/pagination.core'
+import { UpdateCourseDto } from './dto/update-course.dto'
 
 @Injectable()
 export class CoursesService {
@@ -48,5 +49,12 @@ export class CoursesService {
       courses,
       pagination
     }
+  }
+
+  async updateCourse(id: string, updateCourseDto: UpdateCourseDto) {
+    const course = await this.coursesRepository.findOneBy({ id })
+    if (!course) throw new NotFoundException(CourseMessages.COURSE_NOT_FOUND)
+
+    await this.coursesRepository.update(id, updateCourseDto)
   }
 }
