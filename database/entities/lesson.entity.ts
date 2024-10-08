@@ -21,6 +21,6 @@ export class Lesson {
   @UpdateDateColumn()
   updatedAt: Date
 
-  @ManyToOne(() => Course, (course) => course.lessons)
+  @ManyToOne(() => Course, (course) => course.lessons, { onDelete: 'CASCADE' })
   course: Course
 }

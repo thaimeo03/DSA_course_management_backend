@@ -1,11 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Lesson } from 'database/entities/lesson.entity'
 import { Repository } from 'typeorm'
 import { CreateLessonDto } from './dto/create-lesson.dto'
-import { Course } from 'database/entities/course.entity'
 import { CourseMessages } from 'common/constants/messages/course.message'
+import { LessonMessages } from 'common/constants/messages/lesson.message'
 import * as _ from 'lodash'
+import { Lesson } from 'database/entities/lesson.entity'
+import { Course } from 'database/entities/course.entity'
 
 @Injectable()
 export class LessonsService {
@@ -28,5 +29,16 @@ export class LessonsService {
     })
 
     return _.omit(lesson, ['course'])
+  }
+
+  // 1. Check lesson exists
+  // 2. Delete lesson
+  async deleteLesson(id: string) {
+    // 1
+    const lesson = await this.lessonRepository.findOneBy({ id })
+    if (!lesson) throw new NotFoundException(LessonMessages.LESSON_NOT_FOUND)
+
+    // 2
+    await this.lessonRepository.delete(id)
   }
 }
