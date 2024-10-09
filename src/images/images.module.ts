@@ -10,6 +10,7 @@ import { Image } from 'database/entities/image.entity'
 @Module({
   imports: [MulterModule.registerAsync({ useClass: MulterConfigService }), TypeOrmModule.forFeature([Image])],
   providers: [ImagesService, CloudinaryService],
-  controllers: [ImagesController]
+  controllers: [ImagesController],
+  exports: [ImagesService]
 })
 export class ImagesModule {}

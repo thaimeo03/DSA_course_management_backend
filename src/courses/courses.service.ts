@@ -7,10 +7,16 @@ import { CourseMessages } from 'common/constants/messages/course.message'
 import { FindAllCourseDto } from './dto/find-all-course.dto'
 import { Pagination } from 'common/core/pagination.core'
 import { UpdateCourseDto } from './dto/update-course.dto'
+import { ImagesService } from 'src/images/images.service'
+import { Image } from 'database/entities/image.entity'
 
 @Injectable()
 export class CoursesService {
-  constructor(@InjectRepository(Course) private coursesRepository: Repository<Course>) {}
+  constructor(
+    @InjectRepository(Course) private coursesRepository: Repository<Course>,
+    @InjectRepository(Image) private imageRepository: Repository<Image>,
+    private imageService: ImagesService
+  ) {}
 
   async createCourse(createCourseDto: CreateCourseDto) {
     const course = await this.coursesRepository.save(createCourseDto)
@@ -18,13 +24,20 @@ export class CoursesService {
   }
 
   // 1. Check course
-  // 2. Delete course
+  // 2. Delete image on cloudinary if exists
+  // 3. Delete course
   async deleteCourse(id: string) {
     // 1
     const course = await this.coursesRepository.findOneBy({ id })
     if (!course) throw new NotFoundException(CourseMessages.COURSE_NOT_FOUND)
 
     // 2
+    const image = await this.imageRepository.findOneBy({ url: course.thumbnail })
+    if (image) {
+      await this.imageService.deleteImages([image.url])
+    }
+
+    // 3
     await this.coursesRepository.delete(id)
   }
 
@@ -51,10 +64,23 @@ export class CoursesService {
     }
   }
 
+  // 1. Check course
+  // 2. Delete old image on cloudinary if image changed and exists
+  // 3. Update course
   async updateCourse(id: string, updateCourseDto: UpdateCourseDto) {
+    // 1
     const course = await this.coursesRepository.findOneBy({ id })
     if (!course) throw new NotFoundException(CourseMessages.COURSE_NOT_FOUND)
 
+    // 2
+    if (updateCourseDto.thumbnail !== course.thumbnail) {
+      const oldImage = await this.imageRepository.findOneBy({ url: course.thumbnail })
+      if (oldImage) {
+        await this.imageService.deleteImages([oldImage.url])
+      }
+    }
+
+    // 3
     await this.coursesRepository.update(id, updateCourseDto)
   }
 }
