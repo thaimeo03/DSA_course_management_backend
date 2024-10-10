@@ -7,6 +7,7 @@ import { LessonMessages } from 'common/constants/messages/lesson.message'
 import * as _ from 'lodash'
 import { Lesson } from 'database/entities/lesson.entity'
 import { Course } from 'database/entities/course.entity'
+import { UpdateLessonDto } from './dto/update-lesson.dto'
 
 @Injectable()
 export class LessonsService {
@@ -40,5 +41,16 @@ export class LessonsService {
 
     // 2
     await this.lessonRepository.delete(id)
+  }
+
+  // 1. Check lesson exists
+  // 2. Update lesson
+  async updateLesson(id: string, updateLessonDto: UpdateLessonDto) {
+    // 1
+    const lesson = await this.lessonRepository.findOneBy({ id })
+    if (!lesson) throw new NotFoundException(LessonMessages.LESSON_NOT_FOUND)
+
+    // 2
+    await this.lessonRepository.update(id, updateLessonDto)
   }
 }

@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Param, Post } from '@nestjs/common'
+import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common'
 import { LessonsService } from './lessons.service'
 import { CreateLessonDto } from './dto/create-lesson.dto'
 import { DataResponse } from 'common/core/response-success.core'
 import { LessonMessages } from 'common/constants/messages/lesson.message'
+import { UpdateLessonDto } from './dto/update-lesson.dto'
 
 @Controller('lessons')
 export class LessonsController {
@@ -13,6 +14,13 @@ export class LessonsController {
     const data = await this.lessonsService.createLesson(createLessonDto)
 
     return new DataResponse({ message: LessonMessages.CREATE_LESSON_SUCCESS, data })
+  }
+
+  @Patch(':id')
+  async updateLesson(@Param('id') id: string, @Body() updateLessonDto: UpdateLessonDto) {
+    await this.lessonsService.updateLesson(id, updateLessonDto)
+
+    return new DataResponse({ message: LessonMessages.UPDATE_LESSON_SUCCESS })
   }
 
   @Delete(':id')
