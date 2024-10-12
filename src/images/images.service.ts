@@ -7,41 +7,41 @@ import { Image } from 'database/entities/image.entity'
 
 @Injectable()
 export class ImagesService {
-  constructor(
-    @InjectRepository(Image) private imageRepository: Repository<Image>,
-    private cloudinaryService: CloudinaryService
-  ) {}
+    constructor(
+        @InjectRepository(Image) private imageRepository: Repository<Image>,
+        private cloudinaryService: CloudinaryService
+    ) {}
 
-  // Upload images to cloudinary
-  async uploadImages(uploadImagesDto: UploadImagesDto) {
-    const { files, cloudFolder } = uploadImagesDto
+    // Upload images to cloudinary
+    async uploadImages(uploadImagesDto: UploadImagesDto) {
+        const { files, cloudFolder } = uploadImagesDto
 
-    const urls = await Promise.all(
-      files.map(async (file) => {
-        const uploadResult = await this.cloudinaryService.uploadImage({
-          file,
-          cloudFolder
-        })
+        const urls = await Promise.all(
+            files.map(async (file) => {
+                const uploadResult = await this.cloudinaryService.uploadImage({
+                    file,
+                    cloudFolder
+                })
 
-        return uploadResult
-      })
-    )
+                return uploadResult
+            })
+        )
 
-    return urls
-  }
+        return urls
+    }
 
-  // Delete images from cloudinary and database
-  async deleteImages(urls: string[]) {
-    await Promise.all(
-      urls.map(async (url) => {
-        const image = await this.imageRepository.findOneBy({ url })
-        if (!image) return
+    // Delete images from cloudinary and database
+    async deleteImages(urls: string[]) {
+        await Promise.all(
+            urls.map(async (url) => {
+                const image = await this.imageRepository.findOneBy({ url })
+                if (!image) return
 
-        Promise.all([
-          await this.cloudinaryService.deleteImage(image.publicId),
-          await this.imageRepository.delete(image.id)
-        ])
-      })
-    )
-  }
+                Promise.all([
+                    await this.cloudinaryService.deleteImage(image.publicId),
+                    await this.imageRepository.delete(image.id)
+                ])
+            })
+        )
+    }
 }

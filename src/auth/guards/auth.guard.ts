@@ -6,24 +6,24 @@ import { Role } from 'common/enums/users.enum'
 
 @Injectable()
 export class AuthJwtGuard extends AuthGuard('authJwt') {
-  private reflector = new Reflector()
+    private reflector = new Reflector()
 
-  constructor() {
-    super()
-  }
-
-  handleRequest(err, user, info, context: ExecutionContext) {
-    if (err || !user) {
-      throw err || new UnauthorizedException()
+    constructor() {
+        super()
     }
 
-    // Get roles from decorator and check if user has roles
-    const roles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [context.getHandler(), context.getClass()])
+    handleRequest(err, user, info, context: ExecutionContext) {
+        if (err || !user) {
+            throw err || new UnauthorizedException()
+        }
 
-    if (!roles) return user
+        // Get roles from decorator and check if user has roles
+        const roles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [context.getHandler(), context.getClass()])
 
-    if (!roles.includes(user.role)) throw new ForbiddenException()
+        if (!roles) return user
 
-    return user
-  }
+        if (!roles.includes(user.role)) throw new ForbiddenException()
+
+        return user
+    }
 }

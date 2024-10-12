@@ -8,9 +8,9 @@ import { AuthController } from './auth.controller'
 import { RefreshTokenStrategy } from './strategies/refresh-token.strategy'
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), JwtModule],
-  providers: [AuthService, AuthJwtStrategy, RefreshTokenStrategy],
-  exports: [AuthService],
-  controllers: [AuthController]
+    imports: [TypeOrmModule.forFeature([User]), JwtModule],
+    providers: [AuthService, AuthJwtStrategy, RefreshTokenStrategy],
+    exports: [AuthService],
+    controllers: [AuthController]
 })
 export class AuthModule {}

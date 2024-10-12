@@ -1,5 +1,14 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn
+} from 'typeorm'
 import { Course } from './course.entity'
+import { Document } from './document.entity'
 
 @Entity('Lessons')
 export class Lesson {
@@ -23,4 +32,7 @@ export class Lesson {
 
   @ManyToOne(() => Course, (course) => course.lessons, { onDelete: 'CASCADE' })
   course: Course
+
+  @OneToMany(() => Document, (document) => document.lesson)
+  documents: Document[]
 }

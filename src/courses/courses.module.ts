@@ -7,8 +7,8 @@ import { ImagesModule } from 'src/images/images.module'
 import { Image } from 'database/entities/image.entity'
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Course, Image]), ImagesModule],
-  controllers: [CoursesController],
-  providers: [CoursesService]
+    imports: [TypeOrmModule.forFeature([Course, Image]), ImagesModule],
+    controllers: [CoursesController],
+    providers: [CoursesService]
 })
 export class CoursesModule {}

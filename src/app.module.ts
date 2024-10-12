@@ -7,24 +7,26 @@ import { UsersModule } from './users/users.module'
 import { AuthModule } from './auth/auth.module'
 import { ImagesModule } from './images/images.module'
 import { CoursesModule } from './courses/courses.module'
-import { LessonsModule } from './lessons/lessons.module';
+import { LessonsModule } from './lessons/lessons.module'
+import { DocumentsModule } from './documents/documents.module'
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: ['.env.local', '.env']
-    }),
-    TypeOrmModule.forRootAsync({
-      useClass: DBConfigService
-    }),
-    UsersModule,
-    AuthModule,
-    ImagesModule,
-    CoursesModule,
-    LessonsModule
-  ],
-  controllers: [AppController],
-  providers: []
+    imports: [
+        ConfigModule.forRoot({
+            isGlobal: true,
+            envFilePath: ['.env.local', '.env']
+        }),
+        TypeOrmModule.forRootAsync({
+            useClass: DBConfigService
+        }),
+        UsersModule,
+        AuthModule,
+        ImagesModule,
+        CoursesModule,
+        LessonsModule,
+        DocumentsModule
+    ],
+    controllers: [AppController],
+    providers: []
 })
 export class AppModule {}

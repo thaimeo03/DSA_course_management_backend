@@ -8,28 +8,28 @@ import { DeleteImagesDto } from './dto/delete-images.dto'
 
 @Controller('images')
 export class ImagesController {
-  constructor(private readonly imagesService: ImagesService) {}
+    constructor(private readonly imagesService: ImagesService) {}
 
-  @Post('upload')
-  @UseInterceptors(FilesInterceptor('images', 5))
-  async uploadFiles(@UploadedFiles() files: Express.Multer.File[], @Body() uploadImageBodyDto: UploadImageBodyDto) {
-    const data = await this.imagesService.uploadImages({
-      files,
-      cloudFolder: uploadImageBodyDto.cloudFolder
-    })
+    @Post('upload')
+    @UseInterceptors(FilesInterceptor('images', 5))
+    async uploadFiles(@UploadedFiles() files: Express.Multer.File[], @Body() uploadImageBodyDto: UploadImageBodyDto) {
+        const data = await this.imagesService.uploadImages({
+            files,
+            cloudFolder: uploadImageBodyDto.cloudFolder
+        })
 
-    return new DataResponse({
-      message: ImageMessages.UPLOAD_SUCCESS,
-      data
-    })
-  }
+        return new DataResponse({
+            message: ImageMessages.UPLOAD_SUCCESS,
+            data
+        })
+    }
 
-  @Delete('delete')
-  async deleteFiles(@Body() deleteImagesDto: DeleteImagesDto) {
-    await this.imagesService.deleteImages(deleteImagesDto.urls)
+    @Delete('delete')
+    async deleteFiles(@Body() deleteImagesDto: DeleteImagesDto) {
+        await this.imagesService.deleteImages(deleteImagesDto.urls)
 
-    return new DataResponse({
-      message: ImageMessages.DELETE_SUCCESS
-    })
-  }
+        return new DataResponse({
+            message: ImageMessages.DELETE_SUCCESS
+        })
+    }
 }

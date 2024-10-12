@@ -11,82 +11,82 @@ import { LoginDto } from './dto/login.dto'
 
 @Injectable()
 export class UsersService {
-  constructor(
-    private configService: ConfigService,
-    @InjectRepository(User) private usersRepository: Repository<User>,
-    private authService: AuthService
-  ) {}
+    constructor(
+        private configService: ConfigService,
+        @InjectRepository(User) private usersRepository: Repository<User>,
+        private authService: AuthService
+    ) {}
 
-  // 1. Check email exists
-  // 2. Hash password
-  // 3. Create and save new user
-  // 4. Generate token (access token, refresh token) taken from auth service
-  // 5. Update refresh token and return token
-  async register(registerDto: RegisterDto) {
-    // 1
-    const user = await this.usersRepository.findOneBy({ email: registerDto.email })
-    if (user) throw new BadRequestException(UserMessages.EMAIL_ALREADY_EXISTS)
+    // 1. Check email exists
+    // 2. Hash password
+    // 3. Create and save new user
+    // 4. Generate token (access token, refresh token) taken from auth service
+    // 5. Update refresh token and return token
+    async register(registerDto: RegisterDto) {
+        // 1
+        const user = await this.usersRepository.findOneBy({ email: registerDto.email })
+        if (user) throw new BadRequestException(UserMessages.EMAIL_ALREADY_EXISTS)
 
-    // 2
-    const hashedPassword = await bcrypt.hash(
-      registerDto.password,
-      +this.configService.get('AUTH_REGISTER_SALT_ROUNDS') || 10
-    )
+        // 2
+        const hashedPassword = await bcrypt.hash(
+            registerDto.password,
+            +this.configService.get('AUTH_REGISTER_SALT_ROUNDS') || 10
+        )
 
-    // 3
-    const newUser = await this.usersRepository.save({
-      ...registerDto,
-      password: hashedPassword
-    })
+        // 3
+        const newUser = await this.usersRepository.save({
+            ...registerDto,
+            password: hashedPassword
+        })
 
-    // 4
-    const { accessToken, refreshToken } = await this.authService.generateToken({
-      userId: newUser.id,
-      role: newUser.role,
-      verified: newUser.verified
-    })
+        // 4
+        const { accessToken, refreshToken } = await this.authService.generateToken({
+            userId: newUser.id,
+            role: newUser.role,
+            verified: newUser.verified
+        })
 
-    // 5
-    await this.usersRepository.update(newUser.id, {
-      refreshToken
-    })
+        // 5
+        await this.usersRepository.update(newUser.id, {
+            refreshToken
+        })
 
-    return { accessToken, refreshToken }
-  }
+        return { accessToken, refreshToken }
+    }
 
-  // 1. Check email exists
-  // 2. Check password
-  // 3. Check verified (handle in future)
-  // 4. Generate token (access token, refresh token) taken from auth service
-  // 5. Update new refresh token and return token
-  async login(loginDto: LoginDto) {
-    // 1
-    const user = await this.usersRepository.findOneBy({ email: loginDto.email })
-    if (!user) throw new BadRequestException(UserMessages.EMAIL_OR_PASSWORD_INVALID)
+    // 1. Check email exists
+    // 2. Check password
+    // 3. Check verified (handle in future)
+    // 4. Generate token (access token, refresh token) taken from auth service
+    // 5. Update new refresh token and return token
+    async login(loginDto: LoginDto) {
+        // 1
+        const user = await this.usersRepository.findOneBy({ email: loginDto.email })
+        if (!user) throw new BadRequestException(UserMessages.EMAIL_OR_PASSWORD_INVALID)
 
-    // 2
-    const isMatch = await bcrypt.compare(loginDto.password, user.password)
-    if (!isMatch) throw new BadRequestException(UserMessages.EMAIL_OR_PASSWORD_INVALID)
+        // 2
+        const isMatch = await bcrypt.compare(loginDto.password, user.password)
+        if (!isMatch) throw new BadRequestException(UserMessages.EMAIL_OR_PASSWORD_INVALID)
 
-    // 3 (coming soon)
+        // 3 (coming soon)
 
-    // 4
-    const { accessToken, refreshToken } = await this.authService.generateToken({
-      userId: user.id,
-      role: user.role,
-      verified: user.verified
-    })
+        // 4
+        const { accessToken, refreshToken } = await this.authService.generateToken({
+            userId: user.id,
+            role: user.role,
+            verified: user.verified
+        })
 
-    // 5
-    await this.usersRepository.update(user.id, {
-      refreshToken
-    })
+        // 5
+        await this.usersRepository.update(user.id, {
+            refreshToken
+        })
 
-    return { accessToken, refreshToken }
-  }
+        return { accessToken, refreshToken }
+    }
 
-  // Update refresh token is null
-  async logout(userId: string) {
-    await this.usersRepository.update(userId, { refreshToken: null })
-  }
+    // Update refresh token is null
+    async logout(userId: string) {
+        await this.usersRepository.update(userId, { refreshToken: null })
+    }
 }

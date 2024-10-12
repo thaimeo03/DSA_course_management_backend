@@ -1,4 +1,4 @@
 export class RefreshTokenDto {
-  userId: string
-  oldRefreshToken: string
+    userId: string
+    oldRefreshToken: string
 }
