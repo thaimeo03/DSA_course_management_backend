@@ -1,9 +1,9 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryColumn } from 'typeorm'
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { Lesson } from './lesson.entity'
 
 @Entity('Documents')
 export class Document {
-    @PrimaryColumn('uuid')
+    @PrimaryGeneratedColumn('uuid')
     id: string
 
     @Column({ type: 'varchar', length: 300 })
@@ -15,6 +15,6 @@ export class Document {
     @CreateDateColumn()
     createdAt: Date
 
-    @ManyToOne(() => Lesson, (lesson) => lesson.documents)
+    @ManyToOne(() => Lesson, (lesson) => lesson.documents, { onDelete: 'CASCADE' })
     lesson: Lesson
 }
