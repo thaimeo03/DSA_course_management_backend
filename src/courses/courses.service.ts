@@ -9,6 +9,7 @@ import { Pagination } from 'common/core/pagination.core'
 import { UpdateCourseDto } from './dto/update-course.dto'
 import { ImagesService } from 'src/images/images.service'
 import { Image } from 'database/entities/image.entity'
+import { SortBy } from 'common/enums/courses.enum'
 
 @Injectable()
 export class CoursesService {
@@ -41,20 +42,27 @@ export class CoursesService {
         await this.coursesRepository.delete(id)
     }
 
-    // Get all courses
-    // Pagination
+    // 1. Filter courses
+    // 2. Get all courses
+    // 3. Pagination
     async findAllCourses(findAllCoursesDto: FindAllCourseDto) {
         // 1
         const page = findAllCoursesDto.page || 1
         const limit = findAllCoursesDto.limit || 5
         const skip = (page - 1) * limit
 
-        const courses = await this.coursesRepository.find({
-            skip,
-            take: limit
-        })
+        const sortBy = findAllCoursesDto.sortBy || SortBy.Desc
 
         // 2
+        const courses = await this.coursesRepository.find({
+            skip,
+            take: limit,
+            order: {
+                createdAt: sortBy
+            }
+        })
+
+        // 3
         const totalPage = Math.ceil((await this.coursesRepository.count()) / limit)
         const pagination = new Pagination({ limit, currentPage: page, totalPage })
 
