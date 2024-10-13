@@ -1,4 +1,9 @@
-import { ExecutionContext, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common'
+import {
+    ExecutionContext,
+    ForbiddenException,
+    Injectable,
+    UnauthorizedException
+} from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
 import { AuthGuard } from '@nestjs/passport'
 import { ROLES_KEY } from 'common/decorators/roles.de'
@@ -18,7 +23,10 @@ export class AuthJwtGuard extends AuthGuard('authJwt') {
         }
 
         // Get roles from decorator and check if user has roles
-        const roles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [context.getHandler(), context.getClass()])
+        const roles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
+            context.getHandler(),
+            context.getClass()
+        ])
 
         if (!roles) return user
 

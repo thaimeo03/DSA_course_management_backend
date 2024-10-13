@@ -19,8 +19,12 @@ export class UsersController {
     async register(@Body() registerDto: RegisterDto, @Res({ passthrough: true }) res: Response) {
         const { accessToken, refreshToken } = await this.usersService.register(registerDto)
 
-        res.cookie(this.configService.get('AUTH_COOKIE_ACCESS_TOKEN_NAME'), accessToken, { httpOnly: true })
-        res.cookie(this.configService.get('AUTH_COOKIE_REFRESH_TOKEN_NAME'), refreshToken, { httpOnly: true })
+        res.cookie(this.configService.get('AUTH_COOKIE_ACCESS_TOKEN_NAME'), accessToken, {
+            httpOnly: true
+        })
+        res.cookie(this.configService.get('AUTH_COOKIE_REFRESH_TOKEN_NAME'), refreshToken, {
+            httpOnly: true
+        })
 
         return new DataResponse({ message: UserMessages.REGISTER_SUCCESS })
     }
@@ -29,8 +33,12 @@ export class UsersController {
     async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res: Response) {
         const { accessToken, refreshToken } = await this.usersService.login(loginDto)
 
-        res.cookie(this.configService.get('AUTH_COOKIE_ACCESS_TOKEN_NAME'), accessToken, { httpOnly: true })
-        res.cookie(this.configService.get('AUTH_COOKIE_REFRESH_TOKEN_NAME'), refreshToken, { httpOnly: true })
+        res.cookie(this.configService.get('AUTH_COOKIE_ACCESS_TOKEN_NAME'), accessToken, {
+            httpOnly: true
+        })
+        res.cookie(this.configService.get('AUTH_COOKIE_REFRESH_TOKEN_NAME'), refreshToken, {
+            httpOnly: true
+        })
 
         return new DataResponse({ message: UserMessages.LOGIN_SUCCESS })
     }

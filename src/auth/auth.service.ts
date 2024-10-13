@@ -62,7 +62,8 @@ export class AuthService {
         const { userId, oldRefreshToken } = refreshTokenDto
         const user = await this.userRepository.findOneBy({ id: userId })
 
-        if (oldRefreshToken !== user.refreshToken) throw new BadRequestException(AuthMessages.INVALID_TOKEN)
+        if (oldRefreshToken !== user.refreshToken)
+            throw new BadRequestException(AuthMessages.INVALID_TOKEN)
 
         // 2
         const { accessToken, refreshToken } = await this.generateToken({

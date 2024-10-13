@@ -5,8 +5,9 @@ import { CreateDocumentDto } from './dto/create-document.dto'
 import { Document } from 'database/entities/document.entity'
 import { Lesson } from 'database/entities/lesson.entity'
 import { LessonMessages } from 'common/constants/messages/lesson.message'
-import * as _ from 'lodash'
 import { DocumentMessages } from 'common/constants/messages/document.message'
+import * as _ from 'lodash'
+import { UpdateDocumentDto } from './dto/update-docuement.dto'
 
 @Injectable()
 export class DocumentsService {
@@ -40,5 +41,14 @@ export class DocumentsService {
 
         // 2
         await this.documentsRepository.delete(id)
+    }
+
+    // 1. Check document exists
+    // 2. Update document
+    async updateDocument(id: string, updateDocumentDto: UpdateDocumentDto) {
+        const document = await this.documentsRepository.findOneBy({ id })
+        if (!document) throw new NotFoundException(DocumentMessages.DOCUMENT_NOT_FOUND)
+
+        await this.documentsRepository.update(id, updateDocumentDto)
     }
 }

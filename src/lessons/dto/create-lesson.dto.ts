@@ -1,4 +1,12 @@
-import { IsNotEmpty, IsOptional, IsString, IsUrl, IsUUID, MaxLength, MinLength } from 'class-validator'
+import {
+    IsNotEmpty,
+    IsOptional,
+    IsString,
+    IsUrl,
+    IsUUID,
+    MaxLength,
+    MinLength
+} from 'class-validator'
 
 export class CreateLessonDto {
     @IsNotEmpty()

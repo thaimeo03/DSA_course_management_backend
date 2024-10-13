@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Param, Post } from '@nestjs/common'
+import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common'
 import { DocumentsService } from './documents.service'
 import { CreateDocumentDto } from './dto/create-document.dto'
 import { DataResponse } from 'common/core/response-success.core'
 import { DocumentMessages } from 'common/constants/messages/document.message'
+import { UpdateDocumentDto } from './dto/update-docuement.dto'
 
 @Controller('documents')
 export class DocumentsController {
@@ -13,6 +14,13 @@ export class DocumentsController {
         const data = await this.documentsService.createDocument(createDocumentDto)
 
         return new DataResponse({ message: DocumentMessages.CREATE_DOCUMENT_SUCCESS, data })
+    }
+
+    @Patch(':id')
+    async updateDocument(@Param('id') id: string, @Body() updateDocumentDto: UpdateDocumentDto) {
+        await this.documentsService.updateDocument(id, updateDocumentDto)
+
+        return new DataResponse({ message: DocumentMessages.UPDATE_DOCUMENT_SUCCESS })
     }
 
     @Delete(':id')

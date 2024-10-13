@@ -19,10 +19,17 @@ export class AuthController {
         const userId = req.user['userId'] as string
         const oldRefreshToken = req.cookies.refresh_token as string
 
-        const { accessToken, refreshToken } = await this.authService.refreshToken({ userId, oldRefreshToken })
+        const { accessToken, refreshToken } = await this.authService.refreshToken({
+            userId,
+            oldRefreshToken
+        })
 
-        res.cookie(this.configService.get('AUTH_COOKIE_ACCESS_TOKEN_NAME'), accessToken, { httpOnly: true })
-        res.cookie(this.configService.get('AUTH_COOKIE_REFRESH_TOKEN_NAME'), refreshToken, { httpOnly: true })
+        res.cookie(this.configService.get('AUTH_COOKIE_ACCESS_TOKEN_NAME'), accessToken, {
+            httpOnly: true
+        })
+        res.cookie(this.configService.get('AUTH_COOKIE_REFRESH_TOKEN_NAME'), refreshToken, {
+            httpOnly: true
+        })
 
         return new DataResponse({ message: AuthMessages.REFRESH_TOKEN_SUCCESS })
     }

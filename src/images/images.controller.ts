@@ -12,7 +12,10 @@ export class ImagesController {
 
     @Post('upload')
     @UseInterceptors(FilesInterceptor('images', 5))
-    async uploadFiles(@UploadedFiles() files: Express.Multer.File[], @Body() uploadImageBodyDto: UploadImageBodyDto) {
+    async uploadFiles(
+        @UploadedFiles() files: Express.Multer.File[],
+        @Body() uploadImageBodyDto: UploadImageBodyDto
+    ) {
         const data = await this.imagesService.uploadImages({
             files,
             cloudFolder: uploadImageBodyDto.cloudFolder
