@@ -53,4 +53,24 @@ export class LessonsService {
         // 2
         await this.lessonRepository.update(id, updateLessonDto)
     }
+
+    // 1. Check course exists
+    // 2. Find all lessons
+    async findLessonsByCourseId(courseId: string) {
+        // 1
+        const course = await this.courseRepository.findOneBy({ id: courseId })
+        if (!course) throw new NotFoundException(CourseMessages.COURSE_NOT_FOUND)
+
+        // 2
+        const lessons = await this.lessonRepository.find({
+            where: { course: { id: courseId } },
+            relations: { course: true },
+            order: { createdAt: 'ASC' },
+            select: {
+                course: {}
+            }
+        })
+
+        return lessons
+    }
 }

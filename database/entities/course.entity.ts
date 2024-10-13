@@ -1,29 +1,36 @@
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    OneToMany,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn
+} from 'typeorm'
 import { Lesson } from './lesson.entity'
 
 @Entity('Courses')
 export class Course {
-  @PrimaryGeneratedColumn('uuid')
-  id: string
+    @PrimaryGeneratedColumn('uuid')
+    id: string
 
-  @Column({ type: 'varchar', length: 200 })
-  title: string
+    @Column({ type: 'varchar', length: 200 })
+    title: string
 
-  @Column({ type: 'text', nullable: true })
-  description: string
+    @Column({ type: 'text', nullable: true })
+    description: string
 
-  @Column({ type: 'varchar' })
-  thumbnail: string
+    @Column({ type: 'varchar' })
+    thumbnail: string
 
-  @Column({ type: 'real' })
-  price: number
+    @Column({ type: 'real' })
+    price: number
 
-  @CreateDateColumn()
-  createdAt: Date
+    @CreateDateColumn()
+    createdAt: Date
 
-  @UpdateDateColumn()
-  updatedAt: Date
+    @UpdateDateColumn()
+    updatedAt: Date
 
-  @OneToMany(() => Lesson, (lesson) => lesson.course)
-  lessons: Lesson[]
+    @OneToMany(() => Lesson, (lesson) => lesson.course)
+    lessons: Lesson[]
 }

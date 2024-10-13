@@ -3,36 +3,36 @@ import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateCol
 
 @Entity('Users')
 export class User {
-  @PrimaryGeneratedColumn('uuid')
-  id: string
+    @PrimaryGeneratedColumn('uuid')
+    id: string
 
-  @Column({ type: 'varchar', length: 100 })
-  fullName: string
+    @Column({ type: 'varchar', length: 100 })
+    fullName: string
 
-  @Column({ type: 'varchar', length: 100, unique: true })
-  email: string
+    @Column({ type: 'varchar', length: 100, unique: true })
+    email: string
 
-  @Column({ type: 'varchar' })
-  password: string
+    @Column({ type: 'varchar' })
+    password: string
 
-  @Column({ type: 'varchar', nullable: true, unique: true })
-  refreshToken: string
+    @Column({ type: 'varchar', nullable: true, unique: true })
+    refreshToken: string
 
-  @Column({ type: 'enum', enum: Role, default: Role.Student })
-  role: Role
+    @Column({ type: 'enum', enum: Role, default: Role.Student })
+    role: Role
 
-  @Column({ type: 'varchar', nullable: true })
-  avatar: string
+    @Column({ type: 'varchar', nullable: true })
+    avatar: string
 
-  @Column({ type: 'date', nullable: true })
-  dateOfBirth: Date
+    @Column({ type: 'date', nullable: true })
+    dateOfBirth: Date
 
-  @Column({ type: 'boolean', default: false })
-  verified: boolean
+    @Column({ type: 'boolean', default: false })
+    verified: boolean
 
-  @CreateDateColumn()
-  createdAt: Date
+    @CreateDateColumn()
+    createdAt: Date
 
-  @UpdateDateColumn()
-  updatedAt: Date
+    @UpdateDateColumn()
+    updatedAt: Date
 }
