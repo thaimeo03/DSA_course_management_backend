@@ -51,4 +51,24 @@ export class DocumentsService {
 
         await this.documentsRepository.update(id, updateDocumentDto)
     }
+
+    // 1. Check lesson exists
+    // 2. Find all documents
+    async findDocumentsByLessonId(lessonId: string) {
+        // 1
+        const lesson = await this.lessonRepository.findOneBy({ id: lessonId })
+        if (!lesson) throw new NotFoundException(LessonMessages.LESSON_NOT_FOUND)
+
+        // 2
+        const documents = await this.documentsRepository.find({
+            where: { lesson: { id: lessonId } },
+            relations: { lesson: true },
+            order: { createdAt: 'ASC' },
+            select: {
+                lesson: {}
+            }
+        })
+
+        return documents
+    }
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common'
 import { DocumentsService } from './documents.service'
 import { CreateDocumentDto } from './dto/create-document.dto'
 import { DataResponse } from 'common/core/response-success.core'
@@ -14,6 +14,16 @@ export class DocumentsController {
         const data = await this.documentsService.createDocument(createDocumentDto)
 
         return new DataResponse({ message: DocumentMessages.CREATE_DOCUMENT_SUCCESS, data })
+    }
+
+    @Get('/lesson/:lessonId')
+    async findDocumentsByLessonId(@Param('lessonId') lessonId: string) {
+        const data = await this.documentsService.findDocumentsByLessonId(lessonId)
+
+        return new DataResponse({
+            message: DocumentMessages.FIND_DOCUMENTS_BY_LESSON_SUCCESS,
+            data
+        })
     }
 
     @Patch(':id')
