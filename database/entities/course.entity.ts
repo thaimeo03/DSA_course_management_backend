@@ -7,6 +7,7 @@ import {
     UpdateDateColumn
 } from 'typeorm'
 import { Lesson } from './lesson.entity'
+import { Problem } from './problem.entity'
 
 @Entity('Courses')
 export class Course {
@@ -33,4 +34,7 @@ export class Course {
 
     @OneToMany(() => Lesson, (lesson) => lesson.course)
     lessons: Lesson[]
+
+    @OneToMany(() => Problem, (problem) => problem.course)
+    problems: Problem[]
 }

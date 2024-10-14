@@ -1,4 +1,4 @@
 export enum CloudinaryImageFolder {
-  AVATAR = 'avatar',
-  COURSE = 'course'
+    Avatar = 'avatar',
+    Course = 'course'
 }
