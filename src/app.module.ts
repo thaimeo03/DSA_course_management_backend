@@ -9,6 +9,7 @@ import { ImagesModule } from './images/images.module'
 import { CoursesModule } from './courses/courses.module'
 import { LessonsModule } from './lessons/lessons.module'
 import { DocumentsModule } from './documents/documents.module'
+import { ProblemsModule } from './problems/problems.module'
 
 @Module({
     imports: [
@@ -24,7 +25,8 @@ import { DocumentsModule } from './documents/documents.module'
         ImagesModule,
         CoursesModule,
         LessonsModule,
-        DocumentsModule
+        DocumentsModule,
+        ProblemsModule
     ],
     controllers: [AppController],
     providers: []
