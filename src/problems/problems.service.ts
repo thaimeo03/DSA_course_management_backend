@@ -2,12 +2,18 @@ import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Course } from 'database/entities/course.entity'
 import { Problem } from 'database/entities/problem.entity'
-import { Repository } from 'typeorm'
+import { FindOptionsWhere, Repository } from 'typeorm'
 import { CreateProblemDto } from './dto/create-problem.dto'
 import { CourseMessages } from 'common/constants/messages/course.message'
 import * as _ from 'lodash'
 import { ProblemMessages } from 'common/constants/messages/problem.message'
 import { UpdateProblemDto } from './dto/update-problem.dto'
+import { FindProblemsDto } from './dto/find-problems.dto'
+import {
+    FIND_PROBLEMS_LIMIT,
+    FIND_PROBLEMS_PAGE
+} from 'common/constants/constraints/problem.constraint'
+import { Pagination } from 'common/core/pagination.core'
 
 @Injectable()
 export class ProblemsService {
@@ -52,5 +58,41 @@ export class ProblemsService {
 
         // 2
         await this.problemRepository.update(id, updateProblemDto)
+    }
+
+    // 1. Check course exists
+    // 2. Add filters
+    // 3. Find all problems
+    // 4. Pagination
+    async findProblemsByCourseId(courseId: string, findProblemsDto: FindProblemsDto) {
+        // 1
+        const course = await this.courseRepository.findOneBy({ id: courseId })
+        if (!course) throw new NotFoundException(CourseMessages.COURSE_NOT_FOUND)
+
+        // 2
+        const page = findProblemsDto.page || FIND_PROBLEMS_PAGE
+        const limit = findProblemsDto.limit || FIND_PROBLEMS_LIMIT
+        const skip = (page - 1) * limit
+        const where: FindOptionsWhere<Problem> | FindOptionsWhere<Problem>[] = {
+            course: {
+                id: courseId
+            }
+        }
+
+        // 3
+        const problems = await this.problemRepository.find({
+            where,
+            skip,
+            take: limit
+        })
+
+        // 4
+        const totalPage = Math.ceil((await this.problemRepository.count({ where })) / limit)
+        const pagination = new Pagination({ limit, currentPage: page, totalPage })
+
+        return {
+            problems,
+            pagination
+        }
     }
 }

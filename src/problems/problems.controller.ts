@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common'
 import { ProblemsService } from './problems.service'
 import { CreateProblemDto } from './dto/create-problem.dto'
 import { ProblemMessages } from 'common/constants/messages/problem.message'
-import { DataResponse } from 'common/core/response-success.core'
+import { DataResponse, DataResponseWithPagination } from 'common/core/response-success.core'
 import { UpdateProblemDto } from './dto/update-problem.dto'
+import { FindProblemsDto } from './dto/find-problems.dto'
 
 @Controller('problems')
 export class ProblemsController {
@@ -14,6 +15,23 @@ export class ProblemsController {
         const data = await this.problemsService.createProblem(createProblemDto)
 
         return new DataResponse({ message: ProblemMessages.CREATE_PROBLEM_SUCCESS, data })
+    }
+
+    @Get('/course/:courseId')
+    async findProblemsByCourseId(
+        @Param('courseId') courseId: string,
+        @Query() findProblemsDto: FindProblemsDto
+    ) {
+        const { problems, pagination } = await this.problemsService.findProblemsByCourseId(
+            courseId,
+            findProblemsDto
+        )
+
+        return new DataResponseWithPagination({
+            message: ProblemMessages.FIND_PROBLEMS_BY_COURSE_SUCCESS,
+            data: problems,
+            pagination
+        })
     }
 
     @Delete(':id')

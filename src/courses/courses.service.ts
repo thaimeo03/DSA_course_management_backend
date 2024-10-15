@@ -10,6 +10,10 @@ import { UpdateCourseDto } from './dto/update-course.dto'
 import { ImagesService } from 'src/images/images.service'
 import { Image } from 'database/entities/image.entity'
 import { SortBy } from 'common/enums/courses.enum'
+import {
+    FIND_ALL_COURSES_LIMIT,
+    FIND_ALL_COURSES_PAGE
+} from 'common/constants/constraints/course.constraint'
 
 @Injectable()
 export class CoursesService {
@@ -47,8 +51,8 @@ export class CoursesService {
     // 3. Pagination
     async findAllCourses(findAllCoursesDto: FindAllCourseDto) {
         // 1
-        const page = findAllCoursesDto.page || 1
-        const limit = findAllCoursesDto.limit || 5
+        const page = findAllCoursesDto.page || FIND_ALL_COURSES_PAGE
+        const limit = findAllCoursesDto.limit || FIND_ALL_COURSES_LIMIT
         const skip = (page - 1) * limit
 
         const sortBy = findAllCoursesDto.sortBy || SortBy.Desc
