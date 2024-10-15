@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Course } from 'database/entities/course.entity'
-import { Repository } from 'typeorm'
+import { FindOptionsOrder, Repository } from 'typeorm'
 import { CreateCourseDto } from './dto/create-course.dto'
 import { CourseMessages } from 'common/constants/messages/course.message'
 import { FindAllCourseDto } from './dto/find-all-course.dto'
@@ -9,11 +9,12 @@ import { Pagination } from 'common/core/pagination.core'
 import { UpdateCourseDto } from './dto/update-course.dto'
 import { ImagesService } from 'src/images/images.service'
 import { Image } from 'database/entities/image.entity'
-import { SortBy } from 'common/enums/courses.enum'
 import {
     FIND_ALL_COURSES_LIMIT,
     FIND_ALL_COURSES_PAGE
 } from 'common/constants/constraints/course.constraint'
+import { Order } from 'common/enums/index.enum'
+import { SortBy } from 'common/enums/courses.enum'
 
 @Injectable()
 export class CoursesService {
@@ -55,15 +56,15 @@ export class CoursesService {
         const limit = findAllCoursesDto.limit || FIND_ALL_COURSES_LIMIT
         const skip = (page - 1) * limit
 
-        const sortBy = findAllCoursesDto.sortBy || SortBy.Desc
+        const order: FindOptionsOrder<Course> = {
+            [findAllCoursesDto.sortBy || SortBy.CreatedAt]: findAllCoursesDto.order || Order.Desc
+        }
 
         // 2
         const courses = await this.coursesRepository.find({
             skip,
             take: limit,
-            order: {
-                createdAt: sortBy
-            }
+            order: order
         })
 
         // 3

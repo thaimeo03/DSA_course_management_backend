@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Course } from 'database/entities/course.entity'
 import { Problem } from 'database/entities/problem.entity'
-import { FindOptionsWhere, Repository } from 'typeorm'
+import { FindOptionsOrder, FindOptionsWhere, Repository } from 'typeorm'
 import { CreateProblemDto } from './dto/create-problem.dto'
 import { CourseMessages } from 'common/constants/messages/course.message'
 import * as _ from 'lodash'
@@ -14,6 +14,8 @@ import {
     FIND_PROBLEMS_PAGE
 } from 'common/constants/constraints/problem.constraint'
 import { Pagination } from 'common/core/pagination.core'
+import { Order } from 'common/enums/index.enum'
+import { SortBy } from 'common/enums/problems.enum'
 
 @Injectable()
 export class ProblemsService {
@@ -78,12 +80,16 @@ export class ProblemsService {
                 id: courseId
             }
         }
+        const order: FindOptionsOrder<Problem> = {
+            [findProblemsDto.sortBy || SortBy.CreatedAt]: findProblemsDto.order || Order.Asc
+        }
 
         // 3
         const problems = await this.problemRepository.find({
             where,
             skip,
-            take: limit
+            take: limit,
+            order: order
         })
 
         // 4
