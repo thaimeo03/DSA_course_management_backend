@@ -6,6 +6,8 @@ import { Repository } from 'typeorm'
 import { CreateProblemDto } from './dto/create-problem.dto'
 import { CourseMessages } from 'common/constants/messages/course.message'
 import * as _ from 'lodash'
+import { ProblemMessages } from 'common/constants/messages/problem.message'
+import { UpdateProblemDto } from './dto/update-problem.dto'
 
 @Injectable()
 export class ProblemsService {
@@ -28,5 +30,27 @@ export class ProblemsService {
         })
 
         return _.omit(problem, ['course'])
+    }
+
+    // 1. Check problem exists
+    // 2. Delete problem
+    async deleteProblem(id: string) {
+        // 1
+        const problem = await this.problemRepository.findOneBy({ id })
+        if (!problem) throw new NotFoundException(ProblemMessages.PROBLEM_NOT_FOUND)
+
+        // 2
+        await this.problemRepository.delete(id)
+    }
+
+    // 1. Check problem exists
+    // 2. Update problem
+    async updateProblem(id: string, updateProblemDto: UpdateProblemDto) {
+        // 1
+        const problem = await this.problemRepository.findOneBy({ id })
+        if (!problem) throw new NotFoundException(ProblemMessages.PROBLEM_NOT_FOUND)
+
+        // 2
+        await this.problemRepository.update(id, updateProblemDto)
     }
 }
