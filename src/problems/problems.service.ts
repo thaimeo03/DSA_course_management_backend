@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Course } from 'database/entities/course.entity'
 import { Problem } from 'database/entities/problem.entity'
-import { FindOptionsOrder, FindOptionsWhere, Repository } from 'typeorm'
+import { FindOptionsOrder, FindOptionsWhere, ILike, Repository } from 'typeorm'
 import { CreateProblemDto } from './dto/create-problem.dto'
 import { CourseMessages } from 'common/constants/messages/course.message'
 import * as _ from 'lodash'
@@ -76,17 +76,19 @@ export class ProblemsService {
         const limit = findProblemsDto.limit || FIND_PROBLEMS_LIMIT
         const skip = (page - 1) * limit
         const where: FindOptionsWhere<Problem> | FindOptionsWhere<Problem>[] = {
+            title: findProblemsDto.search ? ILike(`%${findProblemsDto.search}%`) : undefined,
             course: {
                 id: courseId
             }
         }
+
         const order: FindOptionsOrder<Problem> = {
             [findProblemsDto.sortBy || SortBy.CreatedAt]: findProblemsDto.order || Order.Asc
         }
 
         // 3
         const problems = await this.problemRepository.find({
-            where,
+            where: _.omitBy(where, _.isUndefined), // remove undefined values
             skip,
             take: limit,
             order: order
