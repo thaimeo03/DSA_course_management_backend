@@ -10,6 +10,7 @@ import { CoursesModule } from './courses/courses.module'
 import { LessonsModule } from './lessons/lessons.module'
 import { DocumentsModule } from './documents/documents.module'
 import { ProblemsModule } from './problems/problems.module'
+import { TestSuitsModule } from './test-suits/test-suits.module';
 
 @Module({
     imports: [
@@ -26,7 +27,8 @@ import { ProblemsModule } from './problems/problems.module'
         CoursesModule,
         LessonsModule,
         DocumentsModule,
-        ProblemsModule
+        ProblemsModule,
+        TestSuitsModule
     ],
     controllers: [AppController],
     providers: []

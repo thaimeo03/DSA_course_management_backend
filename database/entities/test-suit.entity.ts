@@ -1,13 +1,14 @@
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { Problem } from './problem.entity'
+import { InputTypes } from 'common/enums/test-suits.enum'
 
-@Entity('Test_Suit')
+@Entity('Test_Suits')
 export class TestSuit {
     @PrimaryGeneratedColumn('uuid')
     id: string
 
-    @Column({ type: 'varchar', array: true })
-    inputTypes: string[]
+    @Column({ type: 'enum', enum: InputTypes, array: true })
+    inputTypes: InputTypes[]
 
     @Column({ type: 'text' })
     inputSuit: string
