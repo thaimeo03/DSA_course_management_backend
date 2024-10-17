@@ -11,6 +11,7 @@ import { LessonsModule } from './lessons/lessons.module'
 import { DocumentsModule } from './documents/documents.module'
 import { ProblemsModule } from './problems/problems.module'
 import { TestSuitsModule } from './test-suits/test-suits.module';
+import { TemplatesModule } from './templates/templates.module';
 
 @Module({
     imports: [
@@ -28,7 +29,8 @@ import { TestSuitsModule } from './test-suits/test-suits.module';
         LessonsModule,
         DocumentsModule,
         ProblemsModule,
-        TestSuitsModule
+        TestSuitsModule,
+        TemplatesModule
     ],
     controllers: [AppController],
     providers: []
