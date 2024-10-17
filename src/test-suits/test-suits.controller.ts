@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common'
 import { TestSuitsService } from './test-suits.service'
 import { CreateTestSuitDto } from './dto/create-test-suit.dto'
 import { DataResponse } from 'common/core/response-success.core'
@@ -14,6 +14,16 @@ export class TestSuitsController {
         const data = await this.testSuitsService.createTestSuit(createTestSuitDto)
 
         return new DataResponse({ message: TestSuitMessages.CREATE_TEST_SUIT_SUCCESS, data })
+    }
+
+    @Get('/problem/:problemId')
+    async findOneTestSuitByProblemId(@Param('problemId') problemId: string) {
+        const data = await this.testSuitsService.findOneTestSuitByProblemId(problemId)
+
+        return new DataResponse({
+            message: TestSuitMessages.FIND_TEST_SUIT_BY_PROBLEM_SUCCESS,
+            data
+        })
     }
 
     @Delete(':id')

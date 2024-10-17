@@ -4,5 +4,6 @@ export const TestSuitMessages = {
     FIND_ALL_TEST_SUIT_SUCCESS: 'Find all test suits successfully',
     TEST_SUIT_ALREADY_EXISTS: 'Test suit already exists',
     TEST_SUIT_NOT_FOUND: 'Test suit not found',
-    UPDATE_TEST_SUIT_SUCCESS: 'Update test suit successfully'
+    UPDATE_TEST_SUIT_SUCCESS: 'Update test suit successfully',
+    FIND_TEST_SUIT_BY_PROBLEM_SUCCESS: 'Find test suit by problem successfully'
 }

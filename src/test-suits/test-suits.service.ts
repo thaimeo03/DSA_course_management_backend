@@ -62,4 +62,9 @@ export class TestSuitsService {
             await this.testSuitsRepository.update(id, updateTestSuitDto)
         }
     }
+
+    async findOneTestSuitByProblemId(problemId: string) {
+        const testSuit = await this.testSuitsRepository.findOneBy({ problem: { id: problemId } })
+        return testSuit
+    }
 }
