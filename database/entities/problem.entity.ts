@@ -4,10 +4,12 @@ import {
     CreateDateColumn,
     Entity,
     ManyToOne,
+    OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from 'typeorm'
 import { Course } from './course.entity'
+import { Template } from './template.entity'
 
 @Entity('Problems')
 export class Problem {
@@ -34,4 +36,7 @@ export class Problem {
 
     @ManyToOne(() => Course, (course) => course.problems, { onDelete: 'CASCADE' })
     course: Course
+
+    @OneToMany(() => Template, (template) => template.problem)
+    templates: Template[]
 }
