@@ -10,8 +10,9 @@ import { CoursesModule } from './courses/courses.module'
 import { LessonsModule } from './lessons/lessons.module'
 import { DocumentsModule } from './documents/documents.module'
 import { ProblemsModule } from './problems/problems.module'
-import { TestSuitsModule } from './test-suits/test-suits.module';
-import { TemplatesModule } from './templates/templates.module';
+import { TestSuitsModule } from './test-suits/test-suits.module'
+import { TemplatesModule } from './templates/templates.module'
+import { SubmissionsModule } from './submissions/submissions.module'
 
 @Module({
     imports: [
@@ -30,7 +31,8 @@ import { TemplatesModule } from './templates/templates.module';
         DocumentsModule,
         ProblemsModule,
         TestSuitsModule,
-        TemplatesModule
+        TemplatesModule,
+        SubmissionsModule
     ],
     controllers: [AppController],
     providers: []

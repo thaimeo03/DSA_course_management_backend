@@ -1,5 +1,13 @@
 import { Role } from 'common/enums/users.enum'
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    OneToMany,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn
+} from 'typeorm'
+import { Submission } from './submission.entity'
 
 @Entity('Users')
 export class User {
@@ -35,4 +43,7 @@ export class User {
 
     @UpdateDateColumn()
     updatedAt: Date
+
+    @OneToMany(() => Submission, (submission) => submission.user)
+    submissions: Submission[]
 }

@@ -10,6 +10,7 @@ import {
 } from 'typeorm'
 import { Course } from './course.entity'
 import { Template } from './template.entity'
+import { Submission } from './submission.entity'
 
 @Entity('Problems')
 export class Problem {
@@ -39,4 +40,7 @@ export class Problem {
 
     @OneToMany(() => Template, (template) => template.problem)
     templates: Template[]
+
+    @OneToMany(() => Submission, (submission) => submission.problem)
+    submissions: Submission[]
 }
