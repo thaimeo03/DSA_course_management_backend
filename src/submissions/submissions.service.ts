@@ -55,6 +55,6 @@ export class SubmissionsService {
         console.log(modifiedCodeTemplate)
 
         // 5
-        executor.executeCode(modifiedCodeTemplate)
+        // executor.executeCode(modifiedCodeTemplate)
     }
 }

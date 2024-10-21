@@ -1,3 +1,4 @@
+import axios from 'axios'
 import { GenerateCodeTemplateDto } from '../dto/generate-template.dto'
 import { GenerateTestCaseTemplateDto } from '../dto/generate-test-case-template.dto'
 
@@ -29,7 +30,16 @@ export abstract class CodeExecutor {
             .join('\n')
     }
 
-    abstract executeCode(code: string): Promise<any>
+    async executeCode(code: string): Promise<any> {
+        const apiUrl = this.getApiUrl()
+        console.log(apiUrl)
+
+        // Call API
+        const res = await axios.post(apiUrl, { code })
+        return res.data
+    }
+
     protected abstract getCodeTemplate(): HandlebarsTemplateDelegate<any>
     protected abstract getTestCaseTemplate(): HandlebarsTemplateDelegate<any>
+    protected abstract getApiUrl(): string
 }

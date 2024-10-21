@@ -1,8 +1,11 @@
 import Handlebars from 'handlebars'
 import { javascriptTemplate, javascriptTestCaseTemplate } from '../templates/javascript.template'
 import { CodeExecutor } from './code.executor'
+import { ConfigService } from '@nestjs/config'
 
 export class JavascriptExecutor extends CodeExecutor {
+    private configService: ConfigService = new ConfigService()
+
     protected getCodeTemplate(): HandlebarsTemplateDelegate<any> {
         return Handlebars.compile(javascriptTemplate)
     }
@@ -11,5 +14,7 @@ export class JavascriptExecutor extends CodeExecutor {
         return Handlebars.compile(javascriptTestCaseTemplate)
     }
 
-    async executeCode(code: string): Promise<any> {}
+    protected getApiUrl(): string {
+        return this.configService.get('EXECUTOR_JAVASCRIPT_API_URL')
+    }
 }

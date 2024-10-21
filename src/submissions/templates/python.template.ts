@@ -15,5 +15,5 @@ runTests()
 
 export const pythonTestCaseTemplate = `
         if {{{function_name}}}({{{parsed_inputs}}}) != {{{expected_outputs}}}:
-            raise Exception('Expected {{{expected_outputs}}}, but got ' + {{{function_name}}}({{{parsed_inputs}}}))
+            raise Exception('Expected {{{expected_outputs}}}, but got ' + str({{{function_name}}}({{{parsed_inputs}}})))
 `
