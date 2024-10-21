@@ -4,6 +4,7 @@ import { SubmissionMessages } from 'common/constants/messages/submisson.message'
 import { PythonExecutor } from './executor/python.executor'
 import { CodeExecutor } from './executor/code.executor'
 
+// Factory design pattern
 export class CodeExecutorFactory {
     static getExecutor(language: number): CodeExecutor {
         switch (language) {
