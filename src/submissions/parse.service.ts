@@ -5,7 +5,7 @@ import { DataTypes } from 'common/enums/test-suits.enum'
 export class ParseService {
     static parseInput(inputSuit: string, inputTypes: DataTypes[]) {
         const splitted = inputSuit.trim().split('\n')
-        const parsedSuits: DataTypes[][] = []
+        const parsedSuits: any[][] = []
 
         for (let i = 0; i < splitted.length; i += inputTypes.length) {
             const curSuit = []
@@ -19,9 +19,12 @@ export class ParseService {
 
     static parseOutput(expectedOutputSuit: string, outputType: DataTypes) {
         const splitted = expectedOutputSuit.trim().split('\n')
+        const passedOutputs: any[] = []
+
         for (let i = 0; i < splitted.length; i++)
-            splitted[i] = ParseService.parseValue(splitted[i], outputType)
-        return splitted
+            passedOutputs.push(ParseService.parseValue(splitted[i], outputType))
+
+        return passedOutputs
     }
 
     static parseValue(value: string, type: DataTypes) {

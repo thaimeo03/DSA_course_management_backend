@@ -8,6 +8,7 @@ import { TestSuitMessages } from 'common/constants/messages/test-suit.message'
 import { ParseService } from './parse.service'
 import { User } from 'database/entities/user.entity'
 import { UserMessages } from 'common/constants/messages/user.message'
+import { CodeExecutorFactory } from './code-executor.factory'
 
 @Injectable()
 export class SubmissionsService {
@@ -35,9 +36,25 @@ export class SubmissionsService {
         // 3
         const { functionName, inputSuit, inputTypes, outputType, expectedOutputSuit } = testSuit
 
-        const parsedInput = ParseService.parseInput(inputSuit, inputTypes)
-        const parsedExpectedOutput = ParseService.parseOutput(expectedOutputSuit, outputType)
+        const parsedInputs = ParseService.parseInput(inputSuit, inputTypes)
+        const parsedExpectedOutputs = ParseService.parseOutput(expectedOutputSuit, outputType)
+        console.log(parsedInputs, parsedExpectedOutputs)
 
         // 4
+        const executor = CodeExecutorFactory.getExecutor(language) // Apply factory design pattern
+        const modifiedTestCasesTemplate = executor.generateTestCasesTemplate({
+            functionName,
+            parsedInputs,
+            parsedExpectedOutputs
+        })
+        const modifiedCodeTemplate = executor.generateCodeTemplate({
+            userCode: code,
+            modifiedTestCasesTemplate: modifiedTestCasesTemplate
+        })
+
+        console.log(modifiedCodeTemplate)
+
+        // 5
+        executor.executeCode(modifiedCodeTemplate)
     }
 }
