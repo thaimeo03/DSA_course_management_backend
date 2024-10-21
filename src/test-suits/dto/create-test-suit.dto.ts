@@ -1,14 +1,23 @@
-import { IsEnum, IsNotEmpty, IsString, IsUUID } from 'class-validator'
-import { InputTypes } from 'common/enums/test-suits.enum'
+import { IsEnum, IsNotEmpty, IsString, IsUUID, MaxLength } from 'class-validator'
+import { DataTypes } from 'common/enums/test-suits.enum'
 
 export class CreateTestSuitDto {
     @IsNotEmpty()
-    @IsEnum(InputTypes, { each: true })
-    inputTypes: InputTypes[]
+    @IsEnum(DataTypes, { each: true })
+    inputTypes: DataTypes[]
+
+    @IsNotEmpty()
+    @IsString()
+    @MaxLength(100)
+    functionName: string
 
     @IsNotEmpty()
     @IsString()
     inputSuit: string
+
+    @IsNotEmpty()
+    @IsEnum(DataTypes)
+    outputType: DataTypes
 
     @IsNotEmpty()
     @IsString()

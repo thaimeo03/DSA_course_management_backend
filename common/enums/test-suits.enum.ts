@@ -1,4 +1,4 @@
-export enum InputTypes {
+export enum DataTypes {
     Number = 'number',
     String = 'string',
     Boolean = 'boolean',
