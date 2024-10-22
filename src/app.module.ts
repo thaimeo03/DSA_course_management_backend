@@ -13,6 +13,7 @@ import { ProblemsModule } from './problems/problems.module'
 import { TestSuitsModule } from './test-suits/test-suits.module'
 import { TemplatesModule } from './templates/templates.module'
 import { SubmissionsModule } from './submissions/submissions.module'
+import { SourceCodesModule } from './source-codes/source-codes.module';
 
 @Module({
     imports: [
@@ -32,7 +33,8 @@ import { SubmissionsModule } from './submissions/submissions.module'
         ProblemsModule,
         TestSuitsModule,
         TemplatesModule,
-        SubmissionsModule
+        SubmissionsModule,
+        SourceCodesModule
     ],
     controllers: [AppController],
     providers: []

@@ -10,8 +10,8 @@ export class SubmissionsController {
 
     @Post('execute-code')
     async executeCode(@Body() executeCodeDto: ExecuteCodeDto) {
-        await this.submissionsService.executeCode(executeCodeDto)
+        const data = await this.submissionsService.executeCode(executeCodeDto)
 
-        return new DataResponse({ message: SubmissionMessages.EXECUTE_CODE_SUCCESS })
+        return new DataResponse({ message: SubmissionMessages.EXECUTE_CODE_SUCCESS, data })
     }
 }
