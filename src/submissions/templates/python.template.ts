@@ -1,6 +1,18 @@
 export const pythonTemplate = `
 # Template for Python (python.template.py)
 
+# Importing libraries
+import math       # For mathematical operations
+import random     # For random number generation
+import itertools  # For combinatorics, permutations, etc.
+import functools  # For functional programming utilities like reduce
+import operator   # For standard operations (addition, subtraction, etc.)
+import collections  # Useful data structures like Counter, deque, namedtuple
+import heapq        # For heaps (priority queue implementation)
+import bisect       # For binary search operations
+import re  # Regular expressions
+
+
 {{{user_code}}}
 
 def runTests():
