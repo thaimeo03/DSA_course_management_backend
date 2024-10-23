@@ -12,6 +12,8 @@ export class CodeExecutorFactory {
                 return new JavascriptExecutor()
             case ProgrammingLanguage.Python:
                 return new PythonExecutor()
+            case ProgrammingLanguage.Java:
+                return new JavascriptExecutor()
             default:
                 throw new Error(SubmissionMessages.DOES_NOT_SUPPORT_THIS_LANGUAGE)
         }
