@@ -3,6 +3,7 @@ import { JavascriptExecutor } from './executor/javascript.executor'
 import { SubmissionMessages } from 'common/constants/messages/submisson.message'
 import { PythonExecutor } from './executor/python.executor'
 import { CodeExecutor } from './executor/code.executor'
+import { JavaExecutor } from './executor/java.executor'
 
 // Factory design pattern
 export class CodeExecutorFactory {
@@ -13,7 +14,7 @@ export class CodeExecutorFactory {
             case ProgrammingLanguage.Python:
                 return new PythonExecutor()
             case ProgrammingLanguage.Java:
-                return new JavascriptExecutor()
+                return new JavaExecutor()
             default:
                 throw new Error(SubmissionMessages.DOES_NOT_SUPPORT_THIS_LANGUAGE)
         }
