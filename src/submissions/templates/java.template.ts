@@ -5,8 +5,6 @@ export const javaTemplate = `
 import java.util.*;
 import java.math.*;
 
-{{{user_code}}}
-
 public class Main {    
     public static void main(String[] args) {
         runTests();
@@ -24,10 +22,12 @@ public class Main {
         }
     }
 }
+
+{{{user_code}}}
 `
 
 export const javaTestCaseTemplate = `
-            if (!solution.{{function_name}}({{{parsed_inputs}}}).equals({{{expected_outputs}}})) {
-                throw new AssertionError("Expected " + {{{expected_outputs}}} + ", but got " + solution.{{function_name}}({{{parsed_inputs}}}));
+            if (!{{{comparison}}}) {
+                throw new AssertionError("Expected " + Arrays.toString({{{outputVar}}}) + ", but got " + Arrays.toString({{{callingFunction}}}));
             }
 `
