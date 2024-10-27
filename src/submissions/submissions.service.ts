@@ -51,7 +51,9 @@ export class SubmissionsService {
         const modifiedTestCasesTemplate = executor.generateTestCasesTemplate({
             functionName,
             parsedInputs,
-            parsedExpectedOutputs
+            parsedExpectedOutputs,
+            inputTypes,
+            outputType
         })
         const modifiedCodeTemplate = executor.generateCodeTemplate({
             userCode: code,

@@ -38,16 +38,14 @@ export class ParseService {
     // Parse value based on data type
     static parseValue(value: string, type: DataTypes) {
         switch (type) {
-            case DataTypes.Number:
+            case DataTypes.Integer || DataTypes.Double:
                 return Number(value)
-            case DataTypes.String:
-                return String(value)
             case DataTypes.Boolean:
-                return Boolean(value)
-            case DataTypes.Array:
-                return JSON.parse(value)
-            default:
+                return value === 'true'
+            case DataTypes.String:
                 return value
+            default:
+                return JSON.parse(value)
         }
     }
 }

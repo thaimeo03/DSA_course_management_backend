@@ -1,15 +1,19 @@
 export const javaTemplate = `
 // Template for Java (java.template.java)
 
-public class Main {
-    
-    {{{user_code}}}
-    
+// Importing libraries
+import java.util.*;
+import java.math.*;
+
+{{{user_code}}}
+
+public class Main {    
     public static void main(String[] args) {
         runTests();
     }
     
     public static void runTests() {
+        Solution solution = new Solution();
         try {
             {{{test_cases}}}
             System.out.println("All tests passed.");
@@ -23,7 +27,7 @@ public class Main {
 `
 
 export const javaTestCaseTemplate = `
-            if (!{{function_name}}({{{parsed_inputs}}}).equals({{{expected_outputs}}})) {
-                throw new AssertionError("Expected " + {{{expected_outputs}}} + ", but got " + {{function_name}}({{{parsed_inputs}}}));
+            if (!solution.{{function_name}}({{{parsed_inputs}}}).equals({{{expected_outputs}}})) {
+                throw new AssertionError("Expected " + {{{expected_outputs}}} + ", but got " + solution.{{function_name}}({{{parsed_inputs}}}));
             }
 `

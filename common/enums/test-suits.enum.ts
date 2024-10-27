@@ -1,6 +1,14 @@
 export enum DataTypes {
-    Number = 'number',
+    Integer = 'integer',
+    Double = 'double',
     String = 'string',
     Boolean = 'boolean',
-    Array = 'array'
+    IntegerArray = 'integer[]',
+    DoubleArray = 'double[]',
+    StringArray = 'string[]',
+    BooleanArray = 'boolean[]',
+    IntegerMatrix = 'integer[][]',
+    DoubleMatrix = 'double[][]',
+    StringMatrix = 'string[][]',
+    BooleanMatrix = 'boolean[][]'
 }
