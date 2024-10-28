@@ -27,21 +27,21 @@ export class JavaExecutor extends CodeExecutor {
                     outputType,
                     parsedExpectedOutputs[index]
                 )
-
                 const callingFunctionTemplate = `solution.${functionName}(${inputVarTemplate})` // The solution here is a instance of Solution class used in java template
-
-                const testCaseTemplate = this.getTestCaseTemplate()
-
                 const comparisonTemplate = this.getComparisonTemplate(
                     outputType,
                     callingFunctionTemplate,
                     outputVarTemplate
                 )
+                const outputObject = this.getObjectByType(outputType)
+
+                const testCaseTemplate = this.getTestCaseTemplate()
 
                 return testCaseTemplate({
                     comparison: comparisonTemplate,
-                    outputVar: outputVarTemplate,
-                    callingFunction: callingFunctionTemplate
+                    output_var: outputVarTemplate,
+                    calling_function: callingFunctionTemplate,
+                    output_object: outputObject
                 })
             })
             .join('\n')
@@ -64,23 +64,38 @@ export class JavaExecutor extends CodeExecutor {
     protected getVariableTemplate(varType: DataTypes, val: any) {
         switch (varType) {
             case DataTypes.IntegerArray:
-                return `new int[] {${val.join(', ')}}`
+                return `new int[] {${val.map((v) => JSON.stringify(v)).join(', ')}}`
             case DataTypes.DoubleArray:
-                return `new double[] {${val.join(', ')}}`
+                return `new double[] {${val.map((v) => JSON.stringify(v)).join(', ')}}`
             case DataTypes.BooleanArray:
-                return `new boolean[] {${val.join(', ')}}`
+                return `new boolean[] {${val.map((v) => JSON.stringify(v)).join(', ')}}`
             case DataTypes.StringArray:
-                return `new String[] {${val.join(', ')}}`
+                return `new String[] {${val.map((v) => JSON.stringify(v)).join(', ')}}`
             case DataTypes.IntegerMatrix:
-                return `new int[][] {${val.join(', ')}}`
+                return `new int[][] {${val.map((v) => JSON.stringify(v)).join(', ')}}`
             case DataTypes.DoubleMatrix:
-                return `new double[][] {${val.join(', ')}}`
+                return `new double[][] {${val.map((v) => JSON.stringify(v)).join(', ')}}`
             case DataTypes.BooleanMatrix:
-                return `new boolean[][] {${val.join(', ')}}`
+                return `new boolean[][] {${val.map((v) => JSON.stringify(v)).join(', ')}}`
             case DataTypes.StringMatrix:
-                return `new String[][] {${val.join(', ')}}`
+                return `new String[][] {${val.map((v) => JSON.stringify(v)).join(', ')}}`
             default:
-                return val
+                return JSON.stringify(val)
+        }
+    }
+
+    protected getObjectByType(type: DataTypes) {
+        switch (type) {
+            case DataTypes.Integer:
+                return 'Integer'
+            case DataTypes.Double:
+                return 'Double'
+            case DataTypes.String:
+                return 'String'
+            case DataTypes.Boolean:
+                return 'Boolean'
+            default:
+                return 'Arrays'
         }
     }
 

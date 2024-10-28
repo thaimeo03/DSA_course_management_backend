@@ -28,6 +28,6 @@ public class Main {
 
 export const javaTestCaseTemplate = `
             if (!{{{comparison}}}) {
-                throw new AssertionError("Expected " + Arrays.toString({{{outputVar}}}) + ", but got " + Arrays.toString({{{callingFunction}}}));
+                throw new AssertionError("Expected " + {{{output_object}}}.toString({{{output_var}}}) + ", but got " + {{{output_object}}}.toString({{{calling_function}}}));
             }
 `
