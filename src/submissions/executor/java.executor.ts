@@ -62,23 +62,28 @@ export class JavaExecutor extends CodeExecutor {
     }
 
     protected getVariableTemplate(varType: DataTypes, val: any) {
+        let varStrings = ''
+        if (Array.isArray(val)) {
+            varStrings = val.map((v) => JSON.stringify(v)).join(', ')
+        }
+
         switch (varType) {
             case DataTypes.IntegerArray:
-                return `new int[] {${val.map((v) => JSON.stringify(v)).join(', ')}}`
+                return `new int[] {${varStrings}}`
             case DataTypes.DoubleArray:
-                return `new double[] {${val.map((v) => JSON.stringify(v)).join(', ')}}`
+                return `new double[] {${varStrings}}`
             case DataTypes.BooleanArray:
-                return `new boolean[] {${val.map((v) => JSON.stringify(v)).join(', ')}}`
+                return `new boolean[] {${varStrings}}`
             case DataTypes.StringArray:
-                return `new String[] {${val.map((v) => JSON.stringify(v)).join(', ')}}`
+                return `new String[] {${varStrings}}`
             case DataTypes.IntegerMatrix:
-                return `new int[][] {${val.map((v) => JSON.stringify(v)).join(', ')}}`
+                return `new int[][] {${varStrings}}`
             case DataTypes.DoubleMatrix:
-                return `new double[][] {${val.map((v) => JSON.stringify(v)).join(', ')}}`
+                return `new double[][] {${varStrings}}`
             case DataTypes.BooleanMatrix:
-                return `new boolean[][] {${val.map((v) => JSON.stringify(v)).join(', ')}}`
+                return `new boolean[][] {${varStrings}}`
             case DataTypes.StringMatrix:
-                return `new String[][] {${val.map((v) => JSON.stringify(v)).join(', ')}}`
+                return `new String[][] {${varStrings}}`
             default:
                 return JSON.stringify(val)
         }
