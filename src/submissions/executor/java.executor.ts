@@ -1,13 +1,14 @@
 import Handlebars from 'handlebars'
-import { ConfigService } from '@nestjs/config'
 import { CodeExecutor } from './code.executor'
 import { javaTemplate, javaTestCaseTemplate } from '../templates/java.template'
 import { GenerateTestCaseTemplateDto } from '../dto/generate-test-case-template.dto'
 import { DataTypes } from 'common/enums/test-suits.enum'
 
 export class JavaExecutor extends CodeExecutor {
-    private configService: ConfigService = new ConfigService()
-
+    // 1. Get initial variable template of input
+    // 2. Get initial variable template of output and convert it to string
+    // 3. Get calling function template, create comparison template and convert it to string
+    // 4. Get test case template and combine all mini templates
     generateTestCasesTemplate({
         functionName,
         parsedInputs,
@@ -17,31 +18,43 @@ export class JavaExecutor extends CodeExecutor {
     }: GenerateTestCaseTemplateDto): string {
         const res = parsedInputs
             .map((parsedInput, index) => {
-                const inputVarTemplate = parsedInput
+                // 1
+                const inputTemplate = parsedInput
                     .map((variable, index) => {
                         return this.getVariableTemplate(inputTypes[index], variable)
                     })
                     .join(', ')
 
-                const outputVarTemplate = this.getVariableTemplate(
+                // 2
+                const expectedOutputTemplate = this.getVariableTemplate(
                     outputType,
                     parsedExpectedOutputs[index]
                 )
-                const callingFunctionTemplate = `solution.${functionName}(${inputVarTemplate})` // The solution here is a instance of Solution class used in java template
+                const expectedOutputStringTemplate = this.getConvertedStringOutPutVar(
+                    outputType,
+                    expectedOutputTemplate
+                )
+
+                // 3
+                const callingFunctionTemplate = `solution.${functionName}(${inputTemplate})` // The solution here is a instance of Solution class used in java template
                 const comparisonTemplate = this.getComparisonTemplate(
                     outputType,
                     callingFunctionTemplate,
-                    outputVarTemplate
+                    expectedOutputTemplate
                 )
-                const outputObject = this.getObjectByType(outputType)
+                const parsedCallingFunctionTemplate = this.getConvertedStringOutPutVar(
+                    outputType,
+                    callingFunctionTemplate
+                )
 
+                // 4
                 const testCaseTemplate = this.getTestCaseTemplate()
 
                 return testCaseTemplate({
                     comparison: comparisonTemplate,
-                    output_var: outputVarTemplate,
+                    expected_output_string: expectedOutputStringTemplate,
                     calling_function: callingFunctionTemplate,
-                    output_object: outputObject
+                    parsed_calling_function: parsedCallingFunctionTemplate
                 })
             })
             .join('\n')
@@ -50,17 +63,23 @@ export class JavaExecutor extends CodeExecutor {
         return res
     }
 
-    protected getComparisonTemplate(outputType: DataTypes, var1: string, var2: string) {
+    // Generate comparison cases between calling function and expected output
+    protected getComparisonTemplate(
+        outputType: DataTypes,
+        callingFunction: string,
+        expectedOutput: string
+    ) {
         switch (outputType) {
             case DataTypes.String:
-                return `${var1}.equals(${var2})`
+                return `${callingFunction}.equals(${expectedOutput})`
             case DataTypes.Integer || DataTypes.Double || DataTypes.Boolean:
-                return `${var1} == ${var2}`
+                return `${callingFunction} == ${expectedOutput}`
             default:
-                return `Arrays.equals(${var1}, ${var2})`
+                return `Arrays.equals(${callingFunction}, ${expectedOutput})`
         }
     }
 
+    // Convert variable to initial string (apply to array) - [1,2,3] => new int[] {1,2,3}
     protected getVariableTemplate(varType: DataTypes, val: any) {
         let varStrings = ''
         if (Array.isArray(val)) {
@@ -89,6 +108,7 @@ export class JavaExecutor extends CodeExecutor {
         }
     }
 
+    // Get object type based on data type
     protected getObjectByType(type: DataTypes) {
         switch (type) {
             case DataTypes.Integer:
@@ -102,6 +122,14 @@ export class JavaExecutor extends CodeExecutor {
             default:
                 return 'Arrays'
         }
+    }
+
+    // Convert value to string with depend on data type
+    protected getConvertedStringOutPutVar(varType: DataTypes, val: any) {
+        if (varType === DataTypes.String) return val // no need to convert
+
+        const objType = this.getObjectByType(varType)
+        return `${objType}.toString(${val})`
     }
 
     protected getCodeTemplate(): HandlebarsTemplateDelegate<any> {
