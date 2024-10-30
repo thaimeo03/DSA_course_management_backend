@@ -5,12 +5,16 @@ import { Repository } from 'typeorm'
 import { CreatePointDto } from './dto/create-point.dto'
 import { User } from 'database/entities/user.entity'
 import { UserMessages } from 'common/constants/messages/user.message'
+import { IncreasePointDto } from './dto/increase-point.dto'
+import { Submission } from 'database/entities/submission.entity'
+import { SubmissionStatus } from 'common/enums/submissions.enum'
 
 @Injectable()
 export class PointsService {
     constructor(
         @InjectRepository(Point) private pointsRepository: Repository<Point>,
-        @InjectRepository(User) private userRepository: Repository<User>
+        @InjectRepository(User) private userRepository: Repository<User>,
+        @InjectRepository(Submission) private submissionRepository: Repository<Submission>
     ) {}
 
     // 1. Check user exists
@@ -32,6 +36,33 @@ export class PointsService {
             ...createPointDto,
             user
         })
+    }
+
+    // 1. Count number of submission based on user id, problem id and passed status
+    // 2. Increase point if number of submission equals 1 (Only first finished submission with passed status)
+    async increasePoint(increasePointDto: IncreasePointDto) {
+        const { userId, problemId, value } = increasePointDto
+
+        // 1
+        const [cnt, point] = await Promise.all([
+            this.submissionRepository.count({
+                where: {
+                    user: {
+                        id: userId
+                    },
+                    problem: {
+                        id: problemId
+                    },
+                    status: SubmissionStatus.Passed
+                }
+            }),
+            this.pointsRepository.findOneBy({ user: { id: userId } })
+        ])
+
+        // 2
+        if (cnt === 1) {
+            return await this.pointsRepository.update(point.id, { value: point.value + value })
+        }
     }
 
     // Additional feature for dev

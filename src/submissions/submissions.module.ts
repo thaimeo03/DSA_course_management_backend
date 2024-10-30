@@ -6,9 +6,15 @@ import { Submission } from 'database/entities/submission.entity'
 import { TestSuit } from 'database/entities/test-suit.entity'
 import { User } from 'database/entities/user.entity'
 import { SourceCodesModule } from 'src/source-codes/source-codes.module'
+import { PointsModule } from 'src/points/points.module'
+import { Problem } from 'database/entities/problem.entity'
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Submission, TestSuit, User]), SourceCodesModule],
+    imports: [
+        TypeOrmModule.forFeature([Submission, TestSuit, User, Problem]),
+        SourceCodesModule,
+        PointsModule
+    ],
     controllers: [SubmissionsController],
     providers: [SubmissionsService]
 })
