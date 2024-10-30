@@ -8,18 +8,20 @@ import { AuthService } from 'src/auth/auth.service'
 import * as bcrypt from 'bcrypt'
 import { UserMessages } from 'common/constants/messages/user.message'
 import { LoginDto } from './dto/login.dto'
+import { PointsService } from 'src/points/points.service'
 
 @Injectable()
 export class UsersService {
     constructor(
-        private configService: ConfigService,
         @InjectRepository(User) private usersRepository: Repository<User>,
-        private authService: AuthService
+        private configService: ConfigService,
+        private authService: AuthService,
+        private pointService: PointsService
     ) {}
 
     // 1. Check email exists
     // 2. Hash password
-    // 3. Create and save new user
+    // 3. Save new user and point
     // 4. Generate token (access token, refresh token) taken from auth service
     // 5. Update refresh token and return token
     async register(registerDto: RegisterDto) {
@@ -38,6 +40,7 @@ export class UsersService {
             ...registerDto,
             password: hashedPassword
         })
+        await this.pointService.createPoint({ userId: newUser.id })
 
         // 4
         const { accessToken, refreshToken } = await this.authService.generateToken({
