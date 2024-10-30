@@ -1,6 +1,6 @@
 import Handlebars from 'handlebars'
 import { CodeExecutor } from './code.executor'
-import { javaTemplate, javaTestCaseTemplate } from '../templates/java.template'
+import { javaTemplate, javaTestCaseTemplate, solutionClassName } from '../templates/java.template'
 import { GenerateTestCaseTemplateDto } from '../dto/generate-test-case-template.dto'
 import { DataTypes } from 'common/enums/test-suits.enum'
 
@@ -36,7 +36,7 @@ export class JavaExecutor extends CodeExecutor {
                 )
 
                 // 3
-                const callingFunctionTemplate = `solution.${functionName}(${inputTemplate})` // The solution here is a instance of Solution class used in java template
+                const callingFunctionTemplate = `${solutionClassName}.${functionName}(${inputTemplate})` // The solution here is a instance of Solution class used in java template
                 const comparisonTemplate = this.getComparisonTemplate(
                     outputType,
                     callingFunctionTemplate,

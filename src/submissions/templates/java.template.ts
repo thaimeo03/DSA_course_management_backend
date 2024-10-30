@@ -1,3 +1,5 @@
+export const solutionClassName = 'solution'
+
 export const javaTemplate = `
 // Template for Java (java.template.java)
 
@@ -11,7 +13,7 @@ public class Main {
     }
     
     public static void runTests() {
-        Solution solution = new Solution();
+        Solution ${solutionClassName} = new Solution();
         try {
             {{{test_cases}}}
             System.out.println("All tests passed.");
