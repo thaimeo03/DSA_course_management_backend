@@ -4,7 +4,7 @@ import { SubmissionMessages } from 'common/constants/messages/submission.message
 import { PythonExecutor } from './executor/python.executor'
 import { CodeExecutor } from './executor/code.executor'
 import { JavaExecutor } from './executor/java.executor'
-import { Injectable, Type } from '@nestjs/common'
+import { Injectable, NotFoundException, Type } from '@nestjs/common'
 import { ModuleRef } from '@nestjs/core'
 
 // Factory design pattern
@@ -21,7 +21,8 @@ export class CodeExecutorFactory {
 
     async getExecutor(language: ProgrammingLanguage): Promise<CodeExecutor> {
         const executor = this.executors.get(language)
-        if (!executor) throw new Error(SubmissionMessages.DOES_NOT_SUPPORT_THIS_LANGUAGE)
+        if (!executor)
+            throw new NotFoundException(SubmissionMessages.DOES_NOT_SUPPORT_THIS_LANGUAGE)
 
         return await this.moduleRef.create(executor) // Create a new instance and using moduleRef for performance
     }

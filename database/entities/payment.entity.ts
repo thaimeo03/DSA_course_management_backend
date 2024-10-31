@@ -1,4 +1,4 @@
-import { PaymentStatus } from 'common/enums/payment.enum'
+import { PaymentMethod, PaymentStatus } from 'common/enums/payment.enum'
 import {
     Column,
     CreateDateColumn,
@@ -20,6 +20,9 @@ export class Payment {
 
     @Column({ type: 'real', default: 0 })
     totalPrice: number
+
+    @Column({ type: 'enum', enum: PaymentMethod, nullable: true })
+    method: PaymentMethod
 
     @Column({ type: 'enum', enum: PaymentStatus, default: PaymentStatus.Pending })
     status: PaymentStatus

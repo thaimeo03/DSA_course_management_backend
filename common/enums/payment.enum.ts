@@ -3,3 +3,8 @@ export enum PaymentStatus {
     Completed = 1,
     Failed = 2
 }
+
+export enum PaymentMethod {
+    Stripe = 0,
+    VnPay = 1
+}
