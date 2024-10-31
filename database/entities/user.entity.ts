@@ -8,6 +8,7 @@ import {
     UpdateDateColumn
 } from 'typeorm'
 import { Submission } from './submission.entity'
+import { Payment } from './payment.entity'
 
 @Entity('Users')
 export class User {
@@ -46,4 +47,7 @@ export class User {
 
     @OneToMany(() => Submission, (submission) => submission.user)
     submissions: Submission[]
+
+    @OneToMany(() => Payment, (payment) => payment.user)
+    payments: Payment[]
 }

@@ -15,6 +15,7 @@ import { TemplatesModule } from './templates/templates.module'
 import { SubmissionsModule } from './submissions/submissions.module'
 import { SourceCodesModule } from './source-codes/source-codes.module';
 import { PointsModule } from './points/points.module';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
     imports: [
@@ -36,7 +37,8 @@ import { PointsModule } from './points/points.module';
         TemplatesModule,
         SubmissionsModule,
         SourceCodesModule,
-        PointsModule
+        PointsModule,
+        PaymentsModule
     ],
     controllers: [AppController],
     providers: []
