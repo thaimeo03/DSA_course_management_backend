@@ -1,6 +1,6 @@
 import { ProgrammingLanguage } from 'common/enums/index.enum'
 import { JavascriptExecutor } from './executor/javascript.executor'
-import { SubmissionMessages } from 'common/constants/messages/submisson.message'
+import { SubmissionMessages } from 'common/constants/messages/submission.message'
 import { PythonExecutor } from './executor/python.executor'
 import { CodeExecutor } from './executor/code.executor'
 import { JavaExecutor } from './executor/java.executor'

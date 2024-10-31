@@ -2,7 +2,7 @@ import { Body, Controller, Post } from '@nestjs/common'
 import { SubmissionsService } from './submissions.service'
 import { ExecuteCodeDto } from './dto/execute-code.dto'
 import { DataResponse } from 'common/core/response-success.core'
-import { SubmissionMessages } from 'common/constants/messages/submisson.message'
+import { SubmissionMessages } from 'common/constants/messages/submission.message'
 
 @Controller('submissions')
 export class SubmissionsController {

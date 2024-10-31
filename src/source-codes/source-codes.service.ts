@@ -4,7 +4,7 @@ import { SourceCode } from 'database/entities/source-code.entity'
 import { Repository } from 'typeorm'
 import { CreateSourceCodeDto } from './dto/create-source-code.dto'
 import { Submission } from 'database/entities/submission.entity'
-import { SubmissionMessages } from 'common/constants/messages/submisson.message'
+import { SubmissionMessages } from 'common/constants/messages/submission.message'
 
 @Injectable()
 export class SourceCodesService {
