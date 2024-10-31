@@ -4,13 +4,11 @@ import { GenerateTestCaseTemplateDto } from '../dto/generate-test-case-template.
 import { RequestExecutorDto } from '../dto/request-executor.dto'
 import { CodeExecutionResponseDto } from '../dto/code-execution-response.dto'
 import { ConfigService } from '@nestjs/config'
+import { Injectable } from '@nestjs/common'
 
+@Injectable()
 export abstract class CodeExecutor {
-    public configService: ConfigService
-
-    constructor() {
-        this.configService = new ConfigService()
-    }
+    constructor(protected configService: ConfigService) {}
 
     // 1. Get code template from abstract method
     // 2. Generate code template

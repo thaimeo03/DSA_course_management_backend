@@ -8,6 +8,7 @@ import { User } from 'database/entities/user.entity'
 import { SourceCodesModule } from 'src/source-codes/source-codes.module'
 import { PointsModule } from 'src/points/points.module'
 import { Problem } from 'database/entities/problem.entity'
+import { CodeExecutorFactory } from './code-executor.factory'
 
 @Module({
     imports: [
@@ -16,6 +17,6 @@ import { Problem } from 'database/entities/problem.entity'
         PointsModule
     ],
     controllers: [SubmissionsController],
-    providers: [SubmissionsService]
+    providers: [SubmissionsService, CodeExecutorFactory]
 })
 export class SubmissionsModule {}

@@ -22,6 +22,7 @@ export class SubmissionsService {
         @InjectRepository(TestSuit) private testSuitsRepository: Repository<TestSuit>,
         @InjectRepository(User) private userRepository: Repository<User>,
         @InjectRepository(Problem) private problemRepository: Repository<Problem>,
+        private codeExecutorFactory: CodeExecutorFactory,
         private sourceCodesService: SourceCodesService,
         private pointService: PointsService
     ) {}
@@ -56,7 +57,7 @@ export class SubmissionsService {
         // console.log('[parsedExpectedOutputs]', parsedExpectedOutputs)
 
         // 4
-        const executor = CodeExecutorFactory.getExecutor(language) // Apply factory design pattern
+        const executor = await this.codeExecutorFactory.getExecutor(language) // Apply factory design pattern
         const modifiedTestCasesTemplate = executor.generateTestCasesTemplate({
             functionName,
             parsedInputs,
