@@ -8,6 +8,8 @@ import { User } from 'database/entities/user.entity'
 import { Course } from 'database/entities/course.entity'
 import { UserMessages } from 'common/constants/messages/user.message'
 import { CourseMessages } from 'common/constants/messages/course.message'
+import { PaymentStatus } from 'common/enums/payment.enum'
+import { PaymentMessages } from 'common/constants/messages/payment.message'
 
 @Injectable()
 export class PaymentsService {
@@ -31,12 +33,32 @@ export class PaymentsService {
         if (!course) throw new NotFoundException(CourseMessages.COURSE_NOT_FOUND)
 
         // Handle create payment here
+        const payment = await this.createPayment(user, course)
+
         // Apply discount
 
         // 2
         const paymentStrategy = await this.paymentsFactory.getPaymentStrategy(method)
 
         // 3
-        return paymentStrategy.pay(user, course, 100000) // Hardcode unitAmount (need change later after apply discount)
+        return paymentStrategy.pay(user, course, payment) // Hardcode unitAmount (need change later after apply discount)
+    }
+
+    // 1. Check course been paid
+    // 2. Create payment
+    async createPayment(user: User, course: Course) {
+        // 1
+        const payment = await this.paymentRepository.findOneBy({
+            user,
+            course,
+            status: PaymentStatus.Completed
+        })
+        if (payment) throw new NotFoundException(PaymentMessages.COURSE_BEEN_PAID)
+
+        // 2
+        return this.paymentRepository.create({
+            user,
+            course
+        })
     }
 }

@@ -1,7 +1,7 @@
 import { Course } from 'database/entities/course.entity'
 import { User } from 'database/entities/user.entity'
-import { PayOptionsDto } from '../dto/pay-options.dto'
+import { Payment } from 'database/entities/payment.entity'
 
 export interface IPaymentStrategy {
-    pay(user: User, course: Course, unitAmount: number, options?: PayOptionsDto): Promise<string>
+    pay(user: User, course: Course, payment: Payment): Promise<string>
 }
