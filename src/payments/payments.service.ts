@@ -24,7 +24,7 @@ export class PaymentsService {
     // 2. Get payment strategy
     // 3. Pay
     async processPayment(userId: string, payDto: PayDto) {
-        const { courseId, method } = payDto
+        const { courseId, method, code } = payDto
 
         const user = await this.userRepository.findOneBy({ id: userId })
         if (!user) throw new NotFoundException(UserMessages.USER_NOT_FOUND)
@@ -35,12 +35,12 @@ export class PaymentsService {
         // Handle create payment here
         const payment = await this.createPayment(user, course)
 
-        // Apply discount
-
         // 2
         const paymentStrategy = await this.paymentsFactory.getPaymentStrategy(method)
 
         // 3
+        // Find coupon by code, user here (use coupon service)
+
         return paymentStrategy.pay(user, course, payment) // Hardcode unitAmount (need change later after apply discount)
     }
 

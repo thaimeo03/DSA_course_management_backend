@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Payment } from 'database/entities/payment.entity'
 import { Repository } from 'typeorm'
 import { Injectable } from '@nestjs/common'
+import { Coupon } from 'database/entities/coupon.entity'
 
 @Injectable()
 export class StripeService {
@@ -18,9 +19,10 @@ export class StripeService {
         this.setSecretKey()
     }
 
-    async checkout(user: User, course: Course, payment: Payment): Promise<string> {
+    async checkout(user: User, course: Course, payment: Payment, coupon?: Coupon): Promise<string> {
         const product = await this.createProduct(course)
         const price = await this.createPrice(product, payment.totalPrice)
+        const stripeCoupon = coupon ? await this.createCoupon(coupon) : null
 
         const session = await this.stripe.checkout.sessions.create({
             mode: 'payment',
@@ -29,6 +31,11 @@ export class StripeService {
                 {
                     price: price.id,
                     quantity: 1 // Hardcode quantity (Need change later)
+                }
+            ],
+            discounts: [
+                {
+                    coupon: stripeCoupon?.id
                 }
             ],
             success_url: `${this.configService.get('HOST')}/payments/callback?success=1&paymentId=${payment.id}`, // Hardcode
@@ -69,6 +76,20 @@ export class StripeService {
             currency: 'vnd', // Hardcode currency (Need change later)
             product: product.id,
             unit_amount: unitAmount
+        })
+    }
+
+    async createCoupon(coupon: Coupon): Promise<Stripe.Coupon> {
+        const couponExist = await this.stripe.coupons.retrieve(coupon.code)
+        if (couponExist) return couponExist
+
+        return this.stripe.coupons.create({
+            id: coupon.code,
+            amount_off: coupon.amountOff,
+            percent_off: coupon.percentOff,
+            currency: 'vnd', // Hardcode currency (Need change later),
+            max_redemptions: coupon.maxRedeem,
+            redeem_by: coupon.expiredAt.getTime()
         })
     }
 

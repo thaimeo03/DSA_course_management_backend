@@ -14,10 +14,10 @@ export class Coupon {
     code: string
 
     @Column({ type: 'real' })
-    amountOff: string
+    amountOff: number
 
     @Column({ type: 'real' })
-    percentOff: string
+    percentOff: number
 
     @Column({ type: 'int' })
     maxRedeem: number
@@ -27,9 +27,6 @@ export class Coupon {
 
     @UpdateDateColumn()
     updatedAt: Date
-
-    @Column({ type: 'varchar', unique: true, nullable: true })
-    stripeCouponId: string
 
     @ManyToOne(() => User, (user) => user.coupons, { nullable: true })
     user: User

@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsUUID, Min } from 'class-validator'
+import { IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID, Min, MinLength } from 'class-validator'
 import { PaymentMethod } from 'common/enums/payment.enum'
 
 export class PayDto {
@@ -11,7 +11,7 @@ export class PayDto {
     method: PaymentMethod
 
     @IsOptional()
-    @IsNumber()
-    @Min(1)
-    quantity?: number // Can be extended if needed
+    @IsString()
+    @MinLength(1)
+    code?: string
 }
