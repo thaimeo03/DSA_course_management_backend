@@ -13,9 +13,9 @@ import { ProblemsModule } from './problems/problems.module'
 import { TestSuitsModule } from './test-suits/test-suits.module'
 import { TemplatesModule } from './templates/templates.module'
 import { SubmissionsModule } from './submissions/submissions.module'
-import { SourceCodesModule } from './source-codes/source-codes.module';
-import { PointsModule } from './points/points.module';
-import { PaymentsModule } from './payments/payments.module';
+import { SourceCodesModule } from './source-codes/source-codes.module'
+import { PointsModule } from './points/points.module'
+import { PaymentsModule } from './payments/payments.module'
 
 @Module({
     imports: [
