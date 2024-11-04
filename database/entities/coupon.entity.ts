@@ -13,16 +13,16 @@ export class Coupon {
     @Column({ type: 'varchar', length: 100, unique: true })
     code: string
 
-    @Column({ type: 'real' })
+    @Column({ type: 'real', nullable: true })
     amountOff: number
 
-    @Column({ type: 'real' })
+    @Column({ type: 'real', nullable: true })
     percentOff: number
 
-    @Column({ type: 'int' })
+    @Column({ type: 'int', nullable: true })
     maxRedeem: number
 
-    @Column({ type: 'timestamp' })
+    @Column({ type: 'timestamp', nullable: true })
     expiredAt: Date
 
     @UpdateDateColumn()

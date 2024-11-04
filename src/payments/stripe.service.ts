@@ -22,7 +22,7 @@ export class StripeService {
     async checkout(user: User, course: Course, payment: Payment, coupon?: Coupon): Promise<string> {
         const product = await this.createProduct(course)
         const price = await this.createPrice(product, payment.totalPrice)
-        const stripeCoupon = coupon ? await this.createCoupon(coupon) : null
+        const stripeCoupon = coupon ? await this.createCoupon(coupon) : null // This coupon is different from coupon in DB (only for Stripe handling)
 
         const session = await this.stripe.checkout.sessions.create({
             mode: 'payment',
@@ -79,6 +79,8 @@ export class StripeService {
         })
     }
 
+    // 1. Find coupon by code
+    // 2. Create coupon by code if not exist
     async createCoupon(coupon: Coupon): Promise<Stripe.Coupon> {
         const couponExist = await this.stripe.coupons.retrieve(coupon.code)
         if (couponExist) return couponExist
