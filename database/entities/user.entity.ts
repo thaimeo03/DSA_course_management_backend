@@ -9,6 +9,7 @@ import {
 } from 'typeorm'
 import { Submission } from './submission.entity'
 import { Payment } from './payment.entity'
+import { Coupon } from './coupon.entity'
 
 @Entity('Users')
 export class User {
@@ -50,4 +51,7 @@ export class User {
 
     @OneToMany(() => Payment, (payment) => payment.user)
     payments: Payment[]
+
+    @OneToMany(() => Coupon, (coupon) => coupon.user)
+    coupons: Coupon[]
 }
