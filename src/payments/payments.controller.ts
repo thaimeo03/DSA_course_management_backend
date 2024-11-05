@@ -3,21 +3,19 @@ import { PaymentsService } from './payments.service'
 import { PayDto } from './dto/pay.dto'
 import { AuthJwtGuard } from 'src/auth/guards/auth.guard'
 import { Request, Response } from 'express'
-import { DataResponse } from 'common/core/response-success.core'
-import { PaymentMessages } from 'common/constants/messages/payment.message'
 import { CallbackDto } from './dto/callback.dto'
+import { ConfigService } from '@nestjs/config'
 
 @Controller('payments')
 export class PaymentsController {
-    constructor(private readonly paymentsService: PaymentsService) {}
+    constructor(
+        private readonly paymentsService: PaymentsService,
+        private configService: ConfigService
+    ) {}
 
     @Post('pay')
     @UseGuards(AuthJwtGuard)
-    async processPayment(
-        @Req() req: Request,
-        @Res({ passthrough: true }) res: Response,
-        @Body() payDto: PayDto
-    ) {
+    async processPayment(@Req() req: Request, @Res() res: Response, @Body() payDto: PayDto) {
         const userId = req.user['userId'] as string
 
         const url = await this.paymentsService.processPayment(userId, payDto)
@@ -26,9 +24,13 @@ export class PaymentsController {
     }
 
     @Get('callback')
-    async callbackPayment(@Query() callbackDto: CallbackDto) {
-        await this.paymentsService.callbackPayment(callbackDto)
+    async callbackPayment(
+        @Res({ passthrough: true }) res: Response,
+        @Query() callbackDto: CallbackDto
+    ) {
+        const data = await this.paymentsService.callbackPayment(callbackDto)
 
-        return new DataResponse({ message: PaymentMessages.PAYMENT_SUCCESS })
+        if (data === true) res.redirect(this.configService.get('CLIENT_PAYMENT_SUCCESS_URL'))
+        else res.redirect(this.configService.get('CLIENT_PAYMENT_FAIL_URL'))
     }
 }

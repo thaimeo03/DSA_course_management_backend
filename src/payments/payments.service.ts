@@ -12,6 +12,7 @@ import { PaymentStatus } from 'common/enums/payment.enum'
 import { PaymentMessages } from 'common/constants/messages/payment.message'
 import { Coupon } from 'database/entities/coupon.entity'
 import { CallbackDto } from './dto/callback.dto'
+import { CreatePaymentDto } from './dto/create-payment.dto'
 
 @Injectable()
 export class PaymentsService {
@@ -36,7 +37,7 @@ export class PaymentsService {
         if (!course) throw new NotFoundException(CourseMessages.COURSE_NOT_FOUND)
 
         // Handle create payment here
-        const payment = await this.createPayment(user, course)
+        const payment = await this.createPayment({ user, course, method })
 
         // 2
         const paymentStrategy = await this.paymentsFactory.getPaymentStrategy(method)
@@ -56,7 +57,8 @@ export class PaymentsService {
 
     // 1. Check course been paid
     // 2. Create payment
-    async createPayment(user: User, course: Course) {
+    async createPayment(createPaymentDto: CreatePaymentDto) {
+        const { user, course, method } = createPaymentDto
         // 1
         const payment = await this.paymentRepository.findOneBy({
             user,
@@ -69,6 +71,7 @@ export class PaymentsService {
         return this.paymentRepository.save({
             user,
             course,
+            method,
             totalPrice: course.price
         })
     }
@@ -84,9 +87,10 @@ export class PaymentsService {
         })
 
         // 2
-        if (success === 0) throw new InternalServerErrorException(PaymentMessages.PAYMENT_FAILED)
+        if (success === 0) return false
 
         // 3
         // Handle send email here in future
+        return true
     }
 }
