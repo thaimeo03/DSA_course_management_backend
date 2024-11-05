@@ -22,7 +22,7 @@ export class StripeService {
     async checkout(user: User, course: Course, payment: Payment, coupon?: Coupon): Promise<string> {
         const product = await this.createProduct(course)
         const price = await this.createPrice(product, payment.totalPrice)
-        const stripeCoupon = coupon ? await this.createCoupon(coupon) : null // This coupon is different from coupon in DB (only for Stripe handling)
+        const stripeCoupon = coupon !== null ? await this.createCoupon(coupon) : null // This coupon is different from coupon in DB (only for Stripe handling)
 
         const session = await this.stripe.checkout.sessions.create({
             mode: 'payment',
@@ -51,8 +51,10 @@ export class StripeService {
     // 2. Create product by courseId if not exist
     async createProduct(course: Course): Promise<Stripe.Product> {
         // 1
-        const product = await this.stripe.products.retrieve(course.id)
-        if (product) return product
+        try {
+            const product = await this.stripe.products.retrieve(course.id)
+            if (product) return product
+        } catch (error) {}
 
         // 2
         return this.stripe.products.create({
@@ -82,17 +84,23 @@ export class StripeService {
     // 1. Find coupon by code
     // 2. Create coupon by code if not exist
     async createCoupon(coupon: Coupon): Promise<Stripe.Coupon> {
-        const couponExist = await this.stripe.coupons.retrieve(coupon.code)
-        if (couponExist) return couponExist
+        try {
+            const couponExist = await this.stripe.coupons.retrieve(coupon.code)
+            if (couponExist) return couponExist
+        } catch (error) {}
 
-        return this.stripe.coupons.create({
+        const params: Stripe.CouponCreateParams = {
             id: coupon.code,
-            amount_off: coupon.amountOff,
-            percent_off: coupon.percentOff,
-            currency: 'vnd', // Hardcode currency (Need change later),
-            max_redemptions: coupon.maxRedeem,
-            redeem_by: coupon.expiredAt.getTime()
-        })
+            duration: 'once',
+            currency: 'vnd'
+        }
+
+        if (coupon.amountOff) params['amount_off'] = coupon.amountOff
+        if (coupon.percentOff) params['percent_off'] = coupon.percentOff
+        if (coupon.maxRedeem) params['max_redemptions'] = coupon.maxRedeem
+        if (coupon.expiredAt) params['redeem_by'] = coupon.expiredAt.getTime()
+
+        return this.stripe.coupons.create(params)
     }
 
     setSecretKey() {

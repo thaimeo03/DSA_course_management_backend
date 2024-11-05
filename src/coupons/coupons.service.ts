@@ -40,4 +40,17 @@ export class CouponsService {
             ...createCouponDto
         })
     }
+
+    async findCouponByCodeAndUserId(code: string, userId: string) {
+        const coupon = await this.couponRepository.findOneBy({
+            code,
+            user: {
+                id: userId
+            }
+        })
+
+        if (!coupon) throw new BadRequestException(CouponMessages.COUPON_NOT_FOUND)
+
+        return coupon
+    }
 }

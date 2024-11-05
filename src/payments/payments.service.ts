@@ -10,6 +10,7 @@ import { UserMessages } from 'common/constants/messages/user.message'
 import { CourseMessages } from 'common/constants/messages/course.message'
 import { PaymentStatus } from 'common/enums/payment.enum'
 import { PaymentMessages } from 'common/constants/messages/payment.message'
+import { Coupon } from 'database/entities/coupon.entity'
 
 @Injectable()
 export class PaymentsService {
@@ -17,6 +18,7 @@ export class PaymentsService {
         @InjectRepository(Payment) private paymentRepository: Repository<Payment>,
         @InjectRepository(User) private userRepository: Repository<User>,
         @InjectRepository(Course) private courseRepository: Repository<Course>,
+        @InjectRepository(Coupon) private couponRepository: Repository<Coupon>,
         private paymentsFactory: PaymentFactory
     ) {}
 
@@ -39,9 +41,16 @@ export class PaymentsService {
         const paymentStrategy = await this.paymentsFactory.getPaymentStrategy(method)
 
         // 3
-        // Find coupon by code, user here (use coupon service)
+        const coupon = code
+            ? await this.couponRepository.findOneBy({
+                  code,
+                  user: {
+                      id: user.id
+                  }
+              })
+            : null
 
-        return paymentStrategy.pay(user, course, payment) // Hardcode unitAmount (need change later after apply discount)
+        return paymentStrategy.pay(user, course, payment, coupon) // Hardcode unitAmount (need change later after apply discount)
     }
 
     // 1. Check course been paid
@@ -56,9 +65,10 @@ export class PaymentsService {
         if (payment) throw new NotFoundException(PaymentMessages.COURSE_BEEN_PAID)
 
         // 2
-        return this.paymentRepository.create({
+        return this.paymentRepository.save({
             user,
-            course
+            course,
+            totalPrice: course.price
         })
     }
 }
