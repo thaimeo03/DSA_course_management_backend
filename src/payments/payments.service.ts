@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Payment } from 'database/entities/payment.entity'
 import { Not, Repository } from 'typeorm'
@@ -11,6 +11,7 @@ import { CourseMessages } from 'common/constants/messages/course.message'
 import { PaymentStatus } from 'common/enums/payment.enum'
 import { PaymentMessages } from 'common/constants/messages/payment.message'
 import { Coupon } from 'database/entities/coupon.entity'
+import { CallbackDto } from './dto/callback.dto'
 
 @Injectable()
 export class PaymentsService {
@@ -70,5 +71,22 @@ export class PaymentsService {
             course,
             totalPrice: course.price
         })
+    }
+
+    // 1. Update payment status
+    // 2. Throw error if payment failed
+    // 3. Handle send email
+    async callbackPayment(callbackDto: CallbackDto) {
+        const { paymentId, success } = callbackDto
+
+        await this.paymentRepository.update(paymentId, {
+            status: success === 1 ? PaymentStatus.Completed : PaymentStatus.Failed
+        })
+
+        // 2
+        if (success === 0) throw new InternalServerErrorException(PaymentMessages.PAYMENT_FAILED)
+
+        // 3
+        // Handle send email here in future
     }
 }

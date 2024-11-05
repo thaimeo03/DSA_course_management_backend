@@ -42,7 +42,10 @@ export class StripeService {
             cancel_url: `${this.configService.get('HOST')}/payments/callback?success=0&paymentId=${payment.id}` // Hardcode
         })
 
-        await this.paymentRepository.update(payment.id, { sessionId: session.id })
+        await this.paymentRepository.update(payment.id, {
+            sessionId: session.id,
+            totalPrice: session.amount_total
+        })
 
         return session.url
     }

@@ -7,5 +7,7 @@ export const PaymentMessages = {
     PAYMENT_ALREADY_EXISTS: 'Payment already exists',
     PAYMENT_METHOD_NOT_FOUND: 'Payment method not found',
     PROCESS_PAYMENT_SUCCESS: 'Process payment successfully',
-    COURSE_BEEN_PAID: 'Course has been paid'
+    COURSE_BEEN_PAID: 'Course has been paid',
+    PAYMENT_SUCCESS: 'Payment successfully',
+    PAYMENT_FAILED: 'Payment failed'
 }
