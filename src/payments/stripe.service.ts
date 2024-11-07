@@ -7,6 +7,7 @@ import { Payment } from 'database/entities/payment.entity'
 import { Repository } from 'typeorm'
 import { Injectable } from '@nestjs/common'
 import { Coupon } from 'database/entities/coupon.entity'
+import { getPaymentCallbackRoute } from './helpers/get-payment-callback-route.helper'
 
 @Injectable()
 export class StripeService {
@@ -19,18 +20,31 @@ export class StripeService {
         this.setSecretKey()
     }
 
+    // https://docs.stripe.com/products-prices/how-products-and-prices-work
+    // https://docs.stripe.com/api
+    // 1. Create stripe product
+    // 2. Create stripe price
+    // 3. Create stripe coupon
+    // 4. Create checkout session
+    // 5. Update payment and return session url
     async checkout(user: User, course: Course, payment: Payment, coupon?: Coupon): Promise<string> {
+        // 1
         const product = await this.createProduct(course)
+
+        // 2
         const price = await this.createPrice(product, payment.totalPrice)
+
+        // 3
         const stripeCoupon = coupon !== null ? await this.createCoupon(coupon) : null // This coupon is different from coupon in DB (only for Stripe handling)
 
+        // 4
         const session = await this.stripe.checkout.sessions.create({
             mode: 'payment',
             customer_email: user.email,
             line_items: [
                 {
                     price: price.id,
-                    quantity: 1 // Hardcode quantity (Need change later)
+                    quantity: 1 // Only one course and one time
                 }
             ],
             discounts: [
@@ -38,10 +52,11 @@ export class StripeService {
                     coupon: stripeCoupon?.id
                 }
             ],
-            success_url: `${this.configService.get('HOST')}/payments/callback?success=1&paymentId=${payment.id}`, // Hardcode
-            cancel_url: `${this.configService.get('HOST')}/payments/callback?success=0&paymentId=${payment.id}` // Hardcode
+            success_url: getPaymentCallbackRoute(this.configService.get('HOST'), 1, payment.id),
+            cancel_url: getPaymentCallbackRoute(this.configService.get('HOST'), 0, payment.id)
         })
 
+        // 5
         await this.paymentRepository.update(payment.id, {
             sessionId: session.id,
             totalPrice: session.amount_total
@@ -107,8 +122,6 @@ export class StripeService {
     }
 
     setSecretKey() {
-        this.stripe = new Stripe(
-            'sk_test_51QFpLNJoIUxSdq28D8N3UPOBEXuFmWhLBkKBJU4Z71Vl328R1mL4hgLn3VO7cDVTpDPufIFT8HDyzw4yyocY1Ywk00csHipoAZ'
-        ) // Hardcode secret key (Need change later)
+        this.stripe = new Stripe(this.configService.get('STRIPE_SECRET_KEY'))
     }
 }

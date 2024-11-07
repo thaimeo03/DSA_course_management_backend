@@ -10,7 +10,12 @@ import { Injectable } from '@nestjs/common'
 export class StripeStrategy implements IPaymentStrategy {
     constructor(private stripeService: StripeService) {}
 
-    async pay(user: User, course: Course, payment: Payment, coupon?: Coupon): Promise<string> {
+    async processPayment(
+        user: User,
+        course: Course,
+        payment: Payment,
+        coupon?: Coupon
+    ): Promise<string> {
         return this.stripeService.checkout(user, course, payment, coupon)
     }
 }

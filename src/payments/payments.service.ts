@@ -1,7 +1,7 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Payment } from 'database/entities/payment.entity'
-import { Not, Repository } from 'typeorm'
+import { Repository } from 'typeorm'
 import { PaymentFactory } from './payment.factory'
 import { PayDto } from './dto/pay.dto'
 import { User } from 'database/entities/user.entity'
@@ -24,23 +24,21 @@ export class PaymentsService {
         private paymentsFactory: PaymentFactory
     ) {}
 
-    // 1. Create new payment into database
-    // 2. Get payment strategy
-    // 3. Pay
+    // 1. Check user and course exists
+    // 2. Create simple payment
+    // 3. Get coupon by user, code
+    // 4. Apply payment factory
     async processPayment(userId: string, payDto: PayDto) {
         const { courseId, method, code } = payDto
-
+        // 1
         const user = await this.userRepository.findOneBy({ id: userId })
         if (!user) throw new NotFoundException(UserMessages.USER_NOT_FOUND)
 
         const course = await this.courseRepository.findOneBy({ id: courseId })
         if (!course) throw new NotFoundException(CourseMessages.COURSE_NOT_FOUND)
 
-        // Handle create payment here
-        const payment = await this.createPayment({ user, course, method })
-
         // 2
-        const paymentStrategy = await this.paymentsFactory.getPaymentStrategy(method)
+        const payment = await this.createPayment({ user, course, method })
 
         // 3
         const coupon = code
@@ -52,7 +50,9 @@ export class PaymentsService {
               })
             : null
 
-        return paymentStrategy.pay(user, course, payment, coupon) // Hardcode unitAmount (need change later after apply discount)
+        // 4
+        const paymentStrategy = await this.paymentsFactory.getPaymentStrategy(method)
+        return paymentStrategy.processPayment(user, course, payment, coupon)
     }
 
     // 1. Check course been paid
@@ -61,11 +61,15 @@ export class PaymentsService {
         const { user, course, method } = createPaymentDto
         // 1
         const payment = await this.paymentRepository.findOneBy({
-            user,
-            course,
+            user: {
+                id: user.id
+            },
+            course: {
+                id: course.id
+            },
             status: PaymentStatus.Completed
         })
-        if (payment) throw new NotFoundException(PaymentMessages.COURSE_BEEN_PAID)
+        if (payment) throw new BadRequestException(PaymentMessages.COURSE_BEEN_PAID)
 
         // 2
         return this.paymentRepository.save({
@@ -77,11 +81,11 @@ export class PaymentsService {
     }
 
     // 1. Update payment status
-    // 2. Throw error if payment failed
-    // 3. Handle send email
+    // 2. Handle send email if success
     async callbackPayment(callbackDto: CallbackDto) {
         const { paymentId, success } = callbackDto
 
+        // 1
         await this.paymentRepository.update(paymentId, {
             status: success === 1 ? PaymentStatus.Completed : PaymentStatus.Failed
         })
@@ -89,8 +93,9 @@ export class PaymentsService {
         // 2
         if (success === 0) return false
 
-        // 3
         // Handle send email here in future
+        //
+
         return true
     }
 }

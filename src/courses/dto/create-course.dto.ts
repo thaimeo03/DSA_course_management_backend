@@ -26,6 +26,6 @@ export class CreateCourseDto {
 
     @IsNotEmpty()
     @IsNumber()
-    @Min(0)
+    @Min(15000) // Should be greater than 15.000  because of payment policy
     price: number
 }

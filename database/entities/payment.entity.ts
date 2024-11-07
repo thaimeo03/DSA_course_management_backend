@@ -15,8 +15,8 @@ export class Payment {
     @PrimaryGeneratedColumn('uuid')
     id: string
 
-    @Column({ type: 'smallint', default: 0 })
-    quantity: string
+    @Column({ type: 'smallint', default: 1 })
+    quantity: number
 
     @Column({ type: 'real', default: 0 })
     totalPrice: number
