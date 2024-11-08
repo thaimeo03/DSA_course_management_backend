@@ -27,6 +27,9 @@ export class Course {
     @Column({ type: 'real' })
     price: number
 
+    @Column({ type: 'boolean', default: false })
+    isActive: boolean
+
     @CreateDateColumn()
     createdAt: Date
 

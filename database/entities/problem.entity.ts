@@ -29,6 +29,9 @@ export class Problem {
     @Column({ type: 'enum', enum: Difficulty, default: Difficulty.Easy })
     difficulty: Difficulty
 
+    @Column({ type: 'boolean', default: false })
+    isActive: boolean
+
     @CreateDateColumn()
     createdAt: Date
 

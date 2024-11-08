@@ -24,6 +24,9 @@ export class Lesson {
     @Column({ type: 'varchar' })
     videoUrl: string
 
+    @Column({ type: 'boolean', default: false })
+    isActive: boolean
+
     @CreateDateColumn()
     createdAt: Date
 
