@@ -3,5 +3,6 @@ export const CourseMessages = {
     DELETE_COURSE_SUCCESS: 'Delete course successfully',
     UPDATE_COURSE_SUCCESS: 'Update course successfully',
     FIND_ALL_COURSES_SUCCESS: 'Find all courses successfully',
-    COURSE_NOT_FOUND: 'Course not found'
+    COURSE_NOT_FOUND: 'Course not found',
+    TOGGLE_ACTIVE_COURSE_SUCCESS: 'Toggle active course successfully'
 }

@@ -31,6 +31,15 @@ export class CoursesController {
         })
     }
 
+    @Patch('toggle-active/:id')
+    async toggleActiveCourse(@Param('id') id: string) {
+        await this.coursesService.toggleActiveCourse(id)
+
+        return new DataResponse({
+            message: CourseMessages.TOGGLE_ACTIVE_COURSE_SUCCESS
+        })
+    }
+
     @Patch(':id')
     async updateCourse(@Param('id') id: string, @Body() updateCourseDto: UpdateCourseDto) {
         await this.coursesService.updateCourse(id, updateCourseDto)
