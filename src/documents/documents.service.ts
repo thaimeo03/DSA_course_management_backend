@@ -1,30 +1,25 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
+import { Injectable } from '@nestjs/common'
 import { CreateDocumentDto } from './dto/create-document.dto'
-import { Document } from 'database/entities/document.entity'
-import { Lesson } from 'database/entities/lesson.entity'
-import { LessonMessages } from 'common/constants/messages/lesson.message'
-import { DocumentMessages } from 'common/constants/messages/document.message'
 import * as _ from 'lodash'
 import { UpdateDocumentDto } from './dto/update-docuement.dto'
+import { DocumentRepository } from 'src/repositories/document.repository'
+import { LessonRepository } from 'src/repositories/lesson.repository'
 
 @Injectable()
 export class DocumentsService {
     constructor(
-        @InjectRepository(Document) private documentsRepository: Repository<Document>,
-        @InjectRepository(Lesson) private lessonRepository: Repository<Lesson>
+        private documentRepository: DocumentRepository,
+        private lessonRepository: LessonRepository
     ) {}
 
     // 1. Check lesson exists
     // 2. Save document
     async createDocument(createDocumentDto: CreateDocumentDto) {
         // 1
-        const lesson = await this.lessonRepository.findOneBy({ id: createDocumentDto.lessonId })
-        if (!lesson) throw new NotFoundException(LessonMessages.LESSON_NOT_FOUND)
+        const lesson = await this.lessonRepository.checkLessonExists(createDocumentDto.lessonId)
 
         // 2
-        const document = await this.documentsRepository.save({
+        const document = await this.documentRepository.save({
             ...createDocumentDto,
             lesson
         })
@@ -36,31 +31,30 @@ export class DocumentsService {
     // 2. Delete document
     async deleteDocument(id: string) {
         // 1
-        const document = await this.documentsRepository.findOneBy({ id })
-        if (!document) throw new NotFoundException(DocumentMessages.DOCUMENT_NOT_FOUND)
+        await this.documentRepository.checkDocumentExists(id)
 
         // 2
-        await this.documentsRepository.delete(id)
+        await this.documentRepository.delete(id)
     }
 
     // 1. Check document exists
     // 2. Update document
     async updateDocument(id: string, updateDocumentDto: UpdateDocumentDto) {
-        const document = await this.documentsRepository.findOneBy({ id })
-        if (!document) throw new NotFoundException(DocumentMessages.DOCUMENT_NOT_FOUND)
+        // 1
+        await this.documentRepository.checkDocumentExists(id)
 
-        await this.documentsRepository.update(id, updateDocumentDto)
+        // 2
+        await this.documentRepository.update(id, updateDocumentDto)
     }
 
     // 1. Check lesson exists
     // 2. Find all documents
     async findDocumentsByLessonId(lessonId: string) {
         // 1
-        const lesson = await this.lessonRepository.findOneBy({ id: lessonId })
-        if (!lesson) throw new NotFoundException(LessonMessages.LESSON_NOT_FOUND)
+        await this.lessonRepository.checkLessonExists(lessonId)
 
         // 2
-        const documents = await this.documentsRepository.find({
+        const documents = await this.documentRepository.find({
             where: { lesson: { id: lessonId } },
             relations: { lesson: true },
             order: { createdAt: 'ASC' },

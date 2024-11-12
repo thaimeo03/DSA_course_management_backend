@@ -82,8 +82,7 @@ export class CoursesService {
     // 3. Update course
     async updateCourse(id: string, updateCourseDto: UpdateCourseDto) {
         // 1
-        const course = await this.courseRepository.findOneBy({ id })
-        if (!course) throw new NotFoundException(CourseMessages.COURSE_NOT_FOUND)
+        const course = await this.courseRepository.checkCourseExists(id)
 
         // 2
         if (updateCourseDto.thumbnail !== course.thumbnail) {
