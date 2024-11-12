@@ -1,12 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Course } from 'database/entities/course.entity'
+import { Injectable } from '@nestjs/common'
 import { Problem } from 'database/entities/problem.entity'
-import { FindOptionsOrder, FindOptionsWhere, ILike, Repository } from 'typeorm'
+import { FindOptionsOrder, FindOptionsWhere, ILike } from 'typeorm'
 import { CreateProblemDto } from './dto/create-problem.dto'
-import { CourseMessages } from 'common/constants/messages/course.message'
 import * as _ from 'lodash'
-import { ProblemMessages } from 'common/constants/messages/problem.message'
 import { UpdateProblemDto } from './dto/update-problem.dto'
 import { FindProblemsDto } from './dto/find-problems.dto'
 import {
@@ -16,20 +12,21 @@ import {
 import { Pagination } from 'common/core/pagination.core'
 import { Order } from 'common/enums/index.enum'
 import { SortBy } from 'common/enums/problems.enum'
+import { CourseRepository } from 'src/repositories/course.repository'
+import { ProblemRepository } from 'src/repositories/problem.repository'
 
 @Injectable()
 export class ProblemsService {
     constructor(
-        @InjectRepository(Problem) private problemRepository: Repository<Problem>,
-        @InjectRepository(Course) private courseRepository: Repository<Course>
+        private problemRepository: ProblemRepository,
+        private courseRepository: CourseRepository
     ) {}
 
     // 1. Check course exists
     // 2. Save problem
     async createProblem(createProblemDto: CreateProblemDto) {
         // 1
-        const course = await this.courseRepository.findOneBy({ id: createProblemDto.courseId })
-        if (!course) throw new NotFoundException(CourseMessages.COURSE_NOT_FOUND)
+        const course = await this.courseRepository.checkCourseExists(createProblemDto.courseId)
 
         // 2
         const problem = await this.problemRepository.save({
@@ -44,8 +41,7 @@ export class ProblemsService {
     // 2. Delete problem
     async deleteProblem(id: string) {
         // 1
-        const problem = await this.problemRepository.findOneBy({ id })
-        if (!problem) throw new NotFoundException(ProblemMessages.PROBLEM_NOT_FOUND)
+        await this.problemRepository.checkProblemExists(id)
 
         // 2
         await this.problemRepository.delete(id)
@@ -55,8 +51,7 @@ export class ProblemsService {
     // 2. Update problem
     async updateProblem(id: string, updateProblemDto: UpdateProblemDto) {
         // 1
-        const problem = await this.problemRepository.findOneBy({ id })
-        if (!problem) throw new NotFoundException(ProblemMessages.PROBLEM_NOT_FOUND)
+        await this.problemRepository.checkProblemExists(id)
 
         // 2
         await this.problemRepository.update(id, updateProblemDto)
@@ -68,8 +63,7 @@ export class ProblemsService {
     // 4. Pagination
     async findProblemsByCourseId(courseId: string, findProblemsDto: FindProblemsDto) {
         // 1
-        const course = await this.courseRepository.findOneBy({ id: courseId })
-        if (!course) throw new NotFoundException(CourseMessages.COURSE_NOT_FOUND)
+        await this.courseRepository.checkCourseExists(courseId)
 
         // 2
         const page = findProblemsDto.page || FIND_PROBLEMS_PAGE
@@ -102,5 +96,15 @@ export class ProblemsService {
             problems,
             pagination
         }
+    }
+
+    // 1. Check problem exists
+    // 2. Toggle isActive field
+    async toggleActiveProblem(id: string) {
+        // 1
+        const problem = await this.problemRepository.checkProblemExists(id)
+
+        // 2
+        await this.problemRepository.update(id, { isActive: !problem.isActive })
     }
 }

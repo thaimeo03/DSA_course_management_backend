@@ -34,6 +34,13 @@ export class ProblemsController {
         })
     }
 
+    @Patch('toggle-active/:id')
+    async toggleActiveProblem(@Param('id') id: string) {
+        await this.problemsService.toggleActiveProblem(id)
+
+        return new DataResponse({ message: ProblemMessages.TOGGLE_ACTIVE_PROBLEM_SUCCESS })
+    }
+
     @Delete(':id')
     async deleteProblem(@Param('id') id: string) {
         await this.problemsService.deleteProblem(id)
