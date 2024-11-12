@@ -15,18 +15,18 @@ import {
 } from 'common/constants/constraints/course.constraint'
 import { Order } from 'common/enums/index.enum'
 import { SortBy } from 'common/enums/courses.enum'
-import { CoursesRepository } from 'src/repositories/courses.repository'
+import { CourseRepository } from 'src/repositories/course.repository'
 
 @Injectable()
 export class CoursesService {
     constructor(
-        private coursesRepository: CoursesRepository,
+        private courseRepository: CourseRepository,
         @InjectRepository(Image) private imageRepository: Repository<Image>,
         private imageService: ImagesService
     ) {}
 
     async createCourse(createCourseDto: CreateCourseDto) {
-        const course = await this.coursesRepository.save(createCourseDto)
+        const course = await this.courseRepository.save(createCourseDto)
         return course
     }
 
@@ -35,7 +35,7 @@ export class CoursesService {
     // 3. Delete course
     async deleteCourse(id: string) {
         // 1
-        const course = await this.coursesRepository.checkCourseExists(id)
+        const course = await this.courseRepository.checkCourseExists(id)
 
         // 2
         const image = await this.imageRepository.findOneBy({ url: course.thumbnail })
@@ -44,7 +44,7 @@ export class CoursesService {
         }
 
         // 3
-        await this.coursesRepository.delete(id)
+        await this.courseRepository.delete(id)
     }
 
     // 1. Filter courses
@@ -61,14 +61,14 @@ export class CoursesService {
         }
 
         // 2
-        const courses = await this.coursesRepository.find({
+        const courses = await this.courseRepository.find({
             skip,
             take: limit,
             order: order
         })
 
         // 3
-        const totalPage = Math.ceil((await this.coursesRepository.count()) / limit)
+        const totalPage = Math.ceil((await this.courseRepository.count()) / limit)
         const pagination = new Pagination({ limit, currentPage: page, totalPage })
 
         return {
@@ -82,7 +82,7 @@ export class CoursesService {
     // 3. Update course
     async updateCourse(id: string, updateCourseDto: UpdateCourseDto) {
         // 1
-        const course = await this.coursesRepository.findOneBy({ id })
+        const course = await this.courseRepository.findOneBy({ id })
         if (!course) throw new NotFoundException(CourseMessages.COURSE_NOT_FOUND)
 
         // 2
@@ -94,16 +94,16 @@ export class CoursesService {
         }
 
         // 3
-        await this.coursesRepository.update(id, updateCourseDto)
+        await this.courseRepository.update(id, updateCourseDto)
     }
 
     // 1. Check course
     // 2. Toggle isActive field
     async toggleActiveCourse(id: string) {
         // 1
-        const course = await this.coursesRepository.checkCourseExists(id)
+        const course = await this.courseRepository.checkCourseExists(id)
 
         // 2
-        await this.coursesRepository.update(id, { isActive: !course.isActive })
+        await this.courseRepository.update(id, { isActive: !course.isActive })
     }
 }

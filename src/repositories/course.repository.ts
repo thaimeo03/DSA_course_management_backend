@@ -5,7 +5,7 @@ import { Course } from 'database/entities/course.entity'
 import { Repository } from 'typeorm'
 
 @Injectable()
-export class CoursesRepository extends Repository<Course> {
+export class CourseRepository extends Repository<Course> {
     constructor(@InjectRepository(Course) private courseRepository: Repository<Course>) {
         super(courseRepository.target, courseRepository.manager, courseRepository.queryRunner)
     }

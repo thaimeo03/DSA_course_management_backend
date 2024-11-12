@@ -4,5 +4,6 @@ export const LessonMessages = {
     UPDATE_LESSON_SUCCESS: 'Update lesson successfully',
     FIND_ALL_LESSONS_SUCCESS: 'Find all lessons successfully',
     LESSON_NOT_FOUND: 'Lesson not found',
-    FIND_LESSONS_BY_COURSE_SUCCESS: 'Find lessons by course successfully'
+    FIND_LESSONS_BY_COURSE_SUCCESS: 'Find lessons by course successfully',
+    TOGGLE_ACTIVE_LESSON_SUCCESS: 'Toggle active lesson successfully'
 }
