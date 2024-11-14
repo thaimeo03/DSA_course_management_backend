@@ -1,7 +1,4 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
-import { User } from 'database/entities/user.entity'
-import { Repository } from 'typeorm'
 import { RegisterDto } from './dto/register.dto'
 import { ConfigService } from '@nestjs/config'
 import { AuthService } from 'src/auth/auth.service'
@@ -9,11 +6,12 @@ import * as bcrypt from 'bcrypt'
 import { UserMessages } from 'common/constants/messages/user.message'
 import { LoginDto } from './dto/login.dto'
 import { PointsService } from 'src/points/points.service'
+import { UserRepository } from 'src/repositories/user.repository'
 
 @Injectable()
 export class UsersService {
     constructor(
-        @InjectRepository(User) private usersRepository: Repository<User>,
+        private usersRepository: UserRepository,
         private configService: ConfigService,
         private authService: AuthService,
         private pointService: PointsService

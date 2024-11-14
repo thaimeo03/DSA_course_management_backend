@@ -1,20 +1,18 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Point } from 'database/entities/point.entity'
-import { Repository } from 'typeorm'
 import { CreatePointDto } from './dto/create-point.dto'
-import { User } from 'database/entities/user.entity'
 import { UserMessages } from 'common/constants/messages/user.message'
 import { IncreasePointDto } from './dto/increase-point.dto'
-import { Submission } from 'database/entities/submission.entity'
 import { SubmissionStatus } from 'common/enums/submissions.enum'
+import { PointRepository } from 'src/repositories/point.repository'
+import { UserRepository } from 'src/repositories/user.repository'
+import { SubmissionRepository } from 'src/repositories/submission.repository'
 
 @Injectable()
 export class PointsService {
     constructor(
-        @InjectRepository(Point) private pointsRepository: Repository<Point>,
-        @InjectRepository(User) private userRepository: Repository<User>,
-        @InjectRepository(Submission) private submissionRepository: Repository<Submission>
+        private pointsRepository: PointRepository,
+        private userRepository: UserRepository,
+        private submissionRepository: SubmissionRepository
     ) {}
 
     // 1. Check user exists

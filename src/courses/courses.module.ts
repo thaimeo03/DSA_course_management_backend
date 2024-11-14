@@ -6,10 +6,15 @@ import { Course } from 'database/entities/course.entity'
 import { ImagesModule } from 'src/images/images.module'
 import { Image } from 'database/entities/image.entity'
 import { CourseRepository } from 'src/repositories/course.repository'
+import { RepositoriesModule } from 'src/repositories/repositories.module'
+import { ImageRepository } from 'src/repositories/image.repository'
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Course, Image]), ImagesModule],
+    imports: [
+        RepositoriesModule.register([Course, Image], [CourseRepository, ImageRepository]),
+        ImagesModule
+    ],
     controllers: [CoursesController],
-    providers: [CoursesService, CourseRepository]
+    providers: [CoursesService]
 })
 export class CoursesModule {}

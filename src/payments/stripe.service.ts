@@ -2,12 +2,11 @@ import Stripe from 'stripe'
 import { Course } from 'database/entities/course.entity'
 import { User } from 'database/entities/user.entity'
 import { ConfigService } from '@nestjs/config'
-import { InjectRepository } from '@nestjs/typeorm'
 import { Payment } from 'database/entities/payment.entity'
-import { Repository } from 'typeorm'
 import { Injectable } from '@nestjs/common'
 import { Coupon } from 'database/entities/coupon.entity'
 import { getPaymentCallbackRoute } from './helpers/get-payment-callback-route.helper'
+import { PaymentRepository } from 'src/repositories/payment.repository'
 
 @Injectable()
 export class StripeService {
@@ -15,7 +14,7 @@ export class StripeService {
 
     constructor(
         private configService: ConfigService,
-        @InjectRepository(Payment) private paymentRepository: Repository<Payment>
+        private paymentRepository: PaymentRepository
     ) {
         this.setSecretKey()
     }

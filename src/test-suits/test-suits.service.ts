@@ -1,19 +1,17 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
-import { TestSuit } from 'database/entities/test-suit.entity'
-import { Repository } from 'typeorm'
 import { CreateTestSuitDto } from './dto/create-test-suit.dto'
-import { Problem } from 'database/entities/problem.entity'
 import { ProblemMessages } from 'common/constants/messages/problem.message'
 import { TestSuitMessages } from 'common/constants/messages/test-suit.message'
 import * as _ from 'lodash'
 import { UpdateTestSuitDto } from './dto/update-test-suit.dto'
+import { TestSuitRepository } from 'src/repositories/test-suit.repository'
+import { ProblemRepository } from 'src/repositories/problem.repository'
 
 @Injectable()
 export class TestSuitsService {
     constructor(
-        @InjectRepository(TestSuit) private testSuitsRepository: Repository<TestSuit>,
-        @InjectRepository(Problem) private problemRepository: Repository<Problem>
+        private testSuitsRepository: TestSuitRepository,
+        private problemRepository: ProblemRepository
     ) {}
 
     // 1. Check problem exists

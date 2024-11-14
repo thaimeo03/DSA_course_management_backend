@@ -4,14 +4,12 @@ import { UploadImageDto } from './dto/upload-image.dto'
 import { v2 as cloudinary } from 'cloudinary'
 import { ImageMessages } from 'common/constants/messages/image.message'
 import * as fs from 'fs'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Image } from 'database/entities/image.entity'
-import { Repository } from 'typeorm'
+import { ImageRepository } from 'src/repositories/image.repository'
 
 @Injectable()
 export class CloudinaryService {
     constructor(
-        @InjectRepository(Image) private imageRepository: Repository<Image>,
+        private imageRepository: ImageRepository,
         private configService: ConfigService
     ) {
         this.handleConfig()

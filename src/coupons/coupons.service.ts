@@ -1,14 +1,12 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Coupon } from 'database/entities/coupon.entity'
-import { Repository } from 'typeorm'
 import { CreateCouponDto } from './dto/create-coupon.dto'
 import { CouponMessages } from 'common/constants/messages/coupon.message'
 import { CouponType } from 'common/enums/coupons.enum'
+import { CouponRepository } from 'src/repositories/coupon.repository'
 
 @Injectable()
 export class CouponsService {
-    constructor(@InjectRepository(Coupon) private couponRepository: Repository<Coupon>) {}
+    constructor(private couponRepository: CouponRepository) {}
 
     // 1. Check coupon code exists
     // 2. Check amount, percent

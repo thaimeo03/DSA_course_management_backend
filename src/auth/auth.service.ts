@@ -1,12 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
-import { InjectRepository } from '@nestjs/typeorm'
-import { User } from 'database/entities/user.entity'
-import { Repository } from 'typeorm'
 import { PayloadDto } from './dto/payload.dto'
 import { RefreshTokenDto } from './dto/refresh-token.dto'
 import { AuthMessages } from 'common/constants/messages/auth.message'
+import { UserRepository } from 'src/repositories/user.repository'
 
 @Injectable()
 export class AuthService {
@@ -16,7 +14,7 @@ export class AuthService {
     constructor(
         private configService: ConfigService,
         private jwtService: JwtService,
-        @InjectRepository(User) private userRepository: Repository<User>
+        private userRepository: UserRepository
     ) {}
 
     async generateToken(payloadDto: PayloadDto) {

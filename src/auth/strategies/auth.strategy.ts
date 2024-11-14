@@ -1,16 +1,14 @@
 import { Injectable } from '@nestjs/common'
 import { PassportStrategy } from '@nestjs/passport'
-import { InjectRepository } from '@nestjs/typeorm'
-import { User } from 'database/entities/user.entity'
 import { Request } from 'express'
 import { Strategy } from 'passport-jwt'
-import { Repository } from 'typeorm'
 import { JwtPayloadDto } from '../dto/jwt-payload.dto'
 import { PayloadDto } from '../dto/payload.dto'
+import { UserRepository } from 'src/repositories/user.repository'
 
 @Injectable()
 export class AuthJwtStrategy extends PassportStrategy(Strategy, 'authJwt') {
-    @InjectRepository(User) private userRepository: Repository<User>
+    private userRepository: UserRepository
 
     constructor() {
         super({

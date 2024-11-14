@@ -1,20 +1,18 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Problem } from 'database/entities/problem.entity'
-import { Template } from 'database/entities/template.entity'
-import { Repository } from 'typeorm'
 import { CreateTemplateDto } from './dto/create-template.dto'
 import { ProblemMessages } from 'common/constants/messages/problem.message'
 import * as _ from 'lodash'
 import { TemplateMessages } from 'common/constants/messages/template.message'
 import { UpdateTemplateDto } from './dto/update-template.dto'
 import { FindTemplateByProblemIdAndLanguageDto } from './dto/find-template-by-problem-and-language.dto'
+import { TemplateRepository } from 'src/repositories/template.repository'
+import { ProblemRepository } from 'src/repositories/problem.repository'
 
 @Injectable()
 export class TemplatesService {
     constructor(
-        @InjectRepository(Template) private templateRepository: Repository<Template>,
-        @InjectRepository(Problem) private problemRepository: Repository<Problem>
+        private templateRepository: TemplateRepository,
+        private problemRepository: ProblemRepository
     ) {}
 
     // 1. Check problem exists

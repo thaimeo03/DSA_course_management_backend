@@ -1,14 +1,12 @@
 import { Injectable } from '@nestjs/common'
 import { CloudinaryService } from './cloudinary.service'
 import { UploadImagesDto } from './dto/upload-images.dto'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
-import { Image } from 'database/entities/image.entity'
+import { ImageRepository } from 'src/repositories/image.repository'
 
 @Injectable()
 export class ImagesService {
     constructor(
-        @InjectRepository(Image) private imageRepository: Repository<Image>,
+        private imageRepository: ImageRepository,
         private cloudinaryService: CloudinaryService
     ) {}
 

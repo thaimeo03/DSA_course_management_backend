@@ -1,27 +1,25 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Submission } from 'database/entities/submission.entity'
-import { Repository } from 'typeorm'
 import { ExecuteCodeDto } from './dto/execute-code.dto'
-import { TestSuit } from 'database/entities/test-suit.entity'
 import { TestSuitMessages } from 'common/constants/messages/test-suit.message'
 import { ParseService } from './parse.service'
-import { User } from 'database/entities/user.entity'
 import { UserMessages } from 'common/constants/messages/user.message'
 import { CodeExecutorFactory } from './code-executor.factory'
 import { SourceCodesService } from 'src/source-codes/source-codes.service'
 import { SubmissionStatus } from 'common/enums/submissions.enum'
 import { PointsService } from 'src/points/points.service'
-import { Problem } from 'database/entities/problem.entity'
 import { ProblemMessages } from 'common/constants/messages/problem.message'
+import { SubmissionRepository } from 'src/repositories/submission.repository'
+import { TestSuitRepository } from 'src/repositories/test-suit.repository'
+import { UserRepository } from 'src/repositories/user.repository'
+import { ProblemRepository } from 'src/repositories/problem.repository'
 
 @Injectable()
 export class SubmissionsService {
     constructor(
-        @InjectRepository(Submission) private submissionsRepository: Repository<Submission>,
-        @InjectRepository(TestSuit) private testSuitsRepository: Repository<TestSuit>,
-        @InjectRepository(User) private userRepository: Repository<User>,
-        @InjectRepository(Problem) private problemRepository: Repository<Problem>,
+        private submissionsRepository: SubmissionRepository,
+        private testSuitsRepository: TestSuitRepository,
+        private userRepository: UserRepository,
+        private problemRepository: ProblemRepository,
         private codeExecutorFactory: CodeExecutorFactory,
         private sourceCodesService: SourceCodesService,
         private pointService: PointsService

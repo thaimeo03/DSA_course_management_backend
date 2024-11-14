@@ -1,26 +1,24 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Payment } from 'database/entities/payment.entity'
-import { Repository } from 'typeorm'
 import { PaymentFactory } from './payment.factory'
 import { PayDto } from './dto/pay.dto'
-import { User } from 'database/entities/user.entity'
-import { Course } from 'database/entities/course.entity'
 import { UserMessages } from 'common/constants/messages/user.message'
 import { CourseMessages } from 'common/constants/messages/course.message'
 import { PaymentStatus } from 'common/enums/payment.enum'
 import { PaymentMessages } from 'common/constants/messages/payment.message'
-import { Coupon } from 'database/entities/coupon.entity'
 import { CallbackDto } from './dto/callback.dto'
 import { CreatePaymentDto } from './dto/create-payment.dto'
+import { PaymentRepository } from 'src/repositories/payment.repository'
+import { UserRepository } from 'src/repositories/user.repository'
+import { CourseRepository } from 'src/repositories/course.repository'
+import { CouponRepository } from 'src/repositories/coupon.repository'
 
 @Injectable()
 export class PaymentsService {
     constructor(
-        @InjectRepository(Payment) private paymentRepository: Repository<Payment>,
-        @InjectRepository(User) private userRepository: Repository<User>,
-        @InjectRepository(Course) private courseRepository: Repository<Course>,
-        @InjectRepository(Coupon) private couponRepository: Repository<Coupon>,
+        private paymentRepository: PaymentRepository,
+        private userRepository: UserRepository,
+        private courseRepository: CourseRepository,
+        private couponRepository: CouponRepository,
         private paymentsFactory: PaymentFactory
     ) {}
 
