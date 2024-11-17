@@ -31,6 +31,18 @@ export class CoursesController {
         })
     }
 
+    @Get('active')
+    async findAllActiveCourses(@Query() findAllCoursesDto: FindAllCourseDto) {
+        const { courses, pagination } =
+            await this.coursesService.findAllActiveCourses(findAllCoursesDto)
+
+        return new DataResponseWithPagination({
+            message: CourseMessages.FIND_ALL_ACTIVE_COURSES_SUCCESS,
+            data: courses,
+            pagination: pagination
+        })
+    }
+
     @Patch('toggle-active/:id')
     async toggleActiveCourse(@Param('id') id: string) {
         await this.coursesService.toggleActiveCourse(id)
