@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { LessonMessages } from 'common/constants/messages/lesson.message'
 import { Lesson } from 'database/entities/lesson.entity'
 import { FindOptionsWhere, Repository } from 'typeorm'
+import { FindLessonsOptionDto } from 'src/lessons/dto/find-lessons-option.dto'
 
 @Injectable()
 export class LessonRepository extends Repository<Lesson> {
@@ -19,5 +20,24 @@ export class LessonRepository extends Repository<Lesson> {
 
         // 2
         return lesson
+    }
+
+    // Find all lessons
+    async findLessonsByCourseId(courseId: string, options?: FindLessonsOptionDto) {
+        // 2
+        const where: FindOptionsWhere<Lesson> | FindOptionsWhere<Lesson>[] = {
+            course: { id: courseId },
+            ...options?.where
+        }
+        const select = options?.select
+
+        const lessons = await this.lessonRepository.find({
+            where,
+            relations: { course: true },
+            order: { createdAt: 'ASC' },
+            select
+        })
+
+        return lessons
     }
 }

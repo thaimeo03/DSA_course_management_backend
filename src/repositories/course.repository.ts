@@ -47,11 +47,11 @@ export class CourseRepository extends Repository<Course> {
 
         // 2
         const courses = await this.courseRepository.find({
-            where: where,
+            where,
             skip,
             take: limit,
             order: order,
-            select: select
+            select
         })
 
         // 3

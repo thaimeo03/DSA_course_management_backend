@@ -56,10 +56,24 @@ export class LessonsService {
         await this.courseRepository.checkCourseExists({ id: courseId })
 
         // 2
-        const lessons = await this.lessonRepository.find({
-            where: { course: { id: courseId } },
-            relations: { course: true },
-            order: { createdAt: 'ASC' },
+        const lessons = await this.lessonRepository.findLessonsByCourseId(courseId, {
+            select: {
+                course: {}
+            }
+        })
+
+        return lessons
+    }
+
+    // 1. Check course exists
+    // 2. Find all active lessons
+    async findActiveLessonsByCourseId(courseId: string) {
+        // 1
+        await this.courseRepository.checkCourseExists({ id: courseId })
+
+        // 2
+        const lessons = await this.lessonRepository.findLessonsByCourseId(courseId, {
+            where: { isActive: true },
             select: {
                 course: {}
             }

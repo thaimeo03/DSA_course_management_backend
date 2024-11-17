@@ -23,6 +23,16 @@ export class LessonsController {
         return new DataResponse({ message: LessonMessages.FIND_LESSONS_BY_COURSE_SUCCESS, data })
     }
 
+    @Get('/course/active/:courseId')
+    async findActiveLessonsByCourseId(@Param('courseId') courseId: string) {
+        const data = await this.lessonsService.findActiveLessonsByCourseId(courseId)
+
+        return new DataResponse({
+            message: LessonMessages.FIND_ACTIVE_LESSONS_BY_COURSE_SUCCESS,
+            data
+        })
+    }
+
     @Patch('toggle-active/:id')
     async toggleActiveLesson(@Param('id') id: string) {
         await this.lessonsService.toggleActiveLesson(id)
