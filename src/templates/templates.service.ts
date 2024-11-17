@@ -1,6 +1,5 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { CreateTemplateDto } from './dto/create-template.dto'
-import { ProblemMessages } from 'common/constants/messages/problem.message'
 import * as _ from 'lodash'
 import { TemplateMessages } from 'common/constants/messages/template.message'
 import { UpdateTemplateDto } from './dto/update-template.dto'
@@ -20,8 +19,9 @@ export class TemplatesService {
     // 3. Save template
     async createTemplate(createTemplateDto: CreateTemplateDto) {
         // 1
-        const problem = await this.problemRepository.findOneBy({ id: createTemplateDto.problemId })
-        if (!problem) throw new NotFoundException(ProblemMessages.PROBLEM_NOT_FOUND)
+        const problem = await this.problemRepository.checkProblemExists({
+            id: createTemplateDto.problemId
+        })
 
         // 2
         const templateExists = await this.templateRepository.findOneBy({
@@ -49,8 +49,7 @@ export class TemplatesService {
         language
     }: FindTemplateByProblemIdAndLanguageDto) {
         // 1
-        const problem = await this.problemRepository.findOneBy({ id: problemId })
-        if (!problem) throw new NotFoundException(ProblemMessages.PROBLEM_NOT_FOUND)
+        await this.problemRepository.checkProblemExists({ id: problemId })
 
         // 2
         const template = await this.templateRepository.findOneBy({
@@ -65,8 +64,7 @@ export class TemplatesService {
     // 2. Delete template
     async deleteTemplate(id: string) {
         // 1
-        const template = await this.templateRepository.findOneBy({ id })
-        if (!template) throw new NotFoundException(TemplateMessages.TEMPLATE_NOT_FOUND)
+        await this.templateRepository.checkTemplateExists({ id })
 
         // 2
         await this.templateRepository.delete(id)
@@ -76,8 +74,7 @@ export class TemplatesService {
     // 2. Update template
     async updateTemplate(id: string, updateTemplateDto: UpdateTemplateDto) {
         // 1
-        const template = await this.templateRepository.findOneBy({ id })
-        if (!template) throw new NotFoundException(TemplateMessages.TEMPLATE_NOT_FOUND)
+        await this.templateRepository.checkTemplateExists({ id })
 
         // 2
         await this.templateRepository.update(id, updateTemplateDto)

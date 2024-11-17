@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { ProblemMessages } from 'common/constants/messages/problem.message'
 import { Problem } from 'database/entities/problem.entity'
-import { Repository } from 'typeorm'
+import { FindOptionsWhere, Repository } from 'typeorm'
 
 @Injectable()
 export class ProblemRepository extends Repository<Problem> {
@@ -12,9 +12,9 @@ export class ProblemRepository extends Repository<Problem> {
 
     // 1. Check problem exists
     // 2. Return problem
-    async checkProblemExists(id: string) {
+    async checkProblemExists(where: FindOptionsWhere<Problem> | FindOptionsWhere<Problem>[]) {
         // 1
-        const problem = await this.problemRepository.findOneBy({ id })
+        const problem = await this.problemRepository.findOneBy(where)
         if (!problem) throw new NotFoundException(ProblemMessages.PROBLEM_NOT_FOUND)
 
         // 2

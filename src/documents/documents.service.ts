@@ -16,7 +16,9 @@ export class DocumentsService {
     // 2. Save document
     async createDocument(createDocumentDto: CreateDocumentDto) {
         // 1
-        const lesson = await this.lessonRepository.checkLessonExists(createDocumentDto.lessonId)
+        const lesson = await this.lessonRepository.checkLessonExists({
+            id: createDocumentDto.lessonId
+        })
 
         // 2
         const document = await this.documentRepository.save({
@@ -31,7 +33,7 @@ export class DocumentsService {
     // 2. Delete document
     async deleteDocument(id: string) {
         // 1
-        await this.documentRepository.checkDocumentExists(id)
+        await this.documentRepository.checkDocumentExists({ id })
 
         // 2
         await this.documentRepository.delete(id)
@@ -41,7 +43,7 @@ export class DocumentsService {
     // 2. Update document
     async updateDocument(id: string, updateDocumentDto: UpdateDocumentDto) {
         // 1
-        await this.documentRepository.checkDocumentExists(id)
+        await this.documentRepository.checkDocumentExists({ id })
 
         // 2
         await this.documentRepository.update(id, updateDocumentDto)
@@ -51,7 +53,7 @@ export class DocumentsService {
     // 2. Find all documents
     async findDocumentsByLessonId(lessonId: string) {
         // 1
-        await this.lessonRepository.checkLessonExists(lessonId)
+        await this.lessonRepository.checkLessonExists({ id: lessonId })
 
         // 2
         const documents = await this.documentRepository.find({

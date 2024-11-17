@@ -1,13 +1,10 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { ExecuteCodeDto } from './dto/execute-code.dto'
-import { TestSuitMessages } from 'common/constants/messages/test-suit.message'
 import { ParseService } from './parse.service'
-import { UserMessages } from 'common/constants/messages/user.message'
 import { CodeExecutorFactory } from './code-executor.factory'
 import { SourceCodesService } from 'src/source-codes/source-codes.service'
 import { SubmissionStatus } from 'common/enums/submissions.enum'
 import { PointsService } from 'src/points/points.service'
-import { ProblemMessages } from 'common/constants/messages/problem.message'
 import { SubmissionRepository } from 'src/repositories/submission.repository'
 import { TestSuitRepository } from 'src/repositories/test-suit.repository'
 import { UserRepository } from 'src/repositories/user.repository'
@@ -36,14 +33,13 @@ export class SubmissionsService {
         const { code, language, problemId, userId } = executeCodeDto
 
         // 1, 2
-        const problem = await this.problemRepository.findOneBy({ id: problemId })
-        if (!problem) throw new NotFoundException(ProblemMessages.PROBLEM_NOT_FOUND)
+        const problem = await this.problemRepository.checkProblemExists({ id: problemId })
 
-        const testSuit = await this.testSuitsRepository.findOneBy({ problem: { id: problemId } })
-        if (!testSuit) throw new NotFoundException(TestSuitMessages.TEST_SUIT_NOT_FOUND)
+        const testSuit = await this.testSuitsRepository.checkTestSuitExists({
+            problem: { id: problemId }
+        })
 
-        const user = await this.userRepository.findOneBy({ id: userId })
-        if (!user) throw new NotFoundException(UserMessages.USER_NOT_FOUND)
+        const user = await this.userRepository.checkUserExists({ id: userId })
 
         // 3
         const { functionName, inputSuit, inputTypes, outputType, expectedOutputSuit } = testSuit

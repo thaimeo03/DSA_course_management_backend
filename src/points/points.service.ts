@@ -1,6 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { CreatePointDto } from './dto/create-point.dto'
-import { UserMessages } from 'common/constants/messages/user.message'
 import { IncreasePointDto } from './dto/increase-point.dto'
 import { SubmissionStatus } from 'common/enums/submissions.enum'
 import { PointRepository } from 'src/repositories/point.repository'
@@ -20,8 +19,7 @@ export class PointsService {
     // 3. Save point
     async createPoint(createPointDto: CreatePointDto) {
         // 1
-        const user = await this.userRepository.findOneBy({ id: createPointDto.userId })
-        if (!user) throw new NotFoundException(UserMessages.USER_NOT_FOUND)
+        const user = await this.userRepository.checkUserExists({ id: createPointDto.userId })
 
         // 2
         const point = await this.pointsRepository.findOneBy({

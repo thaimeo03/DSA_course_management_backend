@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { CourseMessages } from 'common/constants/messages/course.message'
 import { Course } from 'database/entities/course.entity'
-import { Repository } from 'typeorm'
+import { FindOptionsWhere, Repository } from 'typeorm'
 
 @Injectable()
 export class CourseRepository extends Repository<Course> {
@@ -12,9 +12,9 @@ export class CourseRepository extends Repository<Course> {
 
     // 1. Check course exists, if not throw error
     // 2. Return course
-    async checkCourseExists(id: string) {
+    async checkCourseExists(where: FindOptionsWhere<Course> | FindOptionsWhere<Course>[]) {
         // 1
-        const course = await this.courseRepository.findOneBy({ id })
+        const course = await this.courseRepository.findOneBy(where)
         if (!course) throw new NotFoundException(CourseMessages.COURSE_NOT_FOUND)
 
         // 2

@@ -1,6 +1,5 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { CreateTestSuitDto } from './dto/create-test-suit.dto'
-import { ProblemMessages } from 'common/constants/messages/problem.message'
 import { TestSuitMessages } from 'common/constants/messages/test-suit.message'
 import * as _ from 'lodash'
 import { UpdateTestSuitDto } from './dto/update-test-suit.dto'
@@ -19,8 +18,9 @@ export class TestSuitsService {
     // 3. Save test suit
     async createTestSuit(createTestSuitDto: CreateTestSuitDto) {
         // 1
-        const problem = await this.problemRepository.findOneBy({ id: createTestSuitDto.problemId })
-        if (!problem) throw new NotFoundException(ProblemMessages.PROBLEM_NOT_FOUND)
+        const problem = await this.problemRepository.checkProblemExists({
+            id: createTestSuitDto.problemId
+        })
 
         // 2
         const testSuitExists = await this.testSuitsRepository.findOneBy({
@@ -41,8 +41,7 @@ export class TestSuitsService {
     // 2. Delete test suit
     async deleteTestSuit(id: string) {
         // 1
-        const testSuit = await this.testSuitsRepository.findOneBy({ id })
-        if (!testSuit) throw new NotFoundException(TestSuitMessages.TEST_SUIT_NOT_FOUND)
+        await this.testSuitsRepository.checkTestSuitExists({ id })
 
         // 2
         await this.testSuitsRepository.delete(id)
@@ -52,8 +51,7 @@ export class TestSuitsService {
     // 2. Update test suit
     async updateTestSuit(id: string, updateTestSuitDto: UpdateTestSuitDto) {
         // 1
-        const testSuit = await this.testSuitsRepository.findOneBy({ id })
-        if (!testSuit) throw new NotFoundException(TestSuitMessages.TEST_SUIT_NOT_FOUND)
+        await this.testSuitsRepository.checkTestSuitExists({ id })
 
         // 2
         if (Object.keys(updateTestSuitDto).length > 0) {

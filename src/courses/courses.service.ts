@@ -33,7 +33,7 @@ export class CoursesService {
     // 3. Delete course
     async deleteCourse(id: string) {
         // 1
-        const course = await this.courseRepository.checkCourseExists(id)
+        const course = await this.courseRepository.checkCourseExists({ id })
 
         // 2
         const image = await this.imageRepository.findOneBy({ url: course.thumbnail })
@@ -80,7 +80,7 @@ export class CoursesService {
     // 3. Update course
     async updateCourse(id: string, updateCourseDto: UpdateCourseDto) {
         // 1
-        const course = await this.courseRepository.checkCourseExists(id)
+        const course = await this.courseRepository.checkCourseExists({ id })
 
         // 2
         if (updateCourseDto.thumbnail !== course.thumbnail) {
@@ -98,7 +98,7 @@ export class CoursesService {
     // 2. Toggle isActive field
     async toggleActiveCourse(id: string) {
         // 1
-        const course = await this.courseRepository.checkCourseExists(id)
+        const course = await this.courseRepository.checkCourseExists({ id })
 
         // 2
         await this.courseRepository.update(id, { isActive: !course.isActive })

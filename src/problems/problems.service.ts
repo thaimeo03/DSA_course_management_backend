@@ -26,7 +26,9 @@ export class ProblemsService {
     // 2. Save problem
     async createProblem(createProblemDto: CreateProblemDto) {
         // 1
-        const course = await this.courseRepository.checkCourseExists(createProblemDto.courseId)
+        const course = await this.courseRepository.checkCourseExists({
+            id: createProblemDto.courseId
+        })
 
         // 2
         const problem = await this.problemRepository.save({
@@ -41,7 +43,7 @@ export class ProblemsService {
     // 2. Delete problem
     async deleteProblem(id: string) {
         // 1
-        await this.problemRepository.checkProblemExists(id)
+        await this.problemRepository.checkProblemExists({ id })
 
         // 2
         await this.problemRepository.delete(id)
@@ -51,7 +53,7 @@ export class ProblemsService {
     // 2. Update problem
     async updateProblem(id: string, updateProblemDto: UpdateProblemDto) {
         // 1
-        await this.problemRepository.checkProblemExists(id)
+        await this.problemRepository.checkProblemExists({ id })
 
         // 2
         await this.problemRepository.update(id, updateProblemDto)
@@ -63,7 +65,7 @@ export class ProblemsService {
     // 4. Pagination
     async findProblemsByCourseId(courseId: string, findProblemsDto: FindProblemsDto) {
         // 1
-        await this.courseRepository.checkCourseExists(courseId)
+        await this.courseRepository.checkCourseExists({ id: courseId })
 
         // 2
         const page = findProblemsDto.page || FIND_PROBLEMS_PAGE
@@ -102,7 +104,7 @@ export class ProblemsService {
     // 2. Toggle isActive field
     async toggleActiveProblem(id: string) {
         // 1
-        const problem = await this.problemRepository.checkProblemExists(id)
+        const problem = await this.problemRepository.checkProblemExists({ id })
 
         // 2
         await this.problemRepository.update(id, { isActive: !problem.isActive })

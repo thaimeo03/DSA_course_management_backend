@@ -1,8 +1,6 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { PaymentFactory } from './payment.factory'
 import { PayDto } from './dto/pay.dto'
-import { UserMessages } from 'common/constants/messages/user.message'
-import { CourseMessages } from 'common/constants/messages/course.message'
 import { PaymentStatus } from 'common/enums/payment.enum'
 import { PaymentMessages } from 'common/constants/messages/payment.message'
 import { CallbackDto } from './dto/callback.dto'
@@ -29,11 +27,9 @@ export class PaymentsService {
     async processPayment(userId: string, payDto: PayDto) {
         const { courseId, method, code } = payDto
         // 1
-        const user = await this.userRepository.findOneBy({ id: userId })
-        if (!user) throw new NotFoundException(UserMessages.USER_NOT_FOUND)
+        const user = await this.userRepository.checkUserExists({ id: userId })
 
-        const course = await this.courseRepository.findOneBy({ id: courseId })
-        if (!course) throw new NotFoundException(CourseMessages.COURSE_NOT_FOUND)
+        const course = await this.courseRepository.checkCourseExists({ id: courseId })
 
         // 2
         const payment = await this.createPayment({ user, course, method })

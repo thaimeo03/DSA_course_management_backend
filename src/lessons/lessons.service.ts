@@ -16,7 +16,9 @@ export class LessonsService {
     // 2. Save lesson
     async createLesson(createLessonDto: CreateLessonDto) {
         // 1
-        const course = await this.courseRepository.checkCourseExists(createLessonDto.courseId)
+        const course = await this.courseRepository.checkCourseExists({
+            id: createLessonDto.courseId
+        })
 
         // 2
         const lesson = await this.lessonRepository.save({
@@ -31,7 +33,7 @@ export class LessonsService {
     // 2. Delete lesson
     async deleteLesson(id: string) {
         // 1
-        await this.lessonRepository.checkLessonExists(id)
+        await this.lessonRepository.checkLessonExists({ id })
 
         // 2
         await this.lessonRepository.delete(id)
@@ -41,7 +43,7 @@ export class LessonsService {
     // 2. Update lesson
     async updateLesson(id: string, updateLessonDto: UpdateLessonDto) {
         // 1
-        await this.lessonRepository.checkLessonExists(id)
+        await this.lessonRepository.checkLessonExists({ id })
 
         // 2
         await this.lessonRepository.update(id, updateLessonDto)
@@ -51,7 +53,7 @@ export class LessonsService {
     // 2. Find all lessons
     async findLessonsByCourseId(courseId: string) {
         // 1
-        await this.courseRepository.checkCourseExists(courseId)
+        await this.courseRepository.checkCourseExists({ id: courseId })
 
         // 2
         const lessons = await this.lessonRepository.find({
@@ -70,7 +72,7 @@ export class LessonsService {
     // 2. Toggle isActive field
     async toggleActiveLesson(id: string) {
         // 1
-        const lesson = await this.lessonRepository.checkLessonExists(id)
+        const lesson = await this.lessonRepository.checkLessonExists({ id })
 
         // 2
         await this.lessonRepository.update(id, { isActive: !lesson.isActive })
