@@ -24,7 +24,6 @@ export class LessonRepository extends Repository<Lesson> {
 
     // Find all lessons
     async findLessonsByCourseId(courseId: string, options?: FindLessonsOptionDto) {
-        // 2
         const where: FindOptionsWhere<Lesson> | FindOptionsWhere<Lesson>[] = {
             course: { id: courseId },
             ...options?.where

@@ -34,6 +34,23 @@ export class ProblemsController {
         })
     }
 
+    @Get('/course/active/:courseId')
+    async findActiveProblemsByCourseId(
+        @Param('courseId') courseId: string,
+        @Query() findProblemsDto: FindProblemsDto
+    ) {
+        const { problems, pagination } = await this.problemsService.findActiveProblemsByCourseId(
+            courseId,
+            findProblemsDto
+        )
+
+        return new DataResponseWithPagination({
+            message: ProblemMessages.FIND_PROBLEMS_BY_COURSE_SUCCESS,
+            data: problems,
+            pagination
+        })
+    }
+
     @Patch('toggle-active/:id')
     async toggleActiveProblem(@Param('id') id: string) {
         await this.problemsService.toggleActiveProblem(id)

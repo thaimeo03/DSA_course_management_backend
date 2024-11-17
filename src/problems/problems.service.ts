@@ -60,44 +60,25 @@ export class ProblemsService {
     }
 
     // 1. Check course exists
-    // 2. Add filters
-    // 3. Find all problems
-    // 4. Pagination
+    // 2. Find all problems
     async findProblemsByCourseId(courseId: string, findProblemsDto: FindProblemsDto) {
         // 1
         await this.courseRepository.checkCourseExists({ id: courseId })
 
         // 2
-        const page = findProblemsDto.page || FIND_PROBLEMS_PAGE
-        const limit = findProblemsDto.limit || FIND_PROBLEMS_LIMIT
-        const skip = (page - 1) * limit
-        const where: FindOptionsWhere<Problem> | FindOptionsWhere<Problem>[] = {
-            title: findProblemsDto.search ? ILike(`%${findProblemsDto.search}%`) : undefined,
-            course: {
-                id: courseId
-            }
-        }
+        return this.problemRepository.findProblemsByCourseId(courseId, findProblemsDto)
+    }
 
-        const order: FindOptionsOrder<Problem> = {
-            [findProblemsDto.sortBy || SortBy.CreatedAt]: findProblemsDto.order || Order.Asc
-        }
+    // 1. Check course exists
+    // 2. Find all problems
+    async findActiveProblemsByCourseId(courseId: string, findProblemsDto: FindProblemsDto) {
+        // 1
+        await this.courseRepository.checkCourseExists({ id: courseId })
 
-        // 3
-        const problems = await this.problemRepository.find({
-            where: _.omitBy(where, _.isUndefined), // remove undefined values
-            skip,
-            take: limit,
-            order: order
+        // 2
+        return this.problemRepository.findProblemsByCourseId(courseId, findProblemsDto, {
+            where: { isActive: true }
         })
-
-        // 4
-        const totalPage = Math.ceil((await this.problemRepository.count({ where })) / limit)
-        const pagination = new Pagination({ limit, currentPage: page, totalPage })
-
-        return {
-            problems,
-            pagination
-        }
     }
 
     // 1. Check problem exists
