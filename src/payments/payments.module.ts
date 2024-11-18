@@ -12,6 +12,7 @@ import { PaymentRepository } from 'src/repositories/payment.repository'
 import { UserRepository } from 'src/repositories/user.repository'
 import { CourseRepository } from 'src/repositories/course.repository'
 import { CouponRepository } from 'src/repositories/coupon.repository'
+import { PaymentFacade } from './payment.facade'
 
 @Module({
     imports: [
@@ -21,6 +22,7 @@ import { CouponRepository } from 'src/repositories/coupon.repository'
         )
     ],
     controllers: [PaymentsController],
-    providers: [PaymentsService, PaymentFactory, StripeService]
+    providers: [PaymentsService, PaymentFactory, PaymentFacade, StripeService],
+    exports: [PaymentFacade]
 })
 export class PaymentsModule {}

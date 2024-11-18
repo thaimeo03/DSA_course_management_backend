@@ -8,9 +8,7 @@ import { UserRepository } from 'src/repositories/user.repository'
 
 @Injectable()
 export class AuthJwtStrategy extends PassportStrategy(Strategy, 'authJwt') {
-    private userRepository: UserRepository
-
-    constructor() {
+    constructor(private userRepository: UserRepository) {
         super({
             jwtFromRequest: AuthJwtStrategy.extractJwtFromCookie,
             ignoreExpiration: false,

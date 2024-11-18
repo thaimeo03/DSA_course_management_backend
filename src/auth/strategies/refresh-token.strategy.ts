@@ -7,9 +7,7 @@ import { UserRepository } from 'src/repositories/user.repository'
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(Strategy, 'refresh-token') {
-    private userRepository: UserRepository
-
-    constructor() {
+    constructor(private userRepository: UserRepository) {
         super({
             jwtFromRequest: RefreshTokenStrategy.extractJwtFromCookie,
             ignoreExpiration: false,

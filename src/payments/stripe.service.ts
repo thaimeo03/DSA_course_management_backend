@@ -31,7 +31,7 @@ export class StripeService {
         const product = await this.createProduct(course)
 
         // 2
-        const price = await this.createPrice(product, payment.totalPrice)
+        const price = await this.createPrice(product, course.price)
 
         // 3
         const stripeCoupon = coupon !== null ? await this.createCoupon(coupon) : null // This coupon is different from coupon in DB (only for Stripe handling)
@@ -81,6 +81,21 @@ export class StripeService {
         })
     }
 
+    async updateProduct(course: Course): Promise<Stripe.Product> {
+        const product = await this.createProduct(course)
+        if (product.name === course.title && product.images[0] === course.thumbnail) return product
+
+        return this.stripe.products.update(course.id, {
+            name: course.title,
+            images: [course.thumbnail]
+        })
+    }
+
+    async updateProductAndPrice(course: Course): Promise<void> {
+        const updatedProduct = await this.updateProduct(course)
+        await this.updatePrice(updatedProduct, course.price)
+    }
+
     // 1. Find price by productId and active = true
     // 2. Create price by productId if not exist
     async createPrice(product: Stripe.Product, unitAmount: number): Promise<Stripe.Price> {
@@ -88,7 +103,25 @@ export class StripeService {
         const prices = await this.stripe.prices.search({
             query: "active:'true' AND product:'" + product.id + "'"
         })
-        if (prices.total_count > 0) return prices.data[0]
+        if (prices.data.length > 0) return prices.data[0]
+
+        // 2
+        return this.stripe.prices.create({
+            currency: 'vnd', // Hardcode currency (Need change later)
+            product: product.id,
+            unit_amount: unitAmount
+        })
+    }
+
+    // 1. Find price by productId and check unitAmount changed
+    // 2. Create new price if unitAmount changed
+    async updatePrice(product: Stripe.Product, unitAmount: number): Promise<Stripe.Price> {
+        // 1
+        const price = await this.createPrice(product, unitAmount)
+        if (price.unit_amount === unitAmount) return price
+
+        // Old price
+        await this.stripe.prices.update(price.id, { active: false })
 
         // 2
         return this.stripe.prices.create({

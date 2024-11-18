@@ -1,17 +1,20 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { CreateCourseDto } from './dto/create-course.dto'
 import { FindAllCourseDto } from './dto/find-all-course.dto'
 import { UpdateCourseDto } from './dto/update-course.dto'
 import { ImagesService } from 'src/images/images.service'
 import { CourseRepository } from 'src/repositories/course.repository'
 import { ImageRepository } from 'src/repositories/image.repository'
+import { CourseMessages } from 'common/constants/messages/course.message'
+import { PaymentFacade } from 'src/payments/payment.facade'
 
 @Injectable()
 export class CoursesService {
     constructor(
         private courseRepository: CourseRepository,
         private imageRepository: ImageRepository,
-        private imageService: ImagesService
+        private imageService: ImagesService,
+        private paymentFacade: PaymentFacade
     ) {}
 
     async createCourse(createCourseDto: CreateCourseDto) {
@@ -46,12 +49,14 @@ export class CoursesService {
         return this.courseRepository.findAllCourses(findAllCoursesDto)
     }
 
-    // 1. Check course
+    // 1. Check active course
     // 2. Delete old image on cloudinary if image changed and exists
     // 3. Update course
     async updateCourse(id: string, updateCourseDto: UpdateCourseDto) {
         // 1
         const course = await this.courseRepository.checkCourseExists({ id })
+        if (course.isActive)
+            throw new BadRequestException(CourseMessages.CAN_NOT_UPDATE_ACTIVE_COURSE)
 
         // 2
         if (updateCourseDto.thumbnail !== course.thumbnail) {
@@ -67,11 +72,18 @@ export class CoursesService {
 
     // 1. Check course
     // 2. Toggle isActive field
+    // 3. Update products and prices in payment methods
     async toggleActiveCourse(id: string) {
         // 1
         const course = await this.courseRepository.checkCourseExists({ id })
 
         // 2
-        await this.courseRepository.update(id, { isActive: !course.isActive })
+        const updatedCourse = await this.courseRepository.save({
+            ...course,
+            isActive: !course.isActive
+        })
+
+        // 3
+        if (updatedCourse.isActive) await this.paymentFacade.update(course) // Update products and prices in payment methods after course is activated
     }
 }

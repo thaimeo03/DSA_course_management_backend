@@ -9,6 +9,7 @@ import { PaymentRepository } from 'src/repositories/payment.repository'
 import { UserRepository } from 'src/repositories/user.repository'
 import { CourseRepository } from 'src/repositories/course.repository'
 import { CouponRepository } from 'src/repositories/coupon.repository'
+import { CourseMessages } from 'common/constants/messages/course.message'
 
 @Injectable()
 export class PaymentsService {
@@ -30,6 +31,7 @@ export class PaymentsService {
         const user = await this.userRepository.checkUserExists({ id: userId })
 
         const course = await this.courseRepository.checkCourseExists({ id: courseId })
+        if (!course.isActive) throw new BadRequestException(CourseMessages.COURSE_NOT_ACTIVE)
 
         // 2
         const payment = await this.createPayment({ user, course, method })
