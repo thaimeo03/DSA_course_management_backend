@@ -43,12 +43,39 @@ export class CoursesController {
         })
     }
 
-    @Patch('toggle-active/:id')
-    async toggleActiveCourse(@Param('id') id: string) {
-        await this.coursesService.toggleActiveCourse(id)
+    @Patch('active/:id')
+    async activeCourse(@Param('id') id: string) {
+        await this.coursesService.activateCourse(id)
 
         return new DataResponse({
-            message: CourseMessages.TOGGLE_ACTIVE_COURSE_SUCCESS
+            message: CourseMessages.ACTIVATE_COURSE_SUCCESS
+        })
+    }
+
+    @Patch('inactive/:id')
+    async inActiveCourse(@Param('id') id: string) {
+        await this.coursesService.inactiveCourse(id)
+
+        return new DataResponse({
+            message: CourseMessages.INACTIVATE_COURSE_SUCCESS
+        })
+    }
+
+    @Patch('archive/:id')
+    async archivedCourse(@Param('id') id: string) {
+        await this.coursesService.archivedCourse(id)
+
+        return new DataResponse({
+            message: CourseMessages.ARCHIVE_COURSE_SUCCESS
+        })
+    }
+
+    @Patch('unarchive/:id')
+    async unarchiveCourse(@Param('id') id: string) {
+        await this.coursesService.unarchiveCourse(id)
+
+        return new DataResponse({
+            message: CourseMessages.UNARCHIVE_COURSE_SUCCESS
         })
     }
 

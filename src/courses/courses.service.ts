@@ -71,19 +71,52 @@ export class CoursesService {
     }
 
     // 1. Check course
-    // 2. Toggle isActive field
-    // 3. Update products and prices in payment methods
-    async toggleActiveCourse(id: string) {
+    // 2. Update isActive field = true
+    // 3. Update products and prices in payment methods after course is activated
+    async activateCourse(id: string) {
         // 1
         const course = await this.courseRepository.checkCourseExists({ id })
+        if (course.isActive) return
+
+        // 2, 3
+        await Promise.all([
+            this.courseRepository.update(id, { isActive: true }),
+            this.paymentFacade.update(course)
+        ])
+    }
+
+    // 1. Check course
+    // 2. Update isActive field = false
+    async inactiveCourse(id: string) {
+        // 1
+        const course = await this.courseRepository.checkCourseExists({ id })
+        if (!course.isActive) return
 
         // 2
-        const updatedCourse = await this.courseRepository.save({
-            ...course,
-            isActive: !course.isActive
-        })
+        await this.courseRepository.update(id, { isActive: false })
+    }
 
-        // 3
-        if (updatedCourse.isActive) await this.paymentFacade.update(course) // Update products and prices in payment methods after course is activated
+    // 1. Find course
+    // 2. Update isArchived field = true
+    async archivedCourse(id: string) {
+        // 1
+        const course = await this.courseRepository.findOneBy({ id })
+        if (!course) throw new BadRequestException(CourseMessages.COURSE_NOT_FOUND)
+        if (course.isArchived) return
+
+        // 2
+        await this.courseRepository.update(id, { isArchived: true })
+    }
+
+    // 1. Find course
+    // 2. Update isArchived field = false
+    async unarchiveCourse(id: string) {
+        // 1
+        const course = await this.courseRepository.findOneBy({ id })
+        if (!course) throw new BadRequestException(CourseMessages.COURSE_NOT_FOUND)
+        if (!course.isArchived) return
+
+        // 2
+        await this.courseRepository.update(id, { isArchived: false })
     }
 }

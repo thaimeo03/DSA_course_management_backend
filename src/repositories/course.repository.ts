@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import {
     FIND_ALL_COURSES_LIMIT,
@@ -19,12 +19,13 @@ export class CourseRepository extends Repository<Course> {
         super(courseRepository.target, courseRepository.manager, courseRepository.queryRunner)
     }
 
-    // 1. Check course exists, if not throw error
+    // 1. Check course exists, or archived, if not throw error
     // 2. Return course
     async checkCourseExists(where: FindOptionsWhere<Course> | FindOptionsWhere<Course>[]) {
         // 1
         const course = await this.courseRepository.findOneBy(where)
         if (!course) throw new NotFoundException(CourseMessages.COURSE_NOT_FOUND)
+        if (course.isArchived) throw new BadRequestException(CourseMessages.COURSE_ARCHIVED)
 
         // 2
         return course
@@ -47,7 +48,10 @@ export class CourseRepository extends Repository<Course> {
 
         // 2
         const courses = await this.courseRepository.find({
-            where,
+            where: {
+                ...where,
+                isArchived: false // Only get courses that are not archived (not deleted)
+            },
             skip,
             take: limit,
             order: order,
