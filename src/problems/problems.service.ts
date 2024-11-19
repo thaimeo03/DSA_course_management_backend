@@ -1,19 +1,11 @@
-import { Injectable } from '@nestjs/common'
-import { Problem } from 'database/entities/problem.entity'
-import { FindOptionsOrder, FindOptionsWhere, ILike } from 'typeorm'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { CreateProblemDto } from './dto/create-problem.dto'
 import * as _ from 'lodash'
 import { UpdateProblemDto } from './dto/update-problem.dto'
 import { FindProblemsDto } from './dto/find-problems.dto'
-import {
-    FIND_PROBLEMS_LIMIT,
-    FIND_PROBLEMS_PAGE
-} from 'common/constants/constraints/problem.constraint'
-import { Pagination } from 'common/core/pagination.core'
-import { Order } from 'common/enums/index.enum'
-import { SortBy } from 'common/enums/problems.enum'
 import { CourseRepository } from 'src/repositories/course.repository'
 import { ProblemRepository } from 'src/repositories/problem.repository'
+import { ProblemMessages } from 'common/constants/messages/problem.message'
 
 @Injectable()
 export class ProblemsService {
@@ -43,7 +35,9 @@ export class ProblemsService {
     // 2. Delete problem
     async deleteProblem(id: string) {
         // 1
-        await this.problemRepository.checkProblemExists({ id })
+        const problem = await this.problemRepository.checkProblemExists({ id })
+        if (problem.isActive)
+            throw new BadRequestException(ProblemMessages.CAN_NOT_DELETE_ACTIVE_PROBLEM)
 
         // 2
         await this.problemRepository.delete(id)
@@ -53,7 +47,9 @@ export class ProblemsService {
     // 2. Update problem
     async updateProblem(id: string, updateProblemDto: UpdateProblemDto) {
         // 1
-        await this.problemRepository.checkProblemExists({ id })
+        const problem = await this.problemRepository.checkProblemExists({ id })
+        if (problem.isActive)
+            throw new BadRequestException(ProblemMessages.CAN_NOT_UPDATE_ACTIVE_PROBLEM)
 
         // 2
         await this.problemRepository.update(id, updateProblemDto)
@@ -82,12 +78,24 @@ export class ProblemsService {
     }
 
     // 1. Check problem exists
-    // 2. Toggle isActive field
-    async toggleActiveProblem(id: string) {
+    // 2. Update isActive field = true
+    async activeProblem(id: string) {
         // 1
         const problem = await this.problemRepository.checkProblemExists({ id })
+        if (problem.isActive) return
 
         // 2
-        await this.problemRepository.update(id, { isActive: !problem.isActive })
+        await this.problemRepository.update(id, { isActive: true })
+    }
+
+    // 1. Check problem exists
+    // 2. Update isActive field = false
+    async inactiveProblem(id: string) {
+        // 1
+        const problem = await this.problemRepository.checkProblemExists({ id })
+        if (!problem.isActive) return
+
+        // 2
+        await this.problemRepository.update(id, { isActive: false })
     }
 }
