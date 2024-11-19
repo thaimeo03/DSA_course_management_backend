@@ -98,4 +98,28 @@ export class ProblemsService {
         // 2
         await this.problemRepository.update(id, { isActive: false })
     }
+
+    // 1. Find problem
+    // 2. Update isArchived field = true
+    async archiveProblem(id: string) {
+        // 1
+        const problem = await this.problemRepository.findOneBy({ id })
+        if (!problem) throw new BadRequestException(ProblemMessages.PROBLEM_NOT_FOUND)
+        if (problem.isArchived) return
+
+        // 2
+        await this.problemRepository.update(id, { isArchived: true })
+    }
+
+    // 1. Find problem
+    // 2. Update isArchived field = false
+    async unarchiveProblem(id: string) {
+        // 1
+        const problem = await this.problemRepository.findOneBy({ id })
+        if (!problem) throw new BadRequestException(ProblemMessages.PROBLEM_NOT_FOUND)
+        if (!problem.isArchived) return
+
+        // 2
+        await this.problemRepository.update(id, { isArchived: false })
+    }
 }

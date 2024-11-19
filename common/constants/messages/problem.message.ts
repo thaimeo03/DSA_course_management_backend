@@ -9,5 +9,8 @@ export const ProblemMessages = {
     ACTIVE_PROBLEM_SUCCESS: 'Active problem successfully',
     INACTIVE_PROBLEM_SUCCESS: 'Inactive problem successfully',
     CAN_NOT_UPDATE_ACTIVE_PROBLEM: 'Can not update active problem, please toggle active first',
-    CAN_NOT_DELETE_ACTIVE_PROBLEM: 'Can not delete active problem, please toggle active first'
+    CAN_NOT_DELETE_ACTIVE_PROBLEM: 'Can not delete active problem, please toggle active first',
+    PROBLEM_ARCHIVED: 'Problem archived',
+    ARCHIVE_PROBLEM_SUCCESS: 'Archive problem successfully',
+    UNARCHIVE_PROBLEM_SUCCESS: 'Unarchive problem successfully'
 }

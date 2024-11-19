@@ -32,6 +32,9 @@ export class Problem {
     @Column({ type: 'boolean', default: false })
     isActive: boolean
 
+    @Column({ type: 'boolean', default: false })
+    isArchived: boolean
+
     @CreateDateColumn()
     createdAt: Date
 

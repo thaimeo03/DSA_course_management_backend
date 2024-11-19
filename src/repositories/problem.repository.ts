@@ -26,6 +26,7 @@ export class ProblemRepository extends Repository<Problem> {
         // 1
         const problem = await this.problemRepository.findOneBy(where)
         if (!problem) throw new NotFoundException(ProblemMessages.PROBLEM_NOT_FOUND)
+        if (problem.isArchived) throw new NotFoundException(ProblemMessages.PROBLEM_ARCHIVED)
 
         // 2
         return problem
@@ -48,6 +49,7 @@ export class ProblemRepository extends Repository<Problem> {
             course: {
                 id: courseId
             },
+            isArchived: false,
             ...options?.where
         }
         const select = options?.select

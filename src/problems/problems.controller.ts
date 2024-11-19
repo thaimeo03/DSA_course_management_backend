@@ -65,6 +65,20 @@ export class ProblemsController {
         return new DataResponse({ message: ProblemMessages.INACTIVE_PROBLEM_SUCCESS })
     }
 
+    @Patch('archive/:id')
+    async archiveProblem(@Param('id') id: string) {
+        await this.problemsService.archiveProblem(id)
+
+        return new DataResponse({ message: ProblemMessages.ARCHIVE_PROBLEM_SUCCESS })
+    }
+
+    @Patch('unarchive/:id')
+    async unarchiveProblem(@Param('id') id: string) {
+        await this.problemsService.unarchiveProblem(id)
+
+        return new DataResponse({ message: ProblemMessages.UNARCHIVE_PROBLEM_SUCCESS })
+    }
+
     @Delete(':id')
     async deleteProblem(@Param('id') id: string) {
         await this.problemsService.deleteProblem(id)
