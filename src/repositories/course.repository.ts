@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import {
     FIND_ALL_COURSES_LIMIT,
@@ -25,7 +25,7 @@ export class CourseRepository extends Repository<Course> {
         // 1
         const course = await this.courseRepository.findOneBy(where)
         if (!course) throw new NotFoundException(CourseMessages.COURSE_NOT_FOUND)
-        if (course.isArchived) throw new BadRequestException(CourseMessages.COURSE_ARCHIVED)
+        if (course.isArchived) throw new NotFoundException(CourseMessages.COURSE_ARCHIVED)
 
         // 2
         return course
@@ -39,8 +39,11 @@ export class CourseRepository extends Repository<Course> {
         const page = findAllCoursesDto.page || FIND_ALL_COURSES_PAGE
         const limit = findAllCoursesDto.limit || FIND_ALL_COURSES_LIMIT
         const skip = (page - 1) * limit
-        const where = options?.where,
-            select = options?.select
+        const where: FindOptionsWhere<Course> | FindOptionsWhere<Course>[] = {
+            isArchived: false,
+            ...options?.where
+        }
+        const select = options?.select
 
         const order: FindOptionsOrder<Course> = {
             [findAllCoursesDto.sortBy || SortBy.CreatedAt]: findAllCoursesDto.order || Order.Desc
@@ -48,10 +51,7 @@ export class CourseRepository extends Repository<Course> {
 
         // 2
         const courses = await this.courseRepository.find({
-            where: {
-                ...where,
-                isArchived: false // Only get courses that are not archived (not deleted)
-            },
+            where,
             skip,
             take: limit,
             order: order,
@@ -59,7 +59,7 @@ export class CourseRepository extends Repository<Course> {
         })
 
         // 3
-        const totalCount = await this.courseRepository.count({ where: where })
+        const totalCount = await this.courseRepository.count({ where })
         const totalPage = Math.ceil(totalCount / limit)
         const pagination = new Pagination({ limit, currentPage: page, totalPage })
 

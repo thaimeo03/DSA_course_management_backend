@@ -47,6 +47,20 @@ export class LessonsController {
         return new DataResponse({ message: LessonMessages.INACTIVATE_LESSON_SUCCESS })
     }
 
+    @Patch('archive/:id')
+    async archiveLesson(@Param('id') id: string) {
+        await this.lessonsService.archiveLesson(id)
+
+        return new DataResponse({ message: LessonMessages.ARCHIVE_LESSON_SUCCESS })
+    }
+
+    @Patch('unarchive/:id')
+    async unarchiveLesson(@Param('id') id: string) {
+        await this.lessonsService.unarchiveLesson(id)
+
+        return new DataResponse({ message: LessonMessages.UNARCHIVE_LESSON_SUCCESS })
+    }
+
     @Patch(':id')
     async updateLesson(@Param('id') id: string, @Body() updateLessonDto: UpdateLessonDto) {
         await this.lessonsService.updateLesson(id, updateLessonDto)

@@ -108,4 +108,28 @@ export class LessonsService {
         // 2
         await this.lessonRepository.update(id, { isActive: false })
     }
+
+    // 1. Find lesson
+    // 2. Toggle isArchived field = true
+    async archiveLesson(id: string) {
+        // 1
+        const lesson = await this.lessonRepository.findOneBy({ id })
+        if (!lesson) throw new BadRequestException(LessonMessages.LESSON_NOT_FOUND)
+        if (lesson.isArchived) return
+
+        // 2
+        await this.lessonRepository.update(id, { isArchived: true })
+    }
+
+    // 1. Find lesson
+    // 2. Toggle isArchived field = false
+    async unarchiveLesson(id: string) {
+        // 1
+        const lesson = await this.lessonRepository.findOneBy({ id })
+        if (!lesson) throw new BadRequestException(LessonMessages.LESSON_NOT_FOUND)
+        if (!lesson.isArchived) return
+
+        // 2
+        await this.lessonRepository.update(id, { isArchived: false })
+    }
 }

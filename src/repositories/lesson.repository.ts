@@ -17,6 +17,7 @@ export class LessonRepository extends Repository<Lesson> {
         // 1
         const lesson = await this.lessonRepository.findOneBy(where)
         if (!lesson) throw new NotFoundException(LessonMessages.LESSON_NOT_FOUND)
+        if (lesson.isArchived) throw new NotFoundException(LessonMessages.LESSON_IS_ARCHIVED)
 
         // 2
         return lesson
@@ -26,6 +27,7 @@ export class LessonRepository extends Repository<Lesson> {
     async findLessonsByCourseId(courseId: string, options?: FindLessonsOptionDto) {
         const where: FindOptionsWhere<Lesson> | FindOptionsWhere<Lesson>[] = {
             course: { id: courseId },
+            isArchived: false,
             ...options?.where
         }
         const select = options?.select
