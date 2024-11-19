@@ -5,6 +5,9 @@ export const LessonMessages = {
     FIND_ALL_LESSONS_SUCCESS: 'Find all lessons successfully',
     LESSON_NOT_FOUND: 'Lesson not found',
     FIND_LESSONS_BY_COURSE_SUCCESS: 'Find lessons by course successfully',
-    TOGGLE_ACTIVE_LESSON_SUCCESS: 'Toggle active lesson successfully',
-    FIND_ACTIVE_LESSONS_BY_COURSE_SUCCESS: 'Find active lessons by course successfully'
+    ACTIVATE_LESSON_SUCCESS: 'Activate lesson successfully',
+    INACTIVATE_LESSON_SUCCESS: 'Inactivate lesson successfully',
+    FIND_ACTIVE_LESSONS_BY_COURSE_SUCCESS: 'Find active lessons by course successfully',
+    CAN_NOT_UPDATE_ACTIVE_LESSON: 'Can not update active lesson, please toggle active first',
+    CAN_NOT_DELETE_ACTIVE_LESSON: 'Can not delete active lesson, please toggle active first'
 }

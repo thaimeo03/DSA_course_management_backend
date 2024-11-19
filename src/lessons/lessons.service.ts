@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { CreateLessonDto } from './dto/create-lesson.dto'
 import * as _ from 'lodash'
 import { UpdateLessonDto } from './dto/update-lesson.dto'
 import { CourseRepository } from 'src/repositories/course.repository'
 import { LessonRepository } from 'src/repositories/lesson.repository'
+import { LessonMessages } from 'common/constants/messages/lesson.message'
 
 @Injectable()
 export class LessonsService {
@@ -33,17 +34,21 @@ export class LessonsService {
     // 2. Delete lesson
     async deleteLesson(id: string) {
         // 1
-        await this.lessonRepository.checkLessonExists({ id })
+        const lesson = await this.lessonRepository.checkLessonExists({ id })
+        if (lesson.isActive)
+            throw new BadRequestException(LessonMessages.CAN_NOT_DELETE_ACTIVE_LESSON)
 
         // 2
         await this.lessonRepository.delete(id)
     }
 
-    // 1. Check lesson exists
+    // 1. Check active lesson
     // 2. Update lesson
     async updateLesson(id: string, updateLessonDto: UpdateLessonDto) {
         // 1
-        await this.lessonRepository.checkLessonExists({ id })
+        const lesson = await this.lessonRepository.checkLessonExists({ id })
+        if (lesson.isActive)
+            throw new BadRequestException(LessonMessages.CAN_NOT_UPDATE_ACTIVE_LESSON)
 
         // 2
         await this.lessonRepository.update(id, updateLessonDto)
@@ -84,11 +89,23 @@ export class LessonsService {
 
     // 1. Check lesson exists
     // 2. Toggle isActive field
-    async toggleActiveLesson(id: string) {
+    async activeLesson(id: string) {
         // 1
         const lesson = await this.lessonRepository.checkLessonExists({ id })
+        if (lesson.isActive) return
 
         // 2
-        await this.lessonRepository.update(id, { isActive: !lesson.isActive })
+        await this.lessonRepository.update(id, { isActive: true })
+    }
+
+    // 1. Check lesson exists
+    // 2. Toggle isActive field
+    async inactiveLesson(id: string) {
+        // 1
+        const lesson = await this.lessonRepository.checkLessonExists({ id })
+        if (!lesson.isActive) return
+
+        // 2
+        await this.lessonRepository.update(id, { isActive: false })
     }
 }

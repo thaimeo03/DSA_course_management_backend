@@ -33,11 +33,18 @@ export class LessonsController {
         })
     }
 
-    @Patch('toggle-active/:id')
-    async toggleActiveLesson(@Param('id') id: string) {
-        await this.lessonsService.toggleActiveLesson(id)
+    @Patch('active/:id')
+    async activeLesson(@Param('id') id: string) {
+        await this.lessonsService.activeLesson(id)
 
-        return new DataResponse({ message: LessonMessages.TOGGLE_ACTIVE_LESSON_SUCCESS })
+        return new DataResponse({ message: LessonMessages.ACTIVATE_LESSON_SUCCESS })
+    }
+
+    @Patch('inactive/:id')
+    async inactiveLesson(@Param('id') id: string) {
+        await this.lessonsService.inactiveLesson(id)
+
+        return new DataResponse({ message: LessonMessages.INACTIVATE_LESSON_SUCCESS })
     }
 
     @Patch(':id')
