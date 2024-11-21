@@ -17,37 +17,40 @@ export class UsersService {
         private pointService: PointsService
     ) {}
 
-    // 1. Check email exists
-    // 2. Hash password
-    // 3. Save new user and point
-    // 4. Generate token (access token, refresh token) taken from auth service
-    // 5. Update refresh token and return token
-    async register(registerDto: RegisterDto) {
-        // 1
-        const user = await this.usersRepository.findOneBy({ email: registerDto.email })
-        if (user) throw new BadRequestException(UserMessages.EMAIL_ALREADY_EXISTS)
+    /**
+     * Register a new user
+     * @param registerDto The registration data
+     * @returns An object containing the access token and refresh token
+     * @throws BadRequestException if the email already exists
+     */
+    async register(
+        registerDto: RegisterDto
+    ): Promise<{ accessToken: string; refreshToken: string }> {
+        // Check if the email already exists
+        const existingUser = await this.usersRepository.findOneBy({ email: registerDto.email })
+        if (existingUser) throw new BadRequestException(UserMessages.EMAIL_ALREADY_EXISTS)
 
-        // 2
+        // Hash the password
         const hashedPassword = await bcrypt.hash(
             registerDto.password,
             +this.configService.get('AUTH_REGISTER_SALT_ROUNDS') || 10
         )
 
-        // 3
+        // Save the new user and create a new point
         const newUser = await this.usersRepository.save({
             ...registerDto,
             password: hashedPassword
         })
         await this.pointService.createPoint({ userId: newUser.id })
 
-        // 4
+        // Generate the access token and refresh token
         const { accessToken, refreshToken } = await this.authService.generateToken({
             userId: newUser.id,
             role: newUser.role,
             verified: newUser.verified
         })
 
-        // 5
+        // Update the user with the new refresh token
         await this.usersRepository.update(newUser.id, {
             refreshToken
         })
@@ -55,39 +58,43 @@ export class UsersService {
         return { accessToken, refreshToken }
     }
 
-    // 1. Check email exists
-    // 2. Check password
-    // 3. Check verified (handle in future)
-    // 4. Generate token (access token, refresh token) taken from auth service
-    // 5. Update new refresh token and return token
-    async login(loginDto: LoginDto) {
-        // 1
+    /**
+     * Logs in a user by verifying credentials and generating tokens.
+     * @param loginDto Login data transfer object containing email and password.
+     * @returns An object containing the access token and refresh token.
+     * @throws BadRequestException if the email or password is invalid.
+     */
+    async login(loginDto: LoginDto): Promise<{ accessToken: string; refreshToken: string }> {
+        // Check if the email exists in the database
         const user = await this.usersRepository.findOneBy({ email: loginDto.email })
         if (!user) throw new BadRequestException(UserMessages.EMAIL_OR_PASSWORD_INVALID)
 
-        // 2
+        // Verify the password matches the stored hash
         const isMatch = await bcrypt.compare(loginDto.password, user.password)
         if (!isMatch) throw new BadRequestException(UserMessages.EMAIL_OR_PASSWORD_INVALID)
 
-        // 3 (coming soon)
+        // Check if the user is verified (to be implemented in the future)
 
-        // 4
+        // Generate access and refresh tokens using the auth service
         const { accessToken, refreshToken } = await this.authService.generateToken({
             userId: user.id,
             role: user.role,
             verified: user.verified
         })
 
-        // 5
-        await this.usersRepository.update(user.id, {
-            refreshToken
-        })
+        // Update the user's refresh token in the database
+        await this.usersRepository.update(user.id, { refreshToken })
 
+        // Return the generated tokens
         return { accessToken, refreshToken }
     }
 
-    // Update refresh token is null
-    async logout(userId: string) {
+    /**
+     * Updates the user's refresh token to null, effectively logging them out.
+     * @param userId The ID of the user to log out.
+     * @returns A promise that resolves once the user's refresh token has been updated.
+     */
+    async logout(userId: string): Promise<void> {
         await this.usersRepository.update(userId, { refreshToken: null })
     }
 }
