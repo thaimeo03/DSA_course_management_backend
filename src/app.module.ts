@@ -17,6 +17,7 @@ import { SourceCodesModule } from './source-codes/source-codes.module'
 import { PointsModule } from './points/points.module'
 import { PaymentsModule } from './payments/payments.module'
 import { CouponsModule } from './coupons/coupons.module'
+import { MailsModule } from './mails/mails.module'
 
 @Module({
     imports: [
@@ -40,7 +41,8 @@ import { CouponsModule } from './coupons/coupons.module'
         SourceCodesModule,
         PointsModule,
         PaymentsModule,
-        CouponsModule
+        CouponsModule,
+        MailsModule
     ],
     controllers: [AppController],
     providers: []
