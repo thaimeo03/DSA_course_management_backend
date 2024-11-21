@@ -19,37 +19,47 @@ export class CourseRepository extends Repository<Course> {
         super(courseRepository.target, courseRepository.manager, courseRepository.queryRunner)
     }
 
-    // 1. Check course exists, or archived, if not throw error
-    // 2. Return course
+    /**
+     * Checks if a course exists and is not archived.
+     * @param where - The conditions to find the course.
+     * @returns The course if it exists and is not archived.
+     * @throws NotFoundException - If the course does not exist or is archived.
+     */
     async checkCourseExists(where: FindOptionsWhere<Course> | FindOptionsWhere<Course>[]) {
-        // 1
+        // Find the course by given conditions
         const course = await this.courseRepository.findOneBy(where)
         if (!course) throw new NotFoundException(CourseMessages.COURSE_NOT_FOUND)
         if (course.isArchived) throw new NotFoundException(CourseMessages.COURSE_ARCHIVED)
 
-        // 2
+        // Return the course if found and not archived
         return course
     }
 
-    // 1. Filter courses
-    // 2. Get all courses
-    // 3. Pagination
+    /**
+     * Finds all courses with pagination, sorting, and filtering.
+     * @param findAllCoursesDto - The data to filter, sort and paginate the courses.
+     * @param options - Additional options for finding courses.
+     * @returns An object containing the list of courses and pagination details.
+     */
     async findAllCourses(findAllCoursesDto: FindAllCourseDto, options?: FindAllCourseOptionDto) {
-        // 1
+        // Determine pagination parameters
         const page = findAllCoursesDto.page || FIND_ALL_COURSES_PAGE
         const limit = findAllCoursesDto.limit || FIND_ALL_COURSES_LIMIT
         const skip = (page - 1) * limit
+
+        // Define filter conditions
         const where: FindOptionsWhere<Course> | FindOptionsWhere<Course>[] = {
             isArchived: false,
             ...options?.where
         }
         const select = options?.select
 
+        // Set sorting order
         const order: FindOptionsOrder<Course> = {
             [findAllCoursesDto.sortBy || SortBy.CreatedAt]: findAllCoursesDto.order || Order.Desc
         }
 
-        // 2
+        // Get all courses matching the criteria
         const courses = await this.courseRepository.find({
             where,
             skip,
@@ -58,11 +68,12 @@ export class CourseRepository extends Repository<Course> {
             select
         })
 
-        // 3
+        // Calculate pagination details
         const totalCount = await this.courseRepository.count({ where })
         const totalPage = Math.ceil(totalCount / limit)
         const pagination = new Pagination({ limit, currentPage: page, totalPage })
 
+        // Return courses and pagination information
         return {
             courses,
             pagination

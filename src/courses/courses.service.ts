@@ -17,48 +17,69 @@ export class CoursesService {
         private paymentFacade: PaymentFacade
     ) {}
 
+    /**
+     * Creates a new course with the given data.
+     * @param createCourseDto the data of the course to be created.
+     * @returns the created course.
+     */
     async createCourse(createCourseDto: CreateCourseDto) {
         const course = await this.courseRepository.save(createCourseDto)
+
         return course
     }
 
-    // 1. Check course
-    // 2. Delete image on cloudinary if exists
-    // 3. Delete course
+    /**
+     * Deletes a course and its associated image.
+     * @param id - The ID of the course to be deleted.
+     */
     async deleteCourse(id: string) {
-        // 1
+        // Check if the course exists
         const course = await this.courseRepository.checkCourseExists({ id })
 
-        // 2
+        // Delete associated image on Cloudinary if it exists
         const image = await this.imageRepository.findOneBy({ url: course.thumbnail })
         if (image) {
             await this.imageService.deleteImages([image.url])
         }
 
-        // 3
+        // Delete the course from the repository
         await this.courseRepository.delete(id)
     }
 
+    /**
+     * Finds all active courses.
+     * @param findAllCoursesDto - The data to filter, sort and paginate the courses.
+     * @returns The list of active courses.
+     */
     async findAllActiveCourses(findAllCoursesDto: FindAllCourseDto) {
+        // Find all courses with the given filter, sort and pagination
+        // and also apply the condition of isActive = true
         return this.courseRepository.findAllCourses(findAllCoursesDto, {
             where: { isActive: true }
         })
     }
 
+    /**
+     * Finds all courses with the given filter, sort and pagination.
+     * @param findAllCoursesDto - The data to filter, sort and paginate the courses.
+     * @returns The list of courses.
+     */
     async findAllCourses(findAllCoursesDto: FindAllCourseDto) {
         return this.courseRepository.findAllCourses(findAllCoursesDto)
     }
 
-    // 1. Check active course
-    // 2. Delete old image on cloudinary if image changed and exists
-    // 3. Update course
+    /**
+     * Updates a course.
+     * @param id - The ID of the course to be updated.
+     * @param updateCourseDto - The data to update the course.
+     */
     async updateCourse(id: string, updateCourseDto: UpdateCourseDto) {
-        // 1
+        // Check active course
         const course = await this.courseRepository.checkCourseExists({ id })
         if (course.isActive)
             throw new BadRequestException(CourseMessages.CAN_NOT_UPDATE_ACTIVE_COURSE)
 
-        // 2
+        // Delete old image on cloudinary if image changed and exists
         if (updateCourseDto.thumbnail !== course.thumbnail) {
             const oldImage = await this.imageRepository.findOneBy({ url: course.thumbnail })
             if (oldImage) {
@@ -66,57 +87,66 @@ export class CoursesService {
             }
         }
 
-        // 3
+        // Update course
         await this.courseRepository.update(id, updateCourseDto)
     }
 
-    // 1. Check course
-    // 2. Update isActive field = true
-    // 3. Update products and prices in payment methods after course is activated
+    /**
+     * Activates a course.
+     * @param id - The ID of the course to be activated.
+     */
     async activateCourse(id: string) {
-        // 1
+        // Check course
         const course = await this.courseRepository.checkCourseExists({ id })
-        if (course.isActive) return
+        if (course.isActive) {
+            return
+        }
 
-        // 2, 3
-        await Promise.all([
-            this.courseRepository.update(id, { isActive: true }),
-            this.paymentFacade.update(course)
-        ])
+        // Update isActive field = true
+        await this.courseRepository.update(id, { isActive: true })
+
+        // Update products and prices in payment methods after course is activated
+        await this.paymentFacade.update(course)
     }
 
-    // 1. Check course
-    // 2. Update isActive field = false
+    /**
+     * Inactivates a course.
+     * @param id - The ID of the course to be inactivated.
+     */
     async inactiveCourse(id: string) {
-        // 1
+        // Check course
         const course = await this.courseRepository.checkCourseExists({ id })
         if (!course.isActive) return
 
-        // 2
+        // Update isActive field = false
         await this.courseRepository.update(id, { isActive: false })
     }
 
-    // 1. Find course
-    // 2. Update isArchived field = true
+    /**
+     * Archives a course.
+     * @param id - The ID of the course to be archived.
+     */
     async archivedCourse(id: string) {
-        // 1
+        // Find course
         const course = await this.courseRepository.findOneBy({ id })
         if (!course) throw new BadRequestException(CourseMessages.COURSE_NOT_FOUND)
         if (course.isArchived) return
 
-        // 2
+        // Update isArchived field = true
         await this.courseRepository.update(id, { isArchived: true })
     }
 
-    // 1. Find course
-    // 2. Update isArchived field = false
+    /**
+     * Unarchives a course.
+     * @param id - The ID of the course to be unarchived.
+     */
     async unarchiveCourse(id: string) {
-        // 1
+        // Find course
         const course = await this.courseRepository.findOneBy({ id })
         if (!course) throw new BadRequestException(CourseMessages.COURSE_NOT_FOUND)
         if (!course.isArchived) return
 
-        // 2
+        // Update isArchived field = false
         await this.courseRepository.update(id, { isArchived: false })
     }
 }
