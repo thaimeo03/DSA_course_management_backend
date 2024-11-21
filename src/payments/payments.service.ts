@@ -10,6 +10,8 @@ import { UserRepository } from 'src/repositories/user.repository'
 import { CourseRepository } from 'src/repositories/course.repository'
 import { CouponRepository } from 'src/repositories/coupon.repository'
 import { CourseMessages } from 'common/constants/messages/course.message'
+import { MailsService } from 'src/mails/mails.service'
+import { FormatUtil } from 'common/utils/format.util'
 
 @Injectable()
 export class PaymentsService {
@@ -18,7 +20,8 @@ export class PaymentsService {
         private userRepository: UserRepository,
         private courseRepository: CourseRepository,
         private couponRepository: CouponRepository,
-        private paymentsFactory: PaymentFactory
+        private paymentsFactory: PaymentFactory,
+        private mailsService: MailsService
     ) {}
 
     // 1. Check user and course exists
@@ -76,21 +79,36 @@ export class PaymentsService {
         })
     }
 
-    // 1. Update payment status
-    // 2. Handle send email if success
-    async callbackPayment(callbackDto: CallbackDto) {
+    /**
+     * Handle payment callback
+     *
+     * @param callbackDto callback data
+     * @returns true if success, false if failed
+     */
+    async callbackPayment(callbackDto: CallbackDto): Promise<boolean> {
         const { paymentId, success } = callbackDto
 
-        // 1
+        // Update payment status and payment date
         await this.paymentRepository.update(paymentId, {
-            status: success === 1 ? PaymentStatus.Completed : PaymentStatus.Failed
+            status: success === 1 ? PaymentStatus.Completed : PaymentStatus.Failed,
+            paymentDate: new Date()
         })
 
-        // 2
+        // Return false if failed
         if (success === 0) return false
 
-        // Handle send email here in future
-        //
+        // Handle send email to announce payment success
+        // Find payment info
+        const payment = await this.paymentRepository.findPaymentSuccessById(paymentId)
+
+        // Send email
+        await this.mailsService.sendMailPaymentSuccess({
+            courseName: payment.course.title,
+            userEmail: payment.user.email,
+            userName: payment.user.fullName,
+            totalPrice: FormatUtil.formatMoney(payment.totalPrice),
+            paymentDate: FormatUtil.formatDate(payment.paymentDate)
+        })
 
         return true
     }

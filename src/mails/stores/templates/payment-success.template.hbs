@@ -1,0 +1,40 @@
+<html>
+    <head>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4;
+            } .email-container { max-width: 600px; margin: 20px auto; background-color: #ffffff;
+            border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); overflow: hidden; }
+            .header { background-color: #80C4E9; color: white; text-align: center; padding: 20px
+            10px; } .header h1 { margin: 0; font-size: 24px; } .content { padding: 20px; color:
+            #333333; line-height: 1.6; } .content p { margin: 10px 0; } .content .highlight { color:
+            #80C4E9; font-weight: bold; } .content .button { display: inline-block; margin-top:
+            20px; padding: 10px 20px; background-color: #80C4E9; color: white; text-decoration:
+            none; border-radius: 5px; font-weight: bold; } .content .button:hover {
+            background-color: #6FB9DA; } .footer { background-color: #f4f4f4; color: #888888;
+            text-align: center; font-size: 12px; padding: 10px; border-top: 1px solid #dddddd; }
+            .footer a { color: #80C4E9; text-decoration: none; }
+        </style>
+    </head>
+    <body>
+        <div class='email-container'>
+            <div class='header'>
+                <h1>Congratulations on Your Purchase!</h1>
+            </div>
+            <div class='content'>
+                <p>Dear <span class='highlight'>{{userName}}</span>,</p>
+                <p>We are thrilled to confirm your successful purchase of the course:</p>
+                <p class='highlight'>{{courseName}}</p>
+                <p>Total Price: <span class='highlight'>{{totalPrice}}</span></p>
+                <p>Payment Date: <span class='highlight'>{{paymentDate}}</span></p>
+                <p>Thank you for joining us! Get ready to dive into an exciting learning journey.</p>
+                <a href='' class='button'>Access Your Course</a>
+            </div>
+            <div class='footer'>
+                <p>&copy;
+                    {{currentYear}}
+                    Data Structure & Algorithm Course. All rights reserved.</p>
+                <p><a href=''>Visit our website</a></p>
+            </div>
+        </div>
+    </body>
+</html>

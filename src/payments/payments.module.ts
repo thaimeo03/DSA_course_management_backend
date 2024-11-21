@@ -13,13 +13,15 @@ import { UserRepository } from 'src/repositories/user.repository'
 import { CourseRepository } from 'src/repositories/course.repository'
 import { CouponRepository } from 'src/repositories/coupon.repository'
 import { PaymentFacade } from './payment.facade'
+import { MailsModule } from 'src/mails/mails.module'
 
 @Module({
     imports: [
         RepositoriesModule.register(
             [Payment, User, Course, Coupon],
             [PaymentRepository, UserRepository, CourseRepository, CouponRepository]
-        )
+        ),
+        MailsModule
     ],
     controllers: [PaymentsController],
     providers: [PaymentsService, PaymentFactory, PaymentFacade, StripeService],
