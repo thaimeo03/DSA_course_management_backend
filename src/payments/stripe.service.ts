@@ -77,21 +77,29 @@ export class StripeService {
         } catch (error) {}
 
         // 2
-        return this.stripe.products.create({
+        const product = await this.stripe.products.create({
             id: course.id,
             name: course.title,
             images: [course.thumbnail]
         })
+
+        this.logger.log(`Product created for course ${course.id}`)
+
+        return product
     }
 
     async updateProduct(course: Course): Promise<Stripe.Product> {
         const product = await this.createProduct(course)
         if (product.name === course.title && product.images[0] === course.thumbnail) return product
 
-        return this.stripe.products.update(course.id, {
+        const updatedProduct = await this.stripe.products.update(course.id, {
             name: course.title,
             images: [course.thumbnail]
         })
+
+        this.logger.log(`Product updated for course ${course.id}`)
+
+        return updatedProduct
     }
 
     async updateProductAndPrice(course: Course): Promise<void> {
@@ -109,11 +117,15 @@ export class StripeService {
         if (prices.data.length > 0) return prices.data[0]
 
         // 2
-        return this.stripe.prices.create({
+        const price = await this.stripe.prices.create({
             currency: 'vnd', // Hardcode currency (Need change later)
             product: product.id,
             unit_amount: unitAmount
         })
+
+        this.logger.log(`Price created for product ${product.id}`)
+
+        return price
     }
 
     // 1. Find price by productId and check unitAmount changed
@@ -127,11 +139,15 @@ export class StripeService {
         await this.stripe.prices.update(price.id, { active: false })
 
         // 2
-        return this.stripe.prices.create({
+        const newPrice = await this.stripe.prices.create({
             currency: 'vnd', // Hardcode currency (Need change later)
             product: product.id,
             unit_amount: unitAmount
         })
+
+        this.logger.log(`Price updated for product ${product.id}`)
+
+        return newPrice
     }
 
     // 1. Find coupon by code
@@ -153,7 +169,11 @@ export class StripeService {
         if (coupon.maxRedeem) params['max_redemptions'] = coupon.maxRedeem
         if (coupon.expiredAt) params['redeem_by'] = coupon.expiredAt.getTime()
 
-        return this.stripe.coupons.create(params)
+        const newCoupon = await this.stripe.coupons.create(params)
+
+        this.logger.log(`Coupon created for coupon ${coupon.code}`)
+
+        return newCoupon
     }
 
     /**
@@ -167,8 +187,26 @@ export class StripeService {
             this.logger.log(`Coupon ${code} deleted`)
         } catch (error) {
             // Handle the error
-            this.logger.error(error)
+            this.logger.warn(error)
         }
+    }
+
+    /**
+     * Updates a coupon by its code.
+     * @param coupon - The coupon object that contains the updated data.
+     * @returns - A promise that resolves when the coupon is updated.
+     * @note - Following the Stripe doc, we can only update the meta data of the coupon.
+     * So we need to delete the old one and create a new one. This is done by calling the
+     * deleteCoupon and createCoupon methods respectively.
+     */
+    async updateCoupon(coupon: Coupon) {
+        // Delete the old coupon
+        await this.deleteCoupon(coupon.code)
+
+        // Create a new coupon with the updated data
+        await this.createCoupon(coupon)
+
+        this.logger.log(`Coupon ${coupon.code} updated`)
     }
 
     setSecretKey() {

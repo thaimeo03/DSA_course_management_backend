@@ -4,6 +4,7 @@ import { CouponMessages } from 'common/constants/messages/coupon.message'
 import { CouponType } from 'common/enums/coupons.enum'
 import { CouponRepository } from 'src/repositories/coupon.repository'
 import { PaymentFacade } from 'src/payments/payment.facade'
+import { UpdateCouponDto } from './dto/update-coupon.dto'
 
 @Injectable()
 export class CouponsService {
@@ -55,6 +56,23 @@ export class CouponsService {
         await this.couponRepository.delete(coupon.id)
 
         // Delegate to payment facade to handle any additional deletion logic
-        this.paymentFacade.deleteCoupon(code)
+        await this.paymentFacade.deleteCoupon(code)
+    }
+
+    /**
+     * Updates a coupon by its id.
+     * @param id - The id of the coupon to be updated.
+     * @param updateCouponDto - The updated data of the coupon.
+     * @returns - A promise that resolves when the coupon is updated.
+     */
+    async updateCoupon(id: string, updateCouponDto: UpdateCouponDto) {
+        // Check if the coupon exists
+        const coupon = await this.couponRepository.checkCouponExists({ id })
+
+        // Update the coupon in the database
+        await this.couponRepository.update(id, updateCouponDto)
+
+        // Delegate to payment facade to handle any additional update logic
+        await this.paymentFacade.updateCoupon(coupon)
     }
 }
