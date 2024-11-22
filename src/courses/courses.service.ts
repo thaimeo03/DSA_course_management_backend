@@ -106,7 +106,7 @@ export class CoursesService {
         await this.courseRepository.update(id, { isActive: true })
 
         // Update products and prices in payment methods after course is activated
-        await this.paymentFacade.update(course)
+        await this.paymentFacade.updateCourse(course)
     }
 
     /**

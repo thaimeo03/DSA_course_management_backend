@@ -3,10 +3,14 @@ import { CreateCouponDto } from './dto/create-coupon.dto'
 import { CouponMessages } from 'common/constants/messages/coupon.message'
 import { CouponType } from 'common/enums/coupons.enum'
 import { CouponRepository } from 'src/repositories/coupon.repository'
+import { PaymentFacade } from 'src/payments/payment.facade'
 
 @Injectable()
 export class CouponsService {
-    constructor(private couponRepository: CouponRepository) {}
+    constructor(
+        private couponRepository: CouponRepository,
+        private paymentFacade: PaymentFacade
+    ) {}
 
     // 1. Check coupon code exists
     // 2. Check amount, percent
@@ -39,16 +43,18 @@ export class CouponsService {
         })
     }
 
-    async findCouponByCodeAndUserId(code: string, userId: string) {
-        const coupon = await this.couponRepository.findOneBy({
-            code,
-            user: {
-                id: userId
-            }
-        })
+    /**
+     * Deletes a coupon by its code.
+     * @param code - The code of the coupon to be deleted.
+     */
+    async deleteCoupon(code: string) {
+        // Check if the coupon exists
+        const coupon = await this.couponRepository.checkCouponExists({ code })
 
-        if (!coupon) throw new BadRequestException(CouponMessages.COUPON_NOT_FOUND)
+        // Delete the coupon in the database
+        await this.couponRepository.delete(coupon.id)
 
-        return coupon
+        // Delegate to payment facade to handle any additional deletion logic
+        this.paymentFacade.deleteCoupon(code)
     }
 }

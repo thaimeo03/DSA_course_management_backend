@@ -6,9 +6,15 @@ import { Course } from 'database/entities/course.entity'
 export class PaymentFacade {
     constructor(private stripeService: StripeService) {}
 
-    async update(course: Course) {
+    async updateCourse(course: Course) {
         await this.stripeService.updateProductAndPrice(course)
 
         // Update more here
+    }
+
+    async deleteCoupon(code: string) {
+        await this.stripeService.deleteCoupon(code)
+
+        // Delete more here
     }
 }

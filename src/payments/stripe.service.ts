@@ -3,7 +3,7 @@ import { Course } from 'database/entities/course.entity'
 import { User } from 'database/entities/user.entity'
 import { ConfigService } from '@nestjs/config'
 import { Payment } from 'database/entities/payment.entity'
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import { Coupon } from 'database/entities/coupon.entity'
 import { getPaymentCallbackRoute } from './helpers/get-payment-callback-route.helper'
 import { PaymentRepository } from 'src/repositories/payment.repository'
@@ -11,6 +11,7 @@ import { PaymentRepository } from 'src/repositories/payment.repository'
 @Injectable()
 export class StripeService {
     private stripe: Stripe
+    private readonly logger = new Logger(StripeService.name)
 
     constructor(
         private configService: ConfigService,
@@ -60,6 +61,8 @@ export class StripeService {
             sessionId: session.id,
             totalPrice: session.amount_total
         })
+
+        this.logger.log(`Payment session created by user ${user.id} for course ${course.id}`)
 
         return session.url
     }
@@ -151,6 +154,21 @@ export class StripeService {
         if (coupon.expiredAt) params['redeem_by'] = coupon.expiredAt.getTime()
 
         return this.stripe.coupons.create(params)
+    }
+
+    /**
+     * Deletes a coupon by its code.
+     * @param code - The code of the coupon to be deleted.
+     * @returns - A promise that resolves when the coupon is deleted.
+     */
+    async deleteCoupon(code: string): Promise<void> {
+        try {
+            await this.stripe.coupons.del(code)
+            this.logger.log(`Coupon ${code} deleted`)
+        } catch (error) {
+            // Handle the error
+            this.logger.error(error)
+        }
     }
 
     setSecretKey() {

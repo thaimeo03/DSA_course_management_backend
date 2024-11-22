@@ -4,9 +4,10 @@ import { CouponsService } from './coupons.service'
 import { Coupon } from 'database/entities/coupon.entity'
 import { RepositoriesModule } from 'src/repositories/repositories.module'
 import { CouponRepository } from 'src/repositories/coupon.repository'
+import { PaymentsModule } from 'src/payments/payments.module'
 
 @Module({
-    imports: [RepositoriesModule.register([Coupon], [CouponRepository])],
+    imports: [RepositoriesModule.register([Coupon], [CouponRepository]), PaymentsModule],
     controllers: [CouponsController],
     providers: [CouponsService]
 })
