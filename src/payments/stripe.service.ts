@@ -20,24 +20,25 @@ export class StripeService {
         this.setSecretKey()
     }
 
-    // https://docs.stripe.com/products-prices/how-products-and-prices-work
-    // https://docs.stripe.com/api
-    // 1. Create stripe product
-    // 2. Create stripe price
-    // 3. Create stripe coupon
-    // 4. Create checkout session
-    // 5. Update payment and return session url
+    /**
+     * Creates a checkout session in Stripe and returns the session URL.
+     * @param user - The user object.
+     * @param course - The course object.
+     * @param payment - The payment object.
+     * @param coupon - The coupon object.
+     * @returns - The session URL.
+     */
     async checkout(user: User, course: Course, payment: Payment, coupon?: Coupon): Promise<string> {
-        // 1
+        // Create stripe product
         const product = await this.createProduct(course)
 
-        // 2
+        // Create stripe price
         const price = await this.createPrice(product, course.price)
 
-        // 3
+        // Create stripe coupon
         const stripeCoupon = coupon !== null ? await this.createCoupon(coupon) : null // This coupon is different from coupon in DB (only for Stripe handling)
 
-        // 4
+        // Create checkout session
         const session = await this.stripe.checkout.sessions.create({
             mode: 'payment',
             customer_email: user.email,
@@ -56,7 +57,7 @@ export class StripeService {
             cancel_url: getPaymentCallbackRoute(this.configService.get('HOST'), 0, payment.id)
         })
 
-        // 5
+        // Update payment and return session url
         await this.paymentRepository.update(payment.id, {
             sessionId: session.id,
             totalPrice: session.amount_total
@@ -67,16 +68,22 @@ export class StripeService {
         return session.url
     }
 
-    // 1. Find product by courseId
-    // 2. Create product by courseId if not exist
+    // Product handling
+    /**
+     * Creates a product in Stripe and returns the product.
+     * @param course - The course object.
+     * @returns - The product object.
+     */
     async createProduct(course: Course): Promise<Stripe.Product> {
-        // 1
+        // Find product by courseId
         try {
             const product = await this.stripe.products.retrieve(course.id)
             if (product) return product
-        } catch (error) {}
+        } catch (error) {
+            this.logger.warn(`Product not found for course ${course.id}`)
+        }
 
-        // 2
+        // Create product by courseId if not exist
         const product = await this.stripe.products.create({
             id: course.id,
             name: course.title,
@@ -88,10 +95,17 @@ export class StripeService {
         return product
     }
 
+    /**
+     * Updates a product in Stripe and returns the updated product.
+     * @param course - The course object.
+     * @returns - The updated product object.
+     */
     async updateProduct(course: Course): Promise<Stripe.Product> {
+        // Check product
         const product = await this.createProduct(course)
         if (product.name === course.title && product.images[0] === course.thumbnail) return product
 
+        // Update product
         const updatedProduct = await this.stripe.products.update(course.id, {
             name: course.title,
             images: [course.thumbnail]
@@ -102,21 +116,30 @@ export class StripeService {
         return updatedProduct
     }
 
+    /**
+     * Updates a product and its price in Stripe.
+     * @param course - The course object.
+     */
     async updateProductAndPrice(course: Course): Promise<void> {
         const updatedProduct = await this.updateProduct(course)
         await this.updatePrice(updatedProduct, course.price)
     }
 
-    // 1. Find price by productId and active = true
-    // 2. Create price by productId if not exist
+    // Price handling
+    /**
+     * Creates a price in Stripe if it doesn't exist and returns the price.
+     * @param product - The Stripe product object.
+     * @param unitAmount - The unit amount for the price.
+     * @returns - The Stripe price object.
+     */
     async createPrice(product: Stripe.Product, unitAmount: number): Promise<Stripe.Price> {
-        // 1
+        // Find price by productId and active = true
         const prices = await this.stripe.prices.search({
             query: "active:'true' AND product:'" + product.id + "'"
         })
         if (prices.data.length > 0) return prices.data[0]
 
-        // 2
+        // Create price by productId if not exist
         const price = await this.stripe.prices.create({
             currency: 'vnd', // Hardcode currency (Need change later)
             product: product.id,
@@ -128,17 +151,21 @@ export class StripeService {
         return price
     }
 
-    // 1. Find price by productId and check unitAmount changed
-    // 2. Create new price if unitAmount changed
+    /**
+     * Updates a price in Stripe if the unit amount has changed and returns the new price.
+     * @param product - The Stripe product object.
+     * @param unitAmount - The new unit amount for the price.
+     * @returns - The updated Stripe price object.
+     */
     async updatePrice(product: Stripe.Product, unitAmount: number): Promise<Stripe.Price> {
-        // 1
+        // Find price by productId and check unitAmount changed
         const price = await this.createPrice(product, unitAmount)
         if (price.unit_amount === unitAmount) return price
 
-        // Old price
+        // Deactivate old price
         await this.stripe.prices.update(price.id, { active: false })
 
-        // 2
+        // Create new price if unitAmount changed
         const newPrice = await this.stripe.prices.create({
             currency: 'vnd', // Hardcode currency (Need change later)
             product: product.id,
@@ -150,27 +177,36 @@ export class StripeService {
         return newPrice
     }
 
-    // 1. Find coupon by code
-    // 2. Create coupon by code if not exist
+    /**
+     * Creates a coupon in Stripe if it does not exist and returns the coupon.
+     * @param coupon - The coupon object containing the necessary details.
+     * @returns - The created or retrieved Stripe coupon object.
+     */
     async createCoupon(coupon: Coupon): Promise<Stripe.Coupon> {
         try {
             const couponExist = await this.stripe.coupons.retrieve(coupon.code)
             if (couponExist) return couponExist
-        } catch (error) {}
+        } catch (error) {
+            this.logger.warn(`Coupon not found for code ${coupon.code}`)
+        }
 
+        // Define coupon parameters for creation
         const params: Stripe.CouponCreateParams = {
             id: coupon.code,
             duration: 'once',
             currency: 'vnd'
         }
 
+        // Set optional parameters if they exist
         if (coupon.amountOff) params['amount_off'] = coupon.amountOff
         if (coupon.percentOff) params['percent_off'] = coupon.percentOff
         if (coupon.maxRedeem) params['max_redemptions'] = coupon.maxRedeem
         if (coupon.expiredAt) params['redeem_by'] = coupon.expiredAt.getTime()
 
+        // Create the coupon in Stripe
         const newCoupon = await this.stripe.coupons.create(params)
 
+        // Log the creation of the coupon
         this.logger.log(`Coupon created for coupon ${coupon.code}`)
 
         return newCoupon
