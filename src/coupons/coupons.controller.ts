@@ -4,6 +4,7 @@ import { CreateCouponDto } from './dto/create-coupon.dto'
 import { DataResponse } from 'common/core/response-success.core'
 import { CouponMessages } from 'common/constants/messages/coupon.message'
 import { UpdateCouponDto } from './dto/update-coupon.dto'
+import { ApplyCouponDto } from './dto/apply-coupon.dto'
 
 @Controller('coupons')
 export class CouponsController {
@@ -28,5 +29,12 @@ export class CouponsController {
         await this.couponsService.updateCoupon(id, updateCouponDto)
 
         return new DataResponse({ message: CouponMessages.UPDATE_COUPON_SUCCESS })
+    }
+
+    @Post('apply')
+    async applyCouponForUser(@Body() applyCouponDto: ApplyCouponDto) {
+        await this.couponsService.applyCouponForUser(applyCouponDto)
+
+        return new DataResponse({ message: CouponMessages.APPLY_COUPON_SUCCESS })
     }
 }

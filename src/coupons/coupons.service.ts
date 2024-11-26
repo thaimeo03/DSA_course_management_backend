@@ -1,15 +1,20 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable, Logger } from '@nestjs/common'
 import { CreateCouponDto } from './dto/create-coupon.dto'
 import { CouponMessages } from 'common/constants/messages/coupon.message'
 import { CouponType } from 'common/enums/coupons.enum'
 import { CouponRepository } from 'src/repositories/coupon.repository'
 import { PaymentFacade } from 'src/payments/payment.facade'
 import { UpdateCouponDto } from './dto/update-coupon.dto'
+import { UserRepository } from 'src/repositories/user.repository'
+import { ApplyCouponDto } from './dto/apply-coupon.dto'
 
 @Injectable()
 export class CouponsService {
+    private readonly logger = new Logger(CouponsService.name)
+
     constructor(
         private couponRepository: CouponRepository,
+        private userRepository: UserRepository,
         private paymentFacade: PaymentFacade
     ) {}
 
@@ -74,5 +79,42 @@ export class CouponsService {
 
         // Delegate to payment facade to handle any additional update logic
         await this.paymentFacade.updateCoupon(coupon)
+    }
+
+    /**
+     * Applies a coupon to a user.
+     * @param applyCouponDto - The code of the coupon and the id of the user to apply the coupon to.
+     * @throws {BadRequestException} - If the coupon does not exist or if it has already been applied to a user.
+     * @throws {BadRequestException} - If the coupon has been fully redeemed.
+     */
+    async applyCouponForUser(applyCouponDto: ApplyCouponDto) {
+        const { code, userId } = applyCouponDto
+
+        // Check if the user exists
+        await this.userRepository.checkUserExists({ id: userId })
+
+        // Get the coupon from the database
+        const coupon = await this.couponRepository.findOne({
+            relations: {
+                user: true
+            },
+            where: {
+                code
+            }
+        })
+        if (!coupon) throw new BadRequestException(CouponMessages.COUPON_NOT_FOUND)
+
+        // Check if the coupon has already been applied to a user
+        if (coupon.user) throw new BadRequestException(CouponMessages.COUPON_ALREADY_APPLIED)
+
+        // Check if the coupon has been fully redeemed
+        if (coupon.maxRedeem !== null && coupon.maxRedeem <= 0)
+            throw new BadRequestException(CouponMessages.COUPON_REDEEMED)
+
+        // Apply the coupon to the user in the database
+        await this.couponRepository.update(coupon.id, { user: { id: userId } })
+
+        // Log the action
+        this.logger.log(`Coupon ${code} applied for user ${userId}`)
     }
 }
