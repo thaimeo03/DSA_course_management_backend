@@ -25,9 +25,6 @@ export class User {
     @Column({ type: 'varchar' })
     password: string
 
-    @Column({ type: 'varchar', nullable: true, unique: true })
-    refreshToken: string
-
     @Column({ type: 'enum', enum: Role, default: Role.Student })
     role: Role
 

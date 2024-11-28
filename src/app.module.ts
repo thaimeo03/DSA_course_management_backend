@@ -18,6 +18,7 @@ import { PointsModule } from './points/points.module'
 import { PaymentsModule } from './payments/payments.module'
 import { CouponsModule } from './coupons/coupons.module'
 import { MailsModule } from './mails/mails.module'
+import { RedisModule } from './redis/redis.module'
 
 @Module({
     imports: [
@@ -42,7 +43,8 @@ import { MailsModule } from './mails/mails.module'
         PointsModule,
         PaymentsModule,
         CouponsModule,
-        MailsModule
+        MailsModule,
+        RedisModule
     ],
     controllers: [AppController],
     providers: []

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import { BadRequestException, Inject, Injectable } from '@nestjs/common'
 import { RegisterDto } from './dto/register.dto'
 import { ConfigService } from '@nestjs/config'
 import { AuthService } from 'src/auth/auth.service'
@@ -7,6 +7,8 @@ import { UserMessages } from 'common/constants/messages/user.message'
 import { LoginDto } from './dto/login.dto'
 import { PointsService } from 'src/points/points.service'
 import { UserRepository } from 'src/repositories/user.repository'
+import Redis from 'ioredis'
+import { RedisUtil } from 'common/utils/redis.util'
 
 @Injectable()
 export class UsersService {
@@ -14,7 +16,8 @@ export class UsersService {
         private usersRepository: UserRepository,
         private configService: ConfigService,
         private authService: AuthService,
-        private pointService: PointsService
+        private pointService: PointsService,
+        @Inject('REDIS_CLIENT') private readonly redisClient: Redis
     ) {}
 
     /**
@@ -50,11 +53,6 @@ export class UsersService {
             verified: newUser.verified
         })
 
-        // Update the user with the new refresh token
-        await this.usersRepository.update(newUser.id, {
-            refreshToken
-        })
-
         return { accessToken, refreshToken }
     }
 
@@ -82,9 +80,6 @@ export class UsersService {
             verified: user.verified
         })
 
-        // Update the user's refresh token in the database
-        await this.usersRepository.update(user.id, { refreshToken })
-
         // Return the generated tokens
         return { accessToken, refreshToken }
     }
@@ -95,6 +90,6 @@ export class UsersService {
      * @returns A promise that resolves once the user's refresh token has been updated.
      */
     async logout(userId: string): Promise<void> {
-        await this.usersRepository.update(userId, { refreshToken: null })
+        await this.redisClient.unlink(RedisUtil.getRefreshTokenKey(userId))
     }
 }
