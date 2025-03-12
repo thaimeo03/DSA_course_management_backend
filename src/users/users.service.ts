@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common'
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common'
 import { RegisterDto } from './dto/register.dto'
 import { ConfigService } from '@nestjs/config'
 import { AuthService } from 'src/auth/auth.service'
@@ -91,5 +91,26 @@ export class UsersService {
      */
     async logout(userId: string): Promise<void> {
         await this.redisClient.unlink(RedisUtil.getRefreshTokenKey(userId))
+    }
+
+    async getMe(userId: string) {
+        const user = await this.usersRepository.findOne({
+            where: {
+                id: userId
+            },
+            select: {
+                id: true,
+                email: true,
+                fullName: true,
+                role: true,
+                avatar: true,
+                verified: true,
+                dateOfBirth: true
+            }
+        })
+
+        if (!user) throw new NotFoundException(UserMessages.USER_NOT_FOUND)
+
+        return user
     }
 }

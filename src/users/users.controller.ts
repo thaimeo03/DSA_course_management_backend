@@ -56,4 +56,17 @@ export class UsersController {
 
         return new DataResponse({ message: UserMessages.LOGOUT_SUCCESS })
     }
+
+    @Get('me')
+    @UseGuards(AuthJwtGuard)
+    async getMe(@Req() req: Request) {
+        const userId = req.user['userId'] as string
+
+        const data = await this.usersService.getMe(userId)
+
+        return new DataResponse({
+            message: UserMessages.GET_ME_SUCCESS,
+            data
+        })
+    }
 }
