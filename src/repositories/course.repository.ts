@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import {
     FIND_ALL_COURSES_LIMIT,
@@ -78,5 +78,32 @@ export class CourseRepository extends Repository<Course> {
             courses,
             pagination
         }
+    }
+
+    /**
+     * Retrieves the details of a course by its ID and active status.
+     *
+     * @param id - The unique identifier of the course.
+     * @param isActive - The active status of the course.
+     * @returns The details of the course including id, title, description, thumbnail, price, createdAt, and updatedAt.
+     * @throws {BadRequestException} If the course is not found.
+     */
+    async getDetailCourse(id: string, isActive: boolean) {
+        const course = await this.courseRepository.findOne({
+            where: { id, isActive, isArchived: false },
+            select: {
+                id: true,
+                title: true,
+                description: true,
+                thumbnail: true,
+                price: true,
+                createdAt: true,
+                updatedAt: true
+            }
+        })
+
+        if (!course) throw new BadRequestException(CourseMessages.COURSE_NOT_FOUND)
+
+        return course
     }
 }

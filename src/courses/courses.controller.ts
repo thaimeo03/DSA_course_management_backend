@@ -5,6 +5,7 @@ import { DataResponse, DataResponseWithPagination } from 'common/core/response-s
 import { CourseMessages } from 'common/constants/messages/course.message'
 import { FindAllCourseDto } from './dto/find-all-course.dto'
 import { UpdateCourseDto } from './dto/update-course.dto'
+import { DetailCourseDto } from './dto/detail-course.dto'
 
 @Controller('courses')
 export class CoursesController {
@@ -28,6 +29,16 @@ export class CoursesController {
             message: CourseMessages.FIND_ALL_COURSES_SUCCESS,
             data: courses,
             pagination: pagination
+        })
+    }
+
+    @Get('detail/:id')
+    async getDetailCourse(@Param('id') id: string, @Query() detailCourseDto: DetailCourseDto) {
+        const course = await this.coursesService.getDetailCourse(id, detailCourseDto)
+
+        return new DataResponse({
+            message: CourseMessages.GET_DETAIL_COURSE_SUCCESS,
+            data: course
         })
     }
 

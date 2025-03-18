@@ -7,6 +7,7 @@ import { CourseRepository } from 'src/repositories/course.repository'
 import { ImageRepository } from 'src/repositories/image.repository'
 import { CourseMessages } from 'common/constants/messages/course.message'
 import { PaymentFacade } from 'src/payments/payment.facade'
+import { DetailCourseDto } from './dto/detail-course.dto'
 
 @Injectable()
 export class CoursesService {
@@ -66,6 +67,17 @@ export class CoursesService {
      */
     async findAllCourses(findAllCoursesDto: FindAllCourseDto) {
         return this.courseRepository.findAllCourses(findAllCoursesDto)
+    }
+
+    /**
+     * Retrieves detailed information about a specific course.
+     *
+     * @param id - The unique identifier of the course.
+     * @param detailCourseDto - An object containing additional details for the course query.
+     * @returns A promise that resolves to the detailed course information.
+     */
+    async getDetailCourse(id: string, detailCourseDto: DetailCourseDto) {
+        return this.courseRepository.getDetailCourse(id, detailCourseDto.isActive)
     }
 
     /**
