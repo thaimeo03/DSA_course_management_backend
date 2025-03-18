@@ -18,6 +18,9 @@ export class Course {
     @Column({ type: 'varchar', length: 200 })
     title: string
 
+    @Column({ type: 'varchar', nullable: true })
+    videoUrl: string
+
     @Column({ type: 'text', nullable: true })
     description: string
 
