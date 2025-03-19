@@ -94,6 +94,7 @@ export class CourseRepository extends Repository<Course> {
             select: {
                 id: true,
                 title: true,
+                videoUrl: true,
                 description: true,
                 thumbnail: true,
                 price: true,
