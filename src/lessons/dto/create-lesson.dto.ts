@@ -1,10 +1,12 @@
 import {
     IsNotEmpty,
+    IsNumber,
     IsOptional,
     IsString,
     IsUrl,
     IsUUID,
     MaxLength,
+    Min,
     MinLength
 } from 'class-validator'
 
@@ -14,6 +16,11 @@ export class CreateLessonDto {
     @MinLength(1)
     @MaxLength(300)
     title: string
+
+    @IsNotEmpty()
+    @IsNumber()
+    @Min(1)
+    no?: number
 
     @IsOptional()
     @IsString()

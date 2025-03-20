@@ -14,7 +14,8 @@ export class LessonsService {
     ) {}
 
     // 1. Check course exists
-    // 2. Save lesson
+    // 2. Check no exists
+    // 3. Save lesson
     async createLesson(createLessonDto: CreateLessonDto) {
         // 1
         const course = await this.courseRepository.checkCourseExists({
@@ -22,6 +23,22 @@ export class LessonsService {
         })
 
         // 2
+        const lessonNo = await this.lessonRepository.findOne({
+            where: {
+                no: createLessonDto.no,
+                course: {
+                    id: createLessonDto.courseId
+                }
+            },
+            relations: {
+                course: true
+            }
+        })
+
+        if (lessonNo)
+            throw new BadRequestException(LessonMessages.NUMBER_ORDER_LESSON_ALREADY_EXISTS)
+
+        // 3
         const lesson = await this.lessonRepository.save({
             ...createLessonDto,
             course
@@ -78,7 +95,7 @@ export class LessonsService {
 
         // 2
         const lessons = await this.lessonRepository.findLessonsByCourseId(courseId, {
-            where: { isActive: true },
+            where: { isActive: true, isArchived: false },
             select: {
                 course: {}
             }

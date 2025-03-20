@@ -12,5 +12,6 @@ export const LessonMessages = {
     CAN_NOT_DELETE_ACTIVE_LESSON: 'Can not delete active lesson, please toggle active first',
     LESSON_IS_ARCHIVED: 'Lesson is archived',
     ARCHIVE_LESSON_SUCCESS: 'Archive lesson successfully',
-    UNARCHIVE_LESSON_SUCCESS: 'Unarchive lesson successfully'
+    UNARCHIVE_LESSON_SUCCESS: 'Unarchive lesson successfully',
+    NUMBER_ORDER_LESSON_ALREADY_EXISTS: 'Number order lesson already exists'
 }
