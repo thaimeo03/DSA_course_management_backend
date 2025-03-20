@@ -28,7 +28,11 @@ export class CreateLessonDto {
 
     @IsNotEmpty()
     @IsString()
-    @IsUrl()
+    @IsUrl({
+        protocols: ['http', 'https'],
+        require_protocol: true,
+        host_whitelist: ['www.youtube.com', 'youtube.com', 'youtu.be']
+    })
     videoUrl: string
 
     @IsNotEmpty()
