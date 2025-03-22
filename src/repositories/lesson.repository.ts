@@ -35,7 +35,7 @@ export class LessonRepository extends Repository<Lesson> {
         const lessons = await this.lessonRepository.find({
             where,
             relations: { course: true },
-            order: { createdAt: 'ASC' },
+            order: { no: 'ASC' },
             select
         })
 
