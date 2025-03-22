@@ -5,6 +5,8 @@ import { AuthJwtGuard } from 'src/auth/guards/auth.guard'
 import { Request, Response } from 'express'
 import { CallbackDto } from './dto/callback.dto'
 import { ConfigService } from '@nestjs/config'
+import { DataResponse } from 'common/core/response-success.core'
+import { PaymentMessages } from 'common/constants/messages/payment.message'
 
 @Controller('payments')
 export class PaymentsController {
@@ -15,12 +17,15 @@ export class PaymentsController {
 
     @Post('pay')
     @UseGuards(AuthJwtGuard)
-    async processPayment(@Req() req: Request, @Res() res: Response, @Body() payDto: PayDto) {
+    async processPayment(@Req() req: Request, @Body() payDto: PayDto) {
         const userId = req.user['userId'] as string
 
         const url = await this.paymentsService.processPayment(userId, payDto)
 
-        res.redirect(url)
+        return new DataResponse({
+            message: PaymentMessages.PROCESS_PAYMENT_SUCCESS,
+            data: { url }
+        })
     }
 
     @Get('callback')
