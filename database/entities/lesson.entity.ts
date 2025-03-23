@@ -15,7 +15,7 @@ export class Lesson {
     @PrimaryGeneratedColumn('uuid')
     id: string
 
-    @Column({ type: 'smallint', unique: true })
+    @Column({ type: 'smallint' })
     no: number
 
     @Column({ type: 'varchar', length: 300 })
