@@ -161,4 +161,8 @@ export class CoursesService {
         // Update isArchived field = false
         await this.courseRepository.update(id, { isArchived: false })
     }
+
+    async isPurchaseCourse(courseId: string, userId: string) {
+        return this.courseRepository.isPurchaseCourse(courseId, userId)
+    }
 }

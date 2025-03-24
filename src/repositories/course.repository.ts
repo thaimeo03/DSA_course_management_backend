@@ -8,6 +8,7 @@ import { CourseMessages } from 'common/constants/messages/course.message'
 import { Pagination } from 'common/core/pagination.core'
 import { SortBy } from 'common/enums/courses.enum'
 import { Order } from 'common/enums/index.enum'
+import { PaymentStatus } from 'common/enums/payment.enum'
 import { Course } from 'database/entities/course.entity'
 import { FindAllCourseOptionDto } from 'src/courses/dto/find-all-course-option.dto'
 import { FindAllCourseDto } from 'src/courses/dto/find-all-course.dto'
@@ -106,5 +107,29 @@ export class CourseRepository extends Repository<Course> {
         if (!course) throw new BadRequestException(CourseMessages.COURSE_NOT_FOUND)
 
         return course
+    }
+
+    async isPurchaseCourse(courseId: string, userId: string) {
+        const course = await this.courseRepository.findOne({
+            relations: {
+                payments: {
+                    user: true
+                }
+            },
+            where: {
+                payments: {
+                    user: {
+                        id: userId
+                    },
+                    course: {
+                        id: courseId
+                    },
+
+                    status: PaymentStatus.Completed
+                }
+            }
+        })
+
+        return course ? true : false
     }
 }

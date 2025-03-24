@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common'
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Patch,
+    Post,
+    Query,
+    Req,
+    UseGuards
+} from '@nestjs/common'
 import { CoursesService } from './courses.service'
 import { CreateCourseDto } from './dto/create-course.dto'
 import { DataResponse, DataResponseWithPagination } from 'common/core/response-success.core'
@@ -6,6 +17,8 @@ import { CourseMessages } from 'common/constants/messages/course.message'
 import { FindAllCourseDto } from './dto/find-all-course.dto'
 import { UpdateCourseDto } from './dto/update-course.dto'
 import { DetailCourseDto } from './dto/detail-course.dto'
+import { Request } from 'express'
+import { AuthJwtGuard } from 'src/auth/guards/auth.guard'
 
 @Controller('courses')
 export class CoursesController {
@@ -105,6 +118,18 @@ export class CoursesController {
 
         return new DataResponse({
             message: CourseMessages.DELETE_COURSE_SUCCESS
+        })
+    }
+
+    @Get('is-purchase/:id')
+    @UseGuards(AuthJwtGuard)
+    async isPurchaseCourse(@Param('id') id: string, @Req() req: Request) {
+        const userId = req.user['userId'] as string
+        const isPurchase = await this.coursesService.isPurchaseCourse(id, userId)
+
+        return new DataResponse({
+            message: CourseMessages.IS_PURCHASE_COURSE_SUCCESS,
+            data: isPurchase
         })
     }
 }

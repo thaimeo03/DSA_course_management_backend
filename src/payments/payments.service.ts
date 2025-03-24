@@ -59,16 +59,8 @@ export class PaymentsService {
     async createPayment(createPaymentDto: CreatePaymentDto) {
         const { user, course, method } = createPaymentDto
         // 1
-        const payment = await this.paymentRepository.findOneBy({
-            user: {
-                id: user.id
-            },
-            course: {
-                id: course.id
-            },
-            status: PaymentStatus.Completed
-        })
-        if (payment) throw new BadRequestException(PaymentMessages.COURSE_BEEN_PAID)
+        const isPurchase = await this.courseRepository.isPurchaseCourse(course.id, user.id)
+        if (isPurchase) throw new BadRequestException(PaymentMessages.COURSE_BEEN_PAID)
 
         // 2
         return this.paymentRepository.save({
