@@ -29,8 +29,8 @@ export class SubmissionsService {
     // 5. Call execute code api and handle response
     // 6. Save source code and submission after execute code successfully
     // 7. Increase point if status is passed
-    async executeCode(executeCodeDto: ExecuteCodeDto) {
-        const { code, language, problemId, userId } = executeCodeDto
+    async executeCode(userId: string, executeCodeDto: ExecuteCodeDto) {
+        const { code, language, problemId } = executeCodeDto
 
         // 1, 2
         const problem = await this.problemRepository.checkProblemExists({ id: problemId })

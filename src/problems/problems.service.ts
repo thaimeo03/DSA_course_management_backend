@@ -6,6 +6,8 @@ import { FindProblemsDto } from './dto/find-problems.dto'
 import { CourseRepository } from 'src/repositories/course.repository'
 import { ProblemRepository } from 'src/repositories/problem.repository'
 import { ProblemMessages } from 'common/constants/messages/problem.message'
+import { SubmissionStatus } from 'common/enums/submissions.enum'
+import { Problem } from 'database/entities/problem.entity'
 
 @Injectable()
 export class ProblemsService {
@@ -67,14 +69,60 @@ export class ProblemsService {
 
     // 1. Check course exists
     // 2. Find all problems
-    async findActiveProblemsByCourseId(courseId: string, findProblemsDto: FindProblemsDto) {
+    async findActiveProblemsByCourseId(
+        courseId: string,
+        userId: string,
+        findProblemsDto: FindProblemsDto
+    ) {
         // 1
         await this.courseRepository.checkCourseExists({ id: courseId })
 
         // 2
-        return this.problemRepository.findProblemsByCourseId(courseId, findProblemsDto, {
-            where: { isActive: true }
-        })
+        const data = await this.problemRepository.findProblemsByCourseId(
+            courseId,
+            findProblemsDto,
+            {
+                relations: {
+                    submissions: {
+                        user: true
+                    }
+                },
+                where: {
+                    isActive: true
+                }
+            }
+        )
+
+        data.problems = data.problems.map((problem) => {
+            let problemWithStatus
+            if (problem.submissions.length === 0) {
+                problemWithStatus = {
+                    ...problem,
+                    status: SubmissionStatus.Todo
+                }
+            }
+
+            const isPassed = problem.submissions.some(
+                (submission) =>
+                    submission.user.id === userId && submission.status === SubmissionStatus.Passed
+            )
+
+            if (isPassed) {
+                problemWithStatus = {
+                    ...problem,
+                    status: SubmissionStatus.Passed
+                }
+            } else {
+                problemWithStatus = {
+                    ...problem,
+                    status: SubmissionStatus.Failed
+                }
+            }
+
+            return _.omit(problemWithStatus, ['submissions'])
+        }) as Problem[]
+
+        return data
     }
 
     // 1. Check problem exists

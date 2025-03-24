@@ -10,7 +10,13 @@ import { Order } from 'common/enums/index.enum'
 import { SortBy } from 'common/enums/problems.enum'
 import { Problem } from 'database/entities/problem.entity'
 import { FindProblemsDto } from 'src/problems/dto/find-problems.dto'
-import { FindOptionsOrder, FindOptionsWhere, ILike, Repository } from 'typeorm'
+import {
+    FindOptionsOrder,
+    FindOptionsRelations,
+    FindOptionsWhere,
+    ILike,
+    Repository
+} from 'typeorm'
 import * as _ from 'lodash'
 import { FindProblemOptionDto } from 'src/problems/dto/find-problem-option.dto'
 
@@ -58,8 +64,11 @@ export class ProblemRepository extends Repository<Problem> {
             [findProblemsDto.sortBy || SortBy.CreatedAt]: findProblemsDto.order || Order.Asc
         }
 
+        const relations: FindOptionsRelations<Problem> = options?.relations
+
         // 2
         const problems = await this.problemRepository.find({
+            relations,
             where: _.omitBy(where, _.isUndefined), // remove undefined values
             skip,
             take: limit,

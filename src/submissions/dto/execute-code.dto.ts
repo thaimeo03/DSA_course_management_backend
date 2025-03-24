@@ -13,8 +13,4 @@ export class ExecuteCodeDto {
     @IsNotEmpty()
     @IsUUID()
     problemId: string
-
-    @IsNotEmpty()
-    @IsUUID()
-    userId: string
 }

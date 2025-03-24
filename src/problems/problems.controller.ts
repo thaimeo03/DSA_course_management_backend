@@ -1,10 +1,23 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common'
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Patch,
+    Post,
+    Query,
+    Req,
+    UseGuards
+} from '@nestjs/common'
 import { ProblemsService } from './problems.service'
 import { CreateProblemDto } from './dto/create-problem.dto'
 import { ProblemMessages } from 'common/constants/messages/problem.message'
 import { DataResponse, DataResponseWithPagination } from 'common/core/response-success.core'
 import { UpdateProblemDto } from './dto/update-problem.dto'
 import { FindProblemsDto } from './dto/find-problems.dto'
+import { AuthJwtGuard } from 'src/auth/guards/auth.guard'
+import { Request } from 'express'
 
 @Controller('problems')
 export class ProblemsController {
@@ -35,12 +48,18 @@ export class ProblemsController {
     }
 
     @Get('/course/active/:courseId')
+    @UseGuards(AuthJwtGuard)
     async findActiveProblemsByCourseId(
         @Param('courseId') courseId: string,
-        @Query() findProblemsDto: FindProblemsDto
+        @Query() findProblemsDto: FindProblemsDto,
+        @Req() req: Request
     ) {
+        const userId = req.user['userId'] as string
+
+        await this.problemsService.findActiveProblemsByCourseId(courseId, userId, findProblemsDto)
         const { problems, pagination } = await this.problemsService.findActiveProblemsByCourseId(
             courseId,
+            userId,
             findProblemsDto
         )
 
