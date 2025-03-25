@@ -107,4 +107,39 @@ export class SubmissionsService {
             throw new BadRequestException(error.response?.data?.message || error.message)
         }
     }
+
+    async getSubmissionHistory(userId: string, problemId: string) {
+        // Check problem exists
+        await this.problemRepository.checkProblemExists({ id: problemId })
+
+        // Get submission history
+        const submissions = await this.submissionsRepository.find({
+            relations: {
+                user: true,
+                problem: true,
+                sourceCode: true
+            },
+            where: {
+                user: {
+                    id: userId
+                },
+                problem: {
+                    id: problemId
+                }
+            },
+            select: {
+                id: true,
+                status: true,
+                createdAt: true,
+                sourceCode: {
+                    code: true,
+                    language: true
+                },
+                problem: {},
+                user: {}
+            }
+        })
+
+        return submissions
+    }
 }
