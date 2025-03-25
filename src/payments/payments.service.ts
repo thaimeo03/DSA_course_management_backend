@@ -128,6 +128,9 @@ export class PaymentsService {
                     thumbnail: true
                 },
                 user: {}
+            },
+            order: {
+                paymentDate: 'desc'
             }
         })
 

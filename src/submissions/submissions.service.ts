@@ -137,6 +137,9 @@ export class SubmissionsService {
                 },
                 problem: {},
                 user: {}
+            },
+            order: {
+                createdAt: 'desc'
             }
         })
 
