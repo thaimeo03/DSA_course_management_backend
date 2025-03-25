@@ -38,4 +38,16 @@ export class PaymentsController {
         if (data === true) res.redirect(this.configService.get('CLIENT_PAYMENT_SUCCESS_URL'))
         else res.redirect(this.configService.get('CLIENT_PAYMENT_FAIL_URL'))
     }
+
+    @Get('orders/success')
+    @UseGuards(AuthJwtGuard)
+    async getSuccessOrderHistory(@Req() req: Request) {
+        const userId = req.user['userId'] as string
+        const data = await this.paymentsService.getSuccessOrderHistory(userId)
+
+        return new DataResponse({
+            message: PaymentMessages.GET_SUCCESS_ORDER_HISTORY,
+            data
+        })
+    }
 }

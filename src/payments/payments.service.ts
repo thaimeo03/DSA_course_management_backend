@@ -104,4 +104,33 @@ export class PaymentsService {
 
         return true
     }
+
+    async getSuccessOrderHistory(userId: string) {
+        const payments = this.paymentRepository.find({
+            relations: {
+                user: true,
+                course: true
+            },
+            where: {
+                user: {
+                    id: userId
+                },
+                status: PaymentStatus.Completed
+            },
+            select: {
+                id: true,
+                totalPrice: true,
+                createdAt: true,
+                paymentDate: true,
+                course: {
+                    id: true,
+                    title: true,
+                    thumbnail: true
+                },
+                user: {}
+            }
+        })
+
+        return payments
+    }
 }

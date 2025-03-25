@@ -9,5 +9,6 @@ export const PaymentMessages = {
     PROCESS_PAYMENT_SUCCESS: 'Process payment successfully',
     COURSE_BEEN_PAID: 'Course has been paid',
     PAYMENT_SUCCESS: 'Payment successfully',
-    PAYMENT_FAILED: 'Payment failed'
+    PAYMENT_FAILED: 'Payment failed',
+    GET_SUCCESS_ORDER_HISTORY: 'Get success order history successfully'
 }
