@@ -72,7 +72,12 @@ export class CourseRepository extends Repository<Course> {
         // Calculate pagination details
         const totalCount = await this.courseRepository.count({ where })
         const totalPage = Math.ceil(totalCount / limit)
-        const pagination = new Pagination({ limit, currentPage: page, totalPage })
+        const pagination = new Pagination({
+            limit,
+            currentPage: page,
+            totalPage,
+            totalElements: totalCount
+        })
 
         // Return courses and pagination information
         return {

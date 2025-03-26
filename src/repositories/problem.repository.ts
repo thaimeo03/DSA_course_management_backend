@@ -79,7 +79,12 @@ export class ProblemRepository extends Repository<Problem> {
         // 3
         const totalCount = await this.problemRepository.count({ where })
         const totalPage = Math.ceil(totalCount / limit)
-        const pagination = new Pagination({ limit, currentPage: page, totalPage })
+        const pagination = new Pagination({
+            limit,
+            currentPage: page,
+            totalPage,
+            totalElements: totalCount
+        })
 
         return {
             problems,
