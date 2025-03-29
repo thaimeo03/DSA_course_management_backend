@@ -100,22 +100,23 @@ export class ProblemsService {
                     ...problem,
                     status: SubmissionStatus.Todo
                 }
-            }
-
-            const isPassed = problem.submissions.some(
-                (submission) =>
-                    submission.user.id === userId && submission.status === SubmissionStatus.Passed
-            )
-
-            if (isPassed) {
-                problemWithStatus = {
-                    ...problem,
-                    status: SubmissionStatus.Passed
-                }
             } else {
-                problemWithStatus = {
-                    ...problem,
-                    status: SubmissionStatus.Failed
+                const isPassed = problem.submissions.some(
+                    (submission) =>
+                        submission.user.id === userId &&
+                        submission.status === SubmissionStatus.Passed
+                )
+
+                if (isPassed) {
+                    problemWithStatus = {
+                        ...problem,
+                        status: SubmissionStatus.Passed
+                    }
+                } else {
+                    problemWithStatus = {
+                        ...problem,
+                        status: SubmissionStatus.Failed
+                    }
                 }
             }
 
