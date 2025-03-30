@@ -5,5 +5,6 @@ export const UserMessages = {
     REGISTER_SUCCESS: 'Register successfully',
     LOGIN_SUCCESS: 'Login successfully',
     LOGOUT_SUCCESS: 'Logout successfully',
-    GET_ME_SUCCESS: 'Get me successfully'
+    GET_ME_SUCCESS: 'Get me successfully',
+    UPDATE_PROFILE_SUCCESS: 'Update profile successfully'
 }

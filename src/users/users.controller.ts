@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Patch, Post, Req, Res, UseGuards } from '@nestjs/common'
 import { UsersService } from './users.service'
 import { RegisterDto } from './dto/register.dto'
 import { Request, Response } from 'express'
@@ -7,6 +7,7 @@ import { UserMessages } from 'common/constants/messages/user.message'
 import { ConfigService } from '@nestjs/config'
 import { LoginDto } from './dto/login.dto'
 import { AuthJwtGuard } from 'src/auth/guards/auth.guard'
+import { UpdateProfileDto } from './dto/update-profile.dto'
 
 @Controller('users')
 export class UsersController {
@@ -66,6 +67,18 @@ export class UsersController {
 
         return new DataResponse({
             message: UserMessages.GET_ME_SUCCESS,
+            data
+        })
+    }
+
+    @Patch('update/profile')
+    @UseGuards(AuthJwtGuard)
+    async updateProfile(@Req() req: Request, @Body() updateProfileDto: UpdateProfileDto) {
+        const userId = req.user['userId'] as string
+        const data = await this.usersService.updateProfile(userId, updateProfileDto)
+
+        return new DataResponse({
+            message: UserMessages.UPDATE_PROFILE_SUCCESS,
             data
         })
     }

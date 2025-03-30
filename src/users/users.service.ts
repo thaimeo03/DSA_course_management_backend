@@ -1,4 +1,10 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common'
+import {
+    BadRequestException,
+    Inject,
+    Injectable,
+    InternalServerErrorException,
+    NotFoundException
+} from '@nestjs/common'
 import { RegisterDto } from './dto/register.dto'
 import { ConfigService } from '@nestjs/config'
 import { AuthService } from 'src/auth/auth.service'
@@ -9,6 +15,9 @@ import { PointsService } from 'src/points/points.service'
 import { UserRepository } from 'src/repositories/user.repository'
 import Redis from 'ioredis'
 import { RedisUtil } from 'common/utils/redis.util'
+import { UpdateProfileDto } from './dto/update-profile.dto'
+import { ImagesService } from 'src/images/images.service'
+import { CloudinaryImageFolder } from 'common/enums/images.enum'
 
 @Injectable()
 export class UsersService {
@@ -17,6 +26,7 @@ export class UsersService {
         private configService: ConfigService,
         private authService: AuthService,
         private pointService: PointsService,
+        private imageService: ImagesService,
         @Inject('REDIS_CLIENT') private readonly redisClient: Redis
     ) {}
 
@@ -112,5 +122,23 @@ export class UsersService {
         if (!user) throw new NotFoundException(UserMessages.USER_NOT_FOUND)
 
         return user
+    }
+
+    async updateProfile(userId: string, updateProfileDto: UpdateProfileDto) {
+        const user = await this.usersRepository.findOneBy({ id: userId })
+        if (!user) throw new NotFoundException(UserMessages.USER_NOT_FOUND)
+
+        const { avatar } = updateProfileDto
+
+        // If the avatar is provided, implement the logic to upload it to cloudinary and get the URL and delete the old avatar
+        if (avatar) {
+            try {
+                await this.imageService.deleteImages([user.avatar])
+            } catch (error) {
+                throw new InternalServerErrorException(error)
+            }
+        }
+
+        await this.usersRepository.update({ id: userId }, { ...updateProfileDto })
     }
 }

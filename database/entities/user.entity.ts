@@ -28,6 +28,9 @@ export class User {
     @Column({ type: 'enum', enum: Role, default: Role.Student })
     role: Role
 
+    @Column({ type: 'varchar', length: 15, nullable: true })
+    phoneNumber: string
+
     @Column({ type: 'varchar', nullable: true })
     avatar: string
 
