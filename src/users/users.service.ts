@@ -113,6 +113,7 @@ export class UsersService {
                 email: true,
                 fullName: true,
                 role: true,
+                phoneNumber: true,
                 avatar: true,
                 verified: true,
                 dateOfBirth: true
