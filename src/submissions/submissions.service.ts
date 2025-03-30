@@ -81,7 +81,7 @@ export class SubmissionsService {
 
             // Save source code
             const sourceCode = await this.sourceCodesService.createSourceCode({
-                code: modifiedCodeTemplate,
+                code,
                 language: language
             })
 
