@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { CreatePointDto } from './dto/create-point.dto'
 import { IncreasePointDto } from './dto/increase-point.dto'
 import { SubmissionStatus } from 'common/enums/submissions.enum'
 import { PointRepository } from 'src/repositories/point.repository'
 import { UserRepository } from 'src/repositories/user.repository'
 import { SubmissionRepository } from 'src/repositories/submission.repository'
+import { PointMessages } from 'common/constants/messages/point.message'
 
 @Injectable()
 export class PointsService {
@@ -61,14 +62,13 @@ export class PointsService {
         }
     }
 
-    // Additional feature for dev
-    async addPointForCurrentUsers() {
-        const users = await this.userRepository.find()
+    async getMyPoints(userId: string) {
+        const point = await this.pointsRepository.findOneBy({
+            user: { id: userId }
+        })
 
-        await Promise.all(
-            users.map(async (user) => {
-                await this.createPoint({ userId: user.id })
-            })
-        )
+        if (!point) throw new InternalServerErrorException(PointMessages.POINT_NOT_FOUND)
+
+        return point
     }
 }

@@ -4,5 +4,6 @@ export const PointMessages = {
     UPDATE_POINT_SUCCESS: 'Update point successfully',
     FIND_ALL_POINTS_SUCCESS: 'Find all points successfully',
     POINT_NOT_FOUND: 'Point not found',
-    ADD_POINT_TO_USERS_SUCCESS: 'Add point to users successfully'
+    ADD_POINT_TO_USERS_SUCCESS: 'Add point to users successfully',
+    GET_MY_POINTS_SUCCESS: 'Get my points successfully'
 }
