@@ -8,6 +8,7 @@ import { ImageRepository } from 'src/repositories/image.repository'
 import { CourseMessages } from 'common/constants/messages/course.message'
 import { PaymentFacade } from 'src/payments/payment.facade'
 import { DetailCourseDto } from './dto/detail-course.dto'
+import { PaymentStatus } from 'common/enums/payment.enum'
 
 @Injectable()
 export class CoursesService {
@@ -67,6 +68,28 @@ export class CoursesService {
      */
     async findAllCourses(findAllCoursesDto: FindAllCourseDto) {
         return this.courseRepository.findAllCourses(findAllCoursesDto)
+    }
+
+    async findAllPurchasedCourses(userId: string, findAllCoursesDto: FindAllCourseDto) {
+        return this.courseRepository.findAllCourses(findAllCoursesDto, {
+            relations: {
+                payments: {
+                    user: true
+                }
+            },
+            where: {
+                payments: {
+                    user: {
+                        id: userId
+                    },
+                    status: PaymentStatus.Completed
+                },
+                isActive: true
+            },
+            select: {
+                payments: {}
+            }
+        })
     }
 
     /**

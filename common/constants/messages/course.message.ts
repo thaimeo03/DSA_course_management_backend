@@ -13,5 +13,6 @@ export const CourseMessages = {
     ARCHIVE_COURSE_SUCCESS: 'Archive course successfully',
     UNARCHIVE_COURSE_SUCCESS: 'Unarchive course successfully',
     GET_DETAIL_COURSE_SUCCESS: 'Get detail course successfully',
-    IS_PURCHASE_COURSE_SUCCESS: 'Check course been paid successfully'
+    IS_PURCHASE_COURSE_SUCCESS: 'Check course been paid successfully',
+    FIND_ALL_PURCHASED_COURSES_SUCCESS: 'Find all purchased courses successfully'
 }

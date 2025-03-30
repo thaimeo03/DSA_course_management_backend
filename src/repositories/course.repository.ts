@@ -54,6 +54,7 @@ export class CourseRepository extends Repository<Course> {
             ...options?.where
         }
         const select = options?.select
+        const relations = options?.relations
 
         // Set sorting order
         const order: FindOptionsOrder<Course> = {
@@ -63,6 +64,7 @@ export class CourseRepository extends Repository<Course> {
         // Get all courses matching the criteria
         const courses = await this.courseRepository.find({
             where,
+            relations,
             skip,
             take: limit,
             order: order,

@@ -67,6 +67,25 @@ export class CoursesController {
         })
     }
 
+    @Get('active/purchased')
+    @UseGuards(AuthJwtGuard)
+    async findAllPurchasedCourses(
+        @Query() findAllCoursesDto: FindAllCourseDto,
+        @Req() req: Request
+    ) {
+        const userId = req.user['userId'] as string
+        const { courses, pagination } = await this.coursesService.findAllPurchasedCourses(
+            userId,
+            findAllCoursesDto
+        )
+
+        return new DataResponseWithPagination({
+            message: CourseMessages.FIND_ALL_PURCHASED_COURSES_SUCCESS,
+            data: courses,
+            pagination: pagination
+        })
+    }
+
     @Patch('active/:id')
     async activeCourse(@Param('id') id: string) {
         await this.coursesService.activateCourse(id)
