@@ -1,5 +1,6 @@
 import { Transform } from 'class-transformer'
-import { IsNumber, IsOptional } from 'class-validator'
+import { IsEnum, IsNumber, IsOptional } from 'class-validator'
+import { HavePagination } from 'common/enums/index.enum'
 
 export class PaginationDto {
     @IsOptional()
@@ -11,4 +12,8 @@ export class PaginationDto {
     @IsNumber()
     @Transform(({ value }) => Number(value))
     limit?: number
+
+    @IsOptional()
+    @IsEnum(HavePagination)
+    paging?: HavePagination
 }

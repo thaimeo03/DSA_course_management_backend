@@ -7,7 +7,7 @@ import {
 import { CourseMessages } from 'common/constants/messages/course.message'
 import { Pagination } from 'common/core/pagination.core'
 import { SortBy } from 'common/enums/courses.enum'
-import { Order } from 'common/enums/index.enum'
+import { HavePagination, Order } from 'common/enums/index.enum'
 import { PaymentStatus } from 'common/enums/payment.enum'
 import { Course } from 'database/entities/course.entity'
 import { FindAllCourseOptionDto } from 'src/courses/dto/find-all-course-option.dto'
@@ -44,6 +44,7 @@ export class CourseRepository extends Repository<Course> {
      */
     async findAllCourses(findAllCoursesDto: FindAllCourseDto, options?: FindAllCourseOptionDto) {
         // Determine pagination parameters
+        const paging = findAllCoursesDto.paging || HavePagination.Y
         const page = findAllCoursesDto.page || FIND_ALL_COURSES_PAGE
         const limit = findAllCoursesDto.limit || FIND_ALL_COURSES_LIMIT
         const skip = (page - 1) * limit
@@ -65,18 +66,18 @@ export class CourseRepository extends Repository<Course> {
         const courses = await this.courseRepository.find({
             where,
             relations,
-            skip,
-            take: limit,
+            skip: paging === HavePagination.N ? undefined : skip,
+            take: paging === HavePagination.N ? undefined : limit,
             order: order,
             select
         })
 
         // Calculate pagination details
         const totalCount = await this.courseRepository.count({ where })
-        const totalPage = Math.ceil(totalCount / limit)
+        const totalPage = paging === HavePagination.N ? 1 : Math.ceil(totalCount / limit)
         const pagination = new Pagination({
-            limit,
-            currentPage: page,
+            limit: paging === HavePagination.N ? totalCount : limit,
+            currentPage: paging === HavePagination.N ? 1 : page,
             totalPage,
             totalElements: totalCount
         })

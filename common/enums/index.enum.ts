@@ -9,3 +9,8 @@ export enum ProgrammingLanguage {
     Python = 2,
     Java = 3
 }
+
+export enum HavePagination {
+    Y = 'Y',
+    N = 'N'
+}
