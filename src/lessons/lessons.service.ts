@@ -104,6 +104,10 @@ export class LessonsService {
         return lessons
     }
 
+    async getLessonDetails(id: string) {
+        return this.lessonRepository.checkLessonExists({ id })
+    }
+
     // 1. Check lesson exists
     // 2. Toggle isActive field
     async activeLesson(id: string) {

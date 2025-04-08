@@ -61,6 +61,13 @@ export class LessonsController {
         return new DataResponse({ message: LessonMessages.UNARCHIVE_LESSON_SUCCESS })
     }
 
+    @Get(':id')
+    async getLessonDetails(@Param('id') id: string) {
+        const data = await this.lessonsService.getLessonDetails(id)
+
+        return new DataResponse({ message: LessonMessages.GET_LESSON_DETAILS_SUCCESS, data })
+    }
+
     @Patch(':id')
     async updateLesson(@Param('id') id: string, @Body() updateLessonDto: UpdateLessonDto) {
         await this.lessonsService.updateLesson(id, updateLessonDto)
