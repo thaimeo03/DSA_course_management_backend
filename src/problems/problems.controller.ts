@@ -70,6 +70,13 @@ export class ProblemsController {
         })
     }
 
+    @Get(':id')
+    async getProblemDetail(@Param('id') id: string) {
+        const data = await this.problemsService.getProblemDetail(id)
+
+        return new DataResponse({ message: ProblemMessages.GET_PROBLEM_DETAIL_SUCCESS, data })
+    }
+
     @Patch('active/:id')
     async activeProblem(@Param('id') id: string) {
         await this.problemsService.activeProblem(id)

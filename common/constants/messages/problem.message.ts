@@ -12,5 +12,6 @@ export const ProblemMessages = {
     CAN_NOT_DELETE_ACTIVE_PROBLEM: 'Can not delete active problem, please toggle active first',
     PROBLEM_ARCHIVED: 'Problem archived',
     ARCHIVE_PROBLEM_SUCCESS: 'Archive problem successfully',
-    UNARCHIVE_PROBLEM_SUCCESS: 'Unarchive problem successfully'
+    UNARCHIVE_PROBLEM_SUCCESS: 'Unarchive problem successfully',
+    GET_PROBLEM_DETAIL_SUCCESS: 'Get problem detail successfully'
 }

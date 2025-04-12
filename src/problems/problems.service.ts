@@ -126,6 +126,10 @@ export class ProblemsService {
         return data
     }
 
+    async getProblemDetail(id: string) {
+        return this.problemRepository.checkProblemExists({ id })
+    }
+
     // 1. Check problem exists
     // 2. Update isActive field = true
     async activeProblem(id: string) {
