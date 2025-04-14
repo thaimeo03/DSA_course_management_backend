@@ -7,6 +7,7 @@ import { PaymentFacade } from 'src/payments/payment.facade'
 import { UpdateCouponDto } from './dto/update-coupon.dto'
 import { UserRepository } from 'src/repositories/user.repository'
 import { ApplyCouponDto } from './dto/apply-coupon.dto'
+import { GetAllCouponsDto } from './dto/get-all-coupons.dto'
 
 @Injectable()
 export class CouponsService {
@@ -116,5 +117,9 @@ export class CouponsService {
 
         // Log the action
         this.logger.log(`Coupon ${code} applied for user ${userId}`)
+    }
+
+    async getAllCoupons(getAllCouponsDto: GetAllCouponsDto) {
+        return this.couponRepository.findAllCoupons(getAllCouponsDto)
     }
 }

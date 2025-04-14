@@ -11,5 +11,6 @@ export const CouponMessages = {
     CAN_NOT_SET_AMOUNT_OFF_WITH_PERCENT_OFF: 'Can not set amount off with percent off',
     COUPON_ALREADY_APPLIED: 'Coupon already applied',
     COUPON_REDEEMED: 'Coupon redeemed',
-    APPLY_COUPON_SUCCESS: 'Apply coupon successfully'
+    APPLY_COUPON_SUCCESS: 'Apply coupon successfully',
+    GET_ALL_COUPONS_SUCCESS: 'Get all coupons successfully'
 }

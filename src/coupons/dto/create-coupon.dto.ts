@@ -1,5 +1,6 @@
 import {
     IsDate,
+    IsDateString,
     IsEnum,
     IsNotEmpty,
     IsNumber,
@@ -42,7 +43,7 @@ export class CreateCouponDto {
 
     @IsOptional()
     @IsNotEmpty()
-    @IsDate()
+    @IsDateString()
     @MinDate(new Date()) // set min date to now
     expiredAt: Date
 }

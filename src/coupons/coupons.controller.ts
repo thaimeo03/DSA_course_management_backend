@@ -1,10 +1,14 @@
-import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common'
 import { CouponsService } from './coupons.service'
 import { CreateCouponDto } from './dto/create-coupon.dto'
-import { DataResponse } from 'common/core/response-success.core'
+import { DataResponse, DataResponseWithPagination } from 'common/core/response-success.core'
 import { CouponMessages } from 'common/constants/messages/coupon.message'
 import { UpdateCouponDto } from './dto/update-coupon.dto'
 import { ApplyCouponDto } from './dto/apply-coupon.dto'
+import { GetAllCouponsDto } from './dto/get-all-coupons.dto'
+import { AuthJwtGuard } from 'src/auth/guards/auth.guard'
+import { Roles } from 'common/decorators/roles.de'
+import { Role } from 'common/enums/users.enum'
 
 @Controller('coupons')
 export class CouponsController {
@@ -36,5 +40,18 @@ export class CouponsController {
         await this.couponsService.applyCouponForUser(applyCouponDto)
 
         return new DataResponse({ message: CouponMessages.APPLY_COUPON_SUCCESS })
+    }
+
+    @Get()
+    @UseGuards(AuthJwtGuard)
+    @Roles(Role.Admin)
+    async getAllCoupons(@Query() getAllCouponsDto: GetAllCouponsDto) {
+        const { coupons, pagination } = await this.couponsService.getAllCoupons(getAllCouponsDto)
+
+        return new DataResponseWithPagination({
+            message: CouponMessages.GET_ALL_COUPONS_SUCCESS,
+            data: coupons,
+            pagination: pagination
+        })
     }
 }
