@@ -12,5 +12,6 @@ export const CouponMessages = {
     COUPON_ALREADY_APPLIED: 'Coupon already applied',
     COUPON_REDEEMED: 'Coupon redeemed',
     APPLY_COUPON_SUCCESS: 'Apply coupon successfully',
-    GET_ALL_COUPONS_SUCCESS: 'Get all coupons successfully'
+    GET_ALL_COUPONS_SUCCESS: 'Get all coupons successfully',
+    GET_COUPON_DETAIL_SUCCESS: 'Get coupon detail successfully'
 }

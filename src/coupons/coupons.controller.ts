@@ -21,9 +21,9 @@ export class CouponsController {
         return new DataResponse({ message: CouponMessages.CREATE_COUPON_SUCCESS, data })
     }
 
-    @Delete(':code')
-    async deleteCoupon(@Param('code') code: string) {
-        await this.couponsService.deleteCoupon(code)
+    @Delete(':id')
+    async deleteCoupon(@Param('id') id: string) {
+        await this.couponsService.deleteCoupon(id)
 
         return new DataResponse({ message: CouponMessages.DELETE_COUPON_SUCCESS })
     }
@@ -53,5 +53,14 @@ export class CouponsController {
             data: coupons,
             pagination: pagination
         })
+    }
+
+    @Get(':id')
+    @UseGuards(AuthJwtGuard)
+    @Roles(Role.Admin)
+    async getCouponDetail(@Param('id') id: string) {
+        const coupon = await this.couponsService.getCouponDetail(id)
+
+        return new DataResponse({ message: CouponMessages.GET_COUPON_DETAIL_SUCCESS, data: coupon })
     }
 }

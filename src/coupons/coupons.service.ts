@@ -52,17 +52,17 @@ export class CouponsService {
 
     /**
      * Deletes a coupon by its code.
-     * @param code - The code of the coupon to be deleted.
+     * @param id - The id of the coupon to be deleted.
      */
-    async deleteCoupon(code: string) {
+    async deleteCoupon(id: string) {
         // Check if the coupon exists
-        const coupon = await this.couponRepository.checkCouponExists({ code })
+        const coupon = await this.couponRepository.checkCouponExists({ id })
 
         // Delete the coupon in the database
         await this.couponRepository.delete(coupon.id)
 
         // Delegate to payment facade to handle any additional deletion logic
-        await this.paymentFacade.deleteCoupon(code)
+        await this.paymentFacade.deleteCoupon(coupon.code)
     }
 
     /**
@@ -121,5 +121,9 @@ export class CouponsService {
 
     async getAllCoupons(getAllCouponsDto: GetAllCouponsDto) {
         return this.couponRepository.findAllCoupons(getAllCouponsDto)
+    }
+
+    async getCouponDetail(id: string) {
+        return this.couponRepository.checkCouponExists({ id })
     }
 }
