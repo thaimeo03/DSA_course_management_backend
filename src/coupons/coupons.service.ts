@@ -83,7 +83,8 @@ export class CouponsService {
         await this.couponRepository.update(id, updateCouponDto)
 
         // Delegate to payment facade to handle any additional update logic
-        await this.paymentFacade.updateCoupon(coupon)
+        const updatedCoupon = await this.couponRepository.findOneBy({ id })
+        await this.paymentFacade.updateCoupon(updatedCoupon)
     }
 
     /**
