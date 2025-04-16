@@ -7,6 +7,12 @@ import { Coupon } from 'database/entities/coupon.entity'
 export class PaymentFacade {
     constructor(private stripeService: StripeService) {}
 
+    async createCoupon(coupon: Coupon) {
+        await this.stripeService.createCoupon(coupon)
+
+        // Create more here
+    }
+
     async updateCourse(course: Course) {
         await this.stripeService.updateProductAndPrice(course)
 

@@ -201,7 +201,7 @@ export class StripeService {
         if (coupon.amountOff) params['amount_off'] = coupon.amountOff
         if (coupon.percentOff) params['percent_off'] = coupon.percentOff
         if (coupon.maxRedeem) params['max_redemptions'] = coupon.maxRedeem
-        if (coupon.expiredAt) params['redeem_by'] = coupon.expiredAt.getTime()
+        if (coupon.expiredAt) params['redeem_by'] = coupon.expiredAt.getTime() / 1000 // Convert to seconds
 
         // Create the coupon in Stripe
         const newCoupon = await this.stripe.coupons.create(params)

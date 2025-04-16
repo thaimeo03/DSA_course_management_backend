@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer'
 import {
     IsDate,
     IsDateString,
@@ -42,8 +43,8 @@ export class CreateCouponDto {
     maxRedeem: number
 
     @IsOptional()
-    @IsNotEmpty()
-    @IsDateString()
-    @MinDate(new Date()) // set min date to now
-    expiredAt: Date
+    @IsDate()
+    @Transform(({ value }) => new Date(value))
+    @MinDate(new Date())
+    expiredAt?: Date
 }

@@ -45,9 +45,13 @@ export class CouponsService {
         }
 
         // 3
-        return this.couponRepository.save({
+        const newCoupon = await this.couponRepository.save({
             ...createCouponDto
         })
+
+        await this.paymentFacade.createCoupon(newCoupon)
+
+        return newCoupon
     }
 
     /**
