@@ -44,7 +44,7 @@ export class CreateCouponDto {
 
     @IsOptional()
     @IsDate()
-    @Transform(({ value }) => new Date(value))
+    @Transform(({ value }) => (value ? new Date(value) : null))
     @MinDate(new Date())
     expiredAt?: Date
 }
