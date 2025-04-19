@@ -1,9 +1,21 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common'
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Patch,
+    Post,
+    UploadedFile,
+    UseInterceptors
+} from '@nestjs/common'
 import { DocumentsService } from './documents.service'
 import { CreateDocumentDto } from './dto/create-document.dto'
 import { DataResponse } from 'common/core/response-success.core'
 import { DocumentMessages } from 'common/constants/messages/document.message'
 import { UpdateDocumentDto } from './dto/update-docuement.dto'
+import { FileInterceptor } from '@nestjs/platform-express'
+import { UploadDocumentBodyDto } from './dto/upload-document-body.dto'
 
 @Controller('documents')
 export class DocumentsController {
@@ -14,6 +26,23 @@ export class DocumentsController {
         const data = await this.documentsService.createDocument(createDocumentDto)
 
         return new DataResponse({ message: DocumentMessages.CREATE_DOCUMENT_SUCCESS, data })
+    }
+
+    @Post('upload')
+    @UseInterceptors(FileInterceptor('document'))
+    async uploadDocument(
+        @UploadedFile() file: Express.Multer.File,
+        @Body() uploadDocumentBodyDto: UploadDocumentBodyDto
+    ) {
+        const data = await this.documentsService.uploadDocument({
+            file,
+            cloudFolder: uploadDocumentBodyDto.cloudFolder
+        })
+
+        return new DataResponse({
+            message: DocumentMessages.CREATE_DOCUMENT_SUCCESS,
+            data
+        })
     }
 
     @Get('/lesson/:lessonId')

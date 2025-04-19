@@ -4,7 +4,7 @@ import { FindAllCourseDto } from './dto/find-all-course.dto'
 import { UpdateCourseDto } from './dto/update-course.dto'
 import { ImagesService } from 'src/images/images.service'
 import { CourseRepository } from 'src/repositories/course.repository'
-import { ImageRepository } from 'src/repositories/image.repository'
+import { CloudRepository } from 'src/repositories/cloud.repository'
 import { CourseMessages } from 'common/constants/messages/course.message'
 import { PaymentFacade } from 'src/payments/payment.facade'
 import { DetailCourseDto } from './dto/detail-course.dto'
@@ -14,7 +14,7 @@ import { PaymentStatus } from 'common/enums/payment.enum'
 export class CoursesService {
     constructor(
         private courseRepository: CourseRepository,
-        private imageRepository: ImageRepository,
+        private imageRepository: CloudRepository,
         private imageService: ImagesService,
         private paymentFacade: PaymentFacade
     ) {}

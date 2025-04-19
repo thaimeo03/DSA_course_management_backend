@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common'
-import { CloudinaryService } from './cloudinary.service'
 import { UploadImagesDto } from './dto/upload-images.dto'
-import { ImageRepository } from 'src/repositories/image.repository'
+import { CloudRepository } from 'src/repositories/cloud.repository'
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service'
+import { FileType } from 'common/enums/repository.enum'
 
 @Injectable()
 export class ImagesService {
     constructor(
-        private imageRepository: ImageRepository,
+        private imageRepository: CloudRepository,
         private cloudinaryService: CloudinaryService
     ) {}
 
@@ -16,9 +17,10 @@ export class ImagesService {
 
         const urls = await Promise.all(
             files.map(async (file) => {
-                const uploadResult = await this.cloudinaryService.uploadImage({
+                const uploadResult = await this.cloudinaryService.uploadFile({
                     file,
-                    cloudFolder
+                    cloudFolder,
+                    fileType: FileType.Image
                 })
 
                 return uploadResult
@@ -36,7 +38,7 @@ export class ImagesService {
                 if (!image) return
 
                 Promise.all([
-                    await this.cloudinaryService.deleteImage(image.publicId),
+                    await this.cloudinaryService.deleteFile(image.publicId),
                     await this.imageRepository.delete(image.id)
                 ])
             })

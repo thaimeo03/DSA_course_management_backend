@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
 
-@Entity('Images')
-export class Image {
+@Entity('Repositories')
+export class Repository {
     @PrimaryGeneratedColumn('uuid')
     id: string
 

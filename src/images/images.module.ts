@@ -3,17 +3,18 @@ import { ImagesService } from './images.service'
 import { MulterModule } from '@nestjs/platform-express'
 import { ImagesController } from './images.controller'
 import { MulterConfigService } from './multer-config.service'
-import { CloudinaryService } from './cloudinary.service'
-import { Image } from 'database/entities/image.entity'
-import { ImageRepository } from 'src/repositories/image.repository'
+import { Repository } from 'database/entities/repository.entity'
+import { CloudRepository } from 'src/repositories/cloud.repository'
 import { RepositoriesModule } from 'src/repositories/repositories.module'
+import { CloudinaryModule } from 'src/cloudinary/cloudinary.module'
 
 @Module({
     imports: [
         MulterModule.registerAsync({ useClass: MulterConfigService }),
-        RepositoriesModule.register([Image], [ImageRepository])
+        RepositoriesModule.register([Repository], [CloudRepository]),
+        CloudinaryModule
     ],
-    providers: [ImagesService, CloudinaryService],
+    providers: [ImagesService],
     controllers: [ImagesController],
     exports: [ImagesService]
 })

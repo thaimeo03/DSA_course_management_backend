@@ -19,6 +19,7 @@ import { PaymentsModule } from './payments/payments.module'
 import { CouponsModule } from './coupons/coupons.module'
 import { MailsModule } from './mails/mails.module'
 import { RedisModule } from './redis/redis.module'
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
     imports: [
@@ -44,7 +45,8 @@ import { RedisModule } from './redis/redis.module'
         PaymentsModule,
         CouponsModule,
         MailsModule,
-        RedisModule
+        RedisModule,
+        CloudinaryModule
     ],
     controllers: [AppController],
     providers: []
