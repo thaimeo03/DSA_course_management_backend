@@ -56,7 +56,7 @@ export class CloudinaryService {
         // Get the URL of the uploaded file
         let fileUrl: string
         if (fileType === FileType.Document) {
-            fileUrl = cloudinary.url(uploadResult.public_id)
+            fileUrl = uploadResult.url
         } else {
             // For images, apply optimization
             fileUrl = cloudinary.url(uploadResult.public_id, {
