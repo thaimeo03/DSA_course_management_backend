@@ -20,6 +20,7 @@ import { ImagesService } from 'src/images/images.service'
 import { GetRanksDto } from './dto/get-ranks.dto'
 import { HavePagination } from 'common/enums/index.enum'
 import { Pagination } from 'common/core/pagination.core'
+import { GetAccountsDto } from './dto/get-accounts.dto'
 
 @Injectable()
 export class UsersService {
@@ -185,7 +186,7 @@ export class UsersService {
         }
 
         const pagination = new Pagination({
-            limit: havePagination === HavePagination.N ? ranks.length : limit,
+            limit,
             currentPage: page,
             totalPage: Math.ceil(ranks.length / limit),
             totalElements: ranks.length
@@ -195,5 +196,27 @@ export class UsersService {
             ranks,
             pagination
         }
+    }
+
+    /**
+     * Gets a list of user accounts with pagination, sorting, and filtering.
+     * @param getAccountsDto - The data to filter, sort and paginate the accounts.
+     * @returns An object containing the list of accounts and pagination details.
+     */
+    async getAccounts(getAccountsDto: GetAccountsDto) {
+        return this.usersRepository.getAccounts(getAccountsDto, {
+            select: {
+                id: true,
+                fullName: true,
+                email: true,
+                role: true,
+                phoneNumber: true,
+                avatar: true,
+                verified: true,
+                dateOfBirth: true,
+                createdAt: true,
+                updatedAt: true
+            }
+        })
     }
 }

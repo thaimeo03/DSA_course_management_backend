@@ -9,6 +9,9 @@ import { LoginDto } from './dto/login.dto'
 import { AuthJwtGuard } from 'src/auth/guards/auth.guard'
 import { UpdateProfileDto } from './dto/update-profile.dto'
 import { GetRanksDto } from './dto/get-ranks.dto'
+import { Roles } from 'common/decorators/roles.de'
+import { Role } from 'common/enums/users.enum'
+import { GetAccountsDto } from './dto/get-accounts.dto'
 
 @Controller('users')
 export class UsersController {
@@ -91,6 +94,19 @@ export class UsersController {
         return new DataResponseWithPagination({
             message: UserMessages.GET_RANKS_SUCCESS,
             data: ranks,
+            pagination
+        })
+    }
+
+    @Get('accounts')
+    @UseGuards(AuthJwtGuard)
+    @Roles(Role.Admin)
+    async getAccounts(@Query() getAccountsDto: GetAccountsDto) {
+        const { accounts, pagination } = await this.usersService.getAccounts(getAccountsDto)
+
+        return new DataResponseWithPagination({
+            message: UserMessages.GET_ACCOUNTS_SUCCESS,
+            data: accounts,
             pagination
         })
     }
