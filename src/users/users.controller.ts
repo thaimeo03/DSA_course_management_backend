@@ -1,13 +1,14 @@
-import { Body, Controller, Get, Patch, Post, Req, Res, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Patch, Post, Query, Req, Res, UseGuards } from '@nestjs/common'
 import { UsersService } from './users.service'
 import { RegisterDto } from './dto/register.dto'
 import { Request, Response } from 'express'
-import { DataResponse } from 'common/core/response-success.core'
+import { DataResponse, DataResponseWithPagination } from 'common/core/response-success.core'
 import { UserMessages } from 'common/constants/messages/user.message'
 import { ConfigService } from '@nestjs/config'
 import { LoginDto } from './dto/login.dto'
 import { AuthJwtGuard } from 'src/auth/guards/auth.guard'
 import { UpdateProfileDto } from './dto/update-profile.dto'
+import { GetRanksDto } from './dto/get-ranks.dto'
 
 @Controller('users')
 export class UsersController {
@@ -80,6 +81,17 @@ export class UsersController {
         return new DataResponse({
             message: UserMessages.UPDATE_PROFILE_SUCCESS,
             data
+        })
+    }
+
+    @Get('ranks')
+    async getRanks(@Query() getRanksQuery: GetRanksDto) {
+        const { ranks, pagination } = await this.usersService.getRanks(getRanksQuery)
+
+        return new DataResponseWithPagination({
+            message: UserMessages.GET_RANKS_SUCCESS,
+            data: ranks,
+            pagination
         })
     }
 }

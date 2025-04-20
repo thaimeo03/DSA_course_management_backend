@@ -17,7 +17,9 @@ import Redis from 'ioredis'
 import { RedisUtil } from 'common/utils/redis.util'
 import { UpdateProfileDto } from './dto/update-profile.dto'
 import { ImagesService } from 'src/images/images.service'
-import { CloudinaryImageFolder } from 'common/enums/images.enum'
+import { GetRanksDto } from './dto/get-ranks.dto'
+import { HavePagination } from 'common/enums/index.enum'
+import { Pagination } from 'common/core/pagination.core'
 
 @Injectable()
 export class UsersService {
@@ -141,5 +143,57 @@ export class UsersService {
         }
 
         await this.usersRepository.update({ id: userId }, { ...updateProfileDto })
+    }
+
+    async getRanks(getRanksQuery: GetRanksDto) {
+        const limit = getRanksQuery.limit || 20
+        const page = getRanksQuery.page || 1
+        const havePagination = getRanksQuery.paging || HavePagination.Y
+
+        // Get the ranks from Redis
+        const start = (page - 1) * limit
+        const end = havePagination ? page * limit - 1 : -1
+        const ranksWithScores = await this.redisClient.zrevrange(
+            RedisUtil.getRanksKey(),
+            start,
+            end,
+            'WITHSCORES'
+        )
+
+        // Transform the ranks and scores
+        const ranks = []
+        for (let i = 0; i < ranksWithScores.length; i += 2) {
+            const userId = ranksWithScores[i]
+            const score = +ranksWithScores[i + 1]
+
+            const user = await this.usersRepository.findOne({
+                where: { id: userId },
+                select: {
+                    id: true,
+                    fullName: true,
+                    avatar: true
+                }
+            })
+
+            if (user) {
+                ranks.push({
+                    rank: Math.floor(i / 2) + 1,
+                    user,
+                    score
+                })
+            }
+        }
+
+        const pagination = new Pagination({
+            limit: havePagination === HavePagination.N ? ranks.length : limit,
+            currentPage: page,
+            totalPage: Math.ceil(ranks.length / limit),
+            totalElements: ranks.length
+        })
+
+        return {
+            ranks,
+            pagination
+        }
     }
 }

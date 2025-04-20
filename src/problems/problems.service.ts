@@ -95,16 +95,19 @@ export class ProblemsService {
 
         data.problems = data.problems.map((problem) => {
             let problemWithStatus
-            if (problem.submissions.length === 0) {
+
+            const filteredUserSubmissions = problem.submissions.filter(
+                (submission) => submission.user.id === userId
+            )
+
+            if (filteredUserSubmissions.length === 0) {
                 problemWithStatus = {
                     ...problem,
                     status: SubmissionStatus.Todo
                 }
             } else {
-                const isPassed = problem.submissions.some(
-                    (submission) =>
-                        submission.user.id === userId &&
-                        submission.status === SubmissionStatus.Passed
+                const isPassed = filteredUserSubmissions.some(
+                    (submission) => submission.status === SubmissionStatus.Passed
                 )
 
                 if (isPassed) {
