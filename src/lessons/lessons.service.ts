@@ -23,20 +23,11 @@ export class LessonsService {
         })
 
         // 2
-        const lessonNo = await this.lessonRepository.findOne({
-            where: {
-                no: createLessonDto.no,
-                course: {
-                    id: createLessonDto.courseId
-                }
-            },
-            relations: {
-                course: true
+        this.lessonRepository.checkNoExists(createLessonDto.no, {
+            course: {
+                id: createLessonDto.courseId
             }
         })
-
-        if (lessonNo)
-            throw new BadRequestException(LessonMessages.NUMBER_ORDER_LESSON_ALREADY_EXISTS)
 
         // 3
         const lesson = await this.lessonRepository.save({
@@ -66,6 +57,10 @@ export class LessonsService {
         const lesson = await this.lessonRepository.checkLessonExists({ id })
         if (lesson.isActive)
             throw new BadRequestException(LessonMessages.CAN_NOT_UPDATE_ACTIVE_LESSON)
+
+        this.lessonRepository.checkNoExists(updateLessonDto.no, {
+            id
+        })
 
         // 2
         await this.lessonRepository.update(id, updateLessonDto)

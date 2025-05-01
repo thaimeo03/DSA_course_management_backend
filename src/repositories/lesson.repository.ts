@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { LessonMessages } from 'common/constants/messages/lesson.message'
 import { Lesson } from 'database/entities/lesson.entity'
@@ -40,5 +40,17 @@ export class LessonRepository extends Repository<Lesson> {
         })
 
         return lessons
+    }
+
+    async checkNoExists(no: number, where: FindOptionsWhere<Lesson> | FindOptionsWhere<Lesson>[]) {
+        const lessonNo = await this.lessonRepository.findOne({
+            where,
+            relations: {
+                course: true
+            }
+        })
+
+        if (lessonNo)
+            throw new BadRequestException(LessonMessages.NUMBER_ORDER_LESSON_ALREADY_EXISTS)
     }
 }
