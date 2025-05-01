@@ -29,7 +29,7 @@ public class Main {
 `
 
 export const javaTestCaseTemplate = `
-            if (!{{{comparison}}}) {
+            if (!({{{comparison}}})) {
                 throw new AssertionError("Expected " + {{{expected_output_string}}} + ", but got " + {{{parsed_calling_function}}});
             }
 `
