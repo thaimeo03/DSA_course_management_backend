@@ -42,10 +42,10 @@ export class Course {
     @UpdateDateColumn()
     updatedAt: Date
 
-    @OneToMany(() => Lesson, (lesson) => lesson.course)
+    @OneToMany(() => Lesson, (lesson) => lesson.course, { cascade: true })
     lessons: Lesson[]
 
-    @OneToMany(() => Problem, (problem) => problem.course)
+    @OneToMany(() => Problem, (problem) => problem.course, { cascade: true })
     problems: Problem[]
 
     @OneToMany(() => Payment, (payment) => payment.course)
