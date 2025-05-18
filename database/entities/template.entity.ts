@@ -13,6 +13,6 @@ export class Template {
     @Column({ type: 'enum', enum: ProgrammingLanguage })
     language: ProgrammingLanguage
 
-    @ManyToOne(() => Problem, (problem) => problem.templates)
+    @ManyToOne(() => Problem, (problem) => problem.templates, { onDelete: 'CASCADE' })
     problem: Problem
 }
