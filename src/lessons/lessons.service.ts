@@ -66,8 +66,9 @@ export class LessonsService {
             { catchError: false }
         )
 
-        if (!existedLesson)
-            throw new NotFoundException(LessonMessages.LESSON_NOT_FOUND_OR_NO_ALREADY_EXISTS)
+        if (existedLesson && existedLesson.id !== id) {
+            throw new BadRequestException(LessonMessages.NUMBER_ORDER_LESSON_ALREADY_EXISTS)
+        }
 
         // 2
         await this.lessonRepository.update(id, updateLessonDto)
