@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { CreateLessonDto } from './dto/create-lesson.dto'
 import * as _ from 'lodash'
 import { UpdateLessonDto } from './dto/update-lesson.dto'
@@ -23,7 +23,7 @@ export class LessonsService {
         })
 
         // 2
-        this.lessonRepository.checkNoExists(createLessonDto.no, {
+        await this.lessonRepository.checkNoExists(createLessonDto.no, {
             course: {
                 id: createLessonDto.courseId
             }
@@ -58,9 +58,16 @@ export class LessonsService {
         if (lesson.isActive)
             throw new BadRequestException(LessonMessages.CAN_NOT_UPDATE_ACTIVE_LESSON)
 
-        this.lessonRepository.checkNoExists(updateLessonDto.no, {
-            id
-        })
+        const existedLesson = await this.lessonRepository.checkNoExists(
+            updateLessonDto.no,
+            {
+                id
+            },
+            { catchError: false }
+        )
+
+        if (!existedLesson)
+            throw new NotFoundException(LessonMessages.LESSON_NOT_FOUND_OR_NO_ALREADY_EXISTS)
 
         // 2
         await this.lessonRepository.update(id, updateLessonDto)

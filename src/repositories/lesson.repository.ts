@@ -42,13 +42,22 @@ export class LessonRepository extends Repository<Lesson> {
         return lessons
     }
 
-    async checkNoExists(no: number, where: FindOptionsWhere<Lesson> | FindOptionsWhere<Lesson>[]) {
+    async checkNoExists(
+        no: number,
+        where: FindOptionsWhere<Lesson> | FindOptionsWhere<Lesson>[],
+        { catchError }: { catchError?: boolean } = {}
+    ) {
         const lessonNo = await this.lessonRepository.findOne({
-            where,
+            where: {
+                no,
+                ...where
+            },
             relations: {
                 course: true
             }
         })
+
+        if (!catchError) return lessonNo
 
         if (lessonNo)
             throw new BadRequestException(LessonMessages.NUMBER_ORDER_LESSON_ALREADY_EXISTS)

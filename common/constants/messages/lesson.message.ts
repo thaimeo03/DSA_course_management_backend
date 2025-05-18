@@ -14,5 +14,6 @@ export const LessonMessages = {
     ARCHIVE_LESSON_SUCCESS: 'Archive lesson successfully',
     UNARCHIVE_LESSON_SUCCESS: 'Unarchive lesson successfully',
     NUMBER_ORDER_LESSON_ALREADY_EXISTS: 'Number order lesson already exists',
-    GET_LESSON_DETAILS_SUCCESS: 'Get lesson details successfully'
+    GET_LESSON_DETAILS_SUCCESS: 'Get lesson details successfully',
+    LESSON_NOT_FOUND_OR_NO_ALREADY_EXISTS: 'Lesson not found or no already exists'
 }
