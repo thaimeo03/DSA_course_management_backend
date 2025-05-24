@@ -42,6 +42,7 @@ export class JavaExecutor extends CodeExecutor {
                     callingFunctionTemplate,
                     expectedOutputTemplate
                 )
+
                 const parsedCallingFunctionTemplate = this.getConvertedStringOutPutVar(
                     outputType,
                     callingFunctionTemplate
@@ -72,7 +73,9 @@ export class JavaExecutor extends CodeExecutor {
         switch (outputType) {
             case DataTypes.String:
                 return `${callingFunction}.equals(${expectedOutput})`
-            case DataTypes.Integer || DataTypes.Double || DataTypes.Boolean:
+            case DataTypes.Integer:
+            case DataTypes.Double:
+            case DataTypes.Boolean:
                 return `${callingFunction} == ${expectedOutput}`
             default:
                 return `Arrays.equals(${callingFunction}, ${expectedOutput})`
@@ -96,12 +99,16 @@ export class JavaExecutor extends CodeExecutor {
             case DataTypes.StringArray:
                 return `new String[] {${varStrings}}`
             case DataTypes.IntegerMatrix:
+                varStrings = varStrings.replaceAll('[', '{').replaceAll(']', '}')
                 return `new int[][] {${varStrings}}`
             case DataTypes.DoubleMatrix:
+                varStrings = varStrings.replaceAll('[', '{').replaceAll(']', '}')
                 return `new double[][] {${varStrings}}`
             case DataTypes.BooleanMatrix:
+                varStrings = varStrings.replaceAll('[', '{').replaceAll(']', '}')
                 return `new boolean[][] {${varStrings}}`
             case DataTypes.StringMatrix:
+                varStrings = varStrings.replaceAll('[', '{').replaceAll(']', '}')
                 return `new String[][] {${varStrings}}`
             default:
                 return JSON.stringify(val)
