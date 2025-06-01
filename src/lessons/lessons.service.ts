@@ -64,9 +64,7 @@ export class LessonsService {
 
         const existedLesson = await this.lessonRepository.checkNoExists(
             updateLessonDto.no,
-            {
-                id
-            },
+            {},
             { catchError: false }
         )
 
