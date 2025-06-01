@@ -1,10 +1,10 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
-import { CreateLessonDto } from './dto/create-lesson.dto'
+import { BadRequestException, Injectable } from '@nestjs/common'
+import { LessonMessages } from 'common/constants/messages/lesson.message'
 import * as _ from 'lodash'
-import { UpdateLessonDto } from './dto/update-lesson.dto'
 import { CourseRepository } from 'src/repositories/course.repository'
 import { LessonRepository } from 'src/repositories/lesson.repository'
-import { LessonMessages } from 'common/constants/messages/lesson.message'
+import { CreateLessonDto } from './dto/create-lesson.dto'
+import { UpdateLessonDto } from './dto/update-lesson.dto'
 
 @Injectable()
 export class LessonsService {
@@ -23,11 +23,15 @@ export class LessonsService {
         })
 
         // 2
-        await this.lessonRepository.checkNoExists(createLessonDto.no, {
-            course: {
-                id: createLessonDto.courseId
-            }
-        })
+        await this.lessonRepository.checkNoExists(
+            createLessonDto.no,
+            {
+                course: {
+                    id: createLessonDto.courseId
+                }
+            },
+            { catchError: true }
+        )
 
         // 3
         const lesson = await this.lessonRepository.save({
