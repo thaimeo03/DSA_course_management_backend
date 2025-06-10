@@ -2,8 +2,8 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { InjectRepository } from '@nestjs/typeorm'
 import { LessonMessages } from 'common/constants/messages/lesson.message'
 import { Lesson } from 'database/entities/lesson.entity'
-import { FindOptionsWhere, Repository } from 'typeorm'
 import { FindLessonsOptionDto } from 'src/lessons/dto/find-lessons-option.dto'
+import { FindOptionsWhere, Repository } from 'typeorm'
 
 @Injectable()
 export class LessonRepository extends Repository<Lesson> {
@@ -15,7 +15,10 @@ export class LessonRepository extends Repository<Lesson> {
     // 2. Return lesson
     async checkLessonExists(where: FindOptionsWhere<Lesson> | FindOptionsWhere<Lesson>[]) {
         // 1
-        const lesson = await this.lessonRepository.findOneBy(where)
+        const lesson = await this.lessonRepository.findOne({
+            where,
+            relations: { course: true }
+        })
         if (!lesson) throw new NotFoundException(LessonMessages.LESSON_NOT_FOUND)
         if (lesson.isArchived) throw new NotFoundException(LessonMessages.LESSON_IS_ARCHIVED)
 
@@ -45,7 +48,7 @@ export class LessonRepository extends Repository<Lesson> {
     async checkNoExists(
         no: number,
         where: FindOptionsWhere<Lesson> | FindOptionsWhere<Lesson>[],
-        { catchError }: { catchError?: boolean } = {}
+        { catchError = true } = {}
     ) {
         const lessonNo = await this.lessonRepository.findOne({
             where: {
@@ -57,9 +60,9 @@ export class LessonRepository extends Repository<Lesson> {
             }
         })
 
-        if (!catchError) return lessonNo
-
-        if (lessonNo)
+        if (lessonNo && catchError)
             throw new BadRequestException(LessonMessages.NUMBER_ORDER_LESSON_ALREADY_EXISTS)
+
+        return lessonNo
     }
 }

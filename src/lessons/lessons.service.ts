@@ -23,15 +23,11 @@ export class LessonsService {
         })
 
         // 2
-        await this.lessonRepository.checkNoExists(
-            createLessonDto.no,
-            {
-                course: {
-                    id: createLessonDto.courseId
-                }
-            },
-            { catchError: true }
-        )
+        await this.lessonRepository.checkNoExists(createLessonDto.no, {
+            course: {
+                id: createLessonDto.courseId
+            }
+        })
 
         // 3
         const lesson = await this.lessonRepository.save({
@@ -59,12 +55,17 @@ export class LessonsService {
     async updateLesson(id: string, updateLessonDto: UpdateLessonDto) {
         // 1
         const lesson = await this.lessonRepository.checkLessonExists({ id })
+
         if (lesson.isActive)
             throw new BadRequestException(LessonMessages.CAN_NOT_UPDATE_ACTIVE_LESSON)
 
         const existedLesson = await this.lessonRepository.checkNoExists(
             updateLessonDto.no,
-            {},
+            {
+                course: {
+                    id: lesson.course.id
+                }
+            },
             { catchError: false }
         )
 
